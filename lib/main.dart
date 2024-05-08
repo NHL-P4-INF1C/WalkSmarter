@@ -1,43 +1,35 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Hello, World!',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        home: MyHomePage(),
-      ),
+    return MaterialApp(
+      title: 'Hello, World!',
+      home: MyHomePage(),
     );
   }
-}
-
-class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
 }
 
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Scaffold(
-      body: Column(children: [
-        Text("what the sigma"),
-        Text(appState.current.asLowerCase),
-      ]),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Home page",
+              style: TextStyle(fontSize: 24.0),
+            ),
+            SizedBox(height: 16.0)
+          ],
+        ),
+      ),
     );
   }
 }
