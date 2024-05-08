@@ -29,19 +29,17 @@ class MyHomePage extends StatelessWidget {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-          onPressed: () {
-            // Navigate to the second page when the button is pressed
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LoginDemo()),
-            );
-          },
-          child: Text('Go to Second Page'),
-        ),
+              onPressed: () {
+                // Navigate to the second page when the button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginDemo()),
+                );
+              },
+              child: Text('Go to log in page'),
+            ),
           ],
-          
         ),
-        
       ),
     );
   }
