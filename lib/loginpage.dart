@@ -28,6 +28,22 @@ class LoginDemo extends StatefulWidget {
 
 class _LoginDemoState extends State<LoginDemo> {
   String? email, password;
+  Future<void> signIn() async {
+    try {
+      if (email != null && password != null) {
+        await pb.collection('users').authWithPassword(email!, password!);
+
+        Navigator.pushNamed(
+          context,
+          '/home',
+        );
+        print("Ingelogd!!");
+      }
+    } catch (e) {
+      print('Error occurred during authentication: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +69,7 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
-              //Email INPUT FIELD
+              //Email veld
               child: TextField(
                 onChanged: (value) {
                   setState(() {
@@ -69,7 +85,7 @@ class _LoginDemoState extends State<LoginDemo> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //PASSWORD INPUT FIELD
+              //Password veld
               child: TextField(
                 obscureText: true,
                 onChanged: (value) {
@@ -83,7 +99,7 @@ class _LoginDemoState extends State<LoginDemo> {
                     hintText: 'Enter password'),
               ),
             ),
-            //FORGOT PASSWORD BUTTON
+            //Password vergeten
             TextButton(
               onPressed: () {
                 //TODO FORGOT PASSWORD SCREEN GOES HERE
@@ -101,10 +117,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/home',
-                  );
+                  signIn();
                 },
                 child: Text(
                   'Login',
