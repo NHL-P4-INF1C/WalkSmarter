@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -8,22 +10,26 @@ void main() {
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginDemo(),
+class LoginDemo extends StatefulWidget {
+  const LoginDemo();
+
+  static Future<void> show(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) {
+          return const LoginDemo();
+        },
+      ),
     );
   }
-}
 
-class LoginDemo extends StatefulWidget {
   @override
-  _LoginDemoState createState() => _LoginDemoState();
+  State<LoginDemo> createState() => _LoginDemoState();
 }
 
 class _LoginDemoState extends State<LoginDemo> {
+  String? email, password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +55,13 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
+              //Email INPUT FIELD
               child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    email = value;
+                  });
+                },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
@@ -59,14 +71,21 @@ class _LoginDemoState extends State<LoginDemo> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
+              //PASSWORD INPUT FIELD
               child: TextField(
                 obscureText: true,
+                onChanged: (value) {
+                  setState(() {
+                    password = value;
+                  });
+                },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                     hintText: 'Enter password'),
               ),
             ),
+            //FORGOT PASSWORD BUTTON
             TextButton(
               onPressed: () {
                 //TODO FORGOT PASSWORD SCREEN GOES HERE

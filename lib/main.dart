@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:walk_smarter/loginpage.dart';
+import 'loginpage.dart';
 
 void main() {
   runApp(MyApp());
