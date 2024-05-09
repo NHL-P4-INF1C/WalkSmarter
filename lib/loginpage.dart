@@ -1,14 +1,12 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+
 void main() {
   runApp(MyApp());
 }
-
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
 class LoginDemo extends StatefulWidget {
   const LoginDemo();
@@ -103,8 +101,10 @@ class _LoginDemoState extends State<LoginDemo> {
                   borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()));
+                  Navigator.pushNamed(
+                    context,
+                    '/home',
+                  );
                 },
                 child: Text(
                   'Login',
