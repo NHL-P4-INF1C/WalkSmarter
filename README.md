@@ -6,6 +6,10 @@
 # Walk Smarter
 Walk Smarter is an app designed to help users explore and learn about the city they are in by providing questions about monuments and famous landmarks. Users earn points for correctly answering questions and can redeem these points for rewards.
 
+## Node JS server
+This project is supposed to connect to a custom NodeJS server that can be found in [this repository](https://github.com/NHL-P4-INF1C/walk_smarter_node_server)
+
+
 ## Authors
 
 - [Jesse van der Voet](https://github.com/JesseNHLStenden)
