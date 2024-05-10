@@ -37,7 +37,6 @@ class MyHomePage extends StatelessWidget {
             SizedBox(height: 16.0),
             TextButton(
               onPressed: () {
-                //Navigeer naar het inlog pagina wanneer je op de Button klikt
                 Navigator.pushNamed(
                   context,
                   '/',

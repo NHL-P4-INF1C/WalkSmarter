@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
@@ -79,7 +77,6 @@ class _SignUpDemo extends State<SignUp> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //Email veld
               child: TextField(
                 onChanged: (value) {
                   setState(() {
@@ -87,15 +84,14 @@ class _SignUpDemo extends State<SignUp> {
                   });
                 },
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Username',
-                    hintText: 'Enter your Username'),
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter your new Username',
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //Email veld
               child: TextField(
                 onChanged: (value) {
                   setState(() {
@@ -104,14 +100,13 @@ class _SignUpDemo extends State<SignUp> {
                 },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'email',
+                    labelText: 'E-mail',
                     hintText: 'Enter your email'),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //Password veld
               child: TextField(
                 obscureText: true,
                 onChanged: (value) {
@@ -120,16 +115,16 @@ class _SignUpDemo extends State<SignUp> {
                   });
                 },
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    hintText: 'Enter your new password'),
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter your new password',
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 15),
-              //Email veld
               child: TextField(
+                obscureText: true,
                 onChanged: (value) {
                   setState(() {
                     passwordAgain = value;
@@ -137,8 +132,8 @@ class _SignUpDemo extends State<SignUp> {
                 },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Password again',
-                    hintText: 'Enter your password again'),
+                    labelText: 'Re-enter your password',
+                    hintText: 'Password must be the same!'),
               ),
             ),
             Container(
@@ -157,13 +152,6 @@ class _SignUpDemo extends State<SignUp> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 130,
-            ),
-            RichText(
-                text: TextSpan(children: <TextSpan>[
-              TextSpan(text: "Hoi"),
-            ]))
           ],
         ),
       ),

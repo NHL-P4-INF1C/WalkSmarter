@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -63,14 +62,13 @@ class _LoginDemoState extends State<LoginDemo> {
                 child: SizedBox(
                   width: 200,
                   height: 150,
-                  //Verander hier de path naar de benodigde IMAGE PATH
+                  //Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
                   child: Image(image: AssetImage('assets/logocolor.png')),
                 ),
               ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
-              //Email veld
               child: TextField(
                 onChanged: (value) {
                   setState(() {
@@ -86,7 +84,6 @@ class _LoginDemoState extends State<LoginDemo> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //Password veld
               child: TextField(
                 obscureText: true,
                 onChanged: (value) {
@@ -102,9 +99,7 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             //Password vergeten
             TextButton(
-              onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
-              },
+              onPressed: () {},
               child: Text(
                 'Forgot Password',
                 style: TextStyle(color: Colors.blue, fontSize: 15),
@@ -127,19 +122,17 @@ class _LoginDemoState extends State<LoginDemo> {
               ),
             ),
             SizedBox(
-              height: 130,
+              height: 90,
             ),
-            RichText(
-                text: TextSpan(
-                    style: TextStyle(color: Colors.blue, fontSize: 20.0),
-                    children: <TextSpan>[
-                  TextSpan(
-                      text: 'SignUp!',
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushNamed(context, '/signup');
-                        }),
-                ]))
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+              child: Text(
+                'Sign Up!',
+                style: TextStyle(color: Colors.blue, fontSize: 20),
+              ),
+            )
           ],
         ),
       ),
