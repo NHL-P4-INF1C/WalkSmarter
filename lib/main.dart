@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:walk_smarter/loginpage.dart';
+import 'loginpage.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,8 +9,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Hello, World!',
-      home: MyHomePage(),
+      initialRoute: '/',
+      //Route map
+      routes: {
+        '/': (context) => LoginDemo(),
+        '/home': (context) => MyHomePage(),
+        //Voeg op de zelfde manier een route toe
+      },
     );
   }
 }
@@ -28,12 +33,12 @@ class MyHomePage extends StatelessWidget {
               style: TextStyle(fontSize: 24.0),
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
+            TextButton(
               onPressed: () {
-                // Navigate to the second page when the button is pressed
-                Navigator.push(
+                //Navigeer naar het inlog pagina wanneer je op de Button klikt
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginDemo()),
+                  '/',
                 );
               },
               child: Text('Go to log in page'),

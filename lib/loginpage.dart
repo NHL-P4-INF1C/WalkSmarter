@@ -2,28 +2,48 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+
 void main() {
   runApp(MyApp());
 }
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+class LoginDemo extends StatefulWidget {
+  const LoginDemo();
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginDemo(),
+  static Future<void> show(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) {
+          return const LoginDemo();
+        },
+      ),
     );
   }
-}
 
-class LoginDemo extends StatefulWidget {
   @override
-  _LoginDemoState createState() => _LoginDemoState();
+  State<LoginDemo> createState() => _LoginDemoState();
 }
 
 class _LoginDemoState extends State<LoginDemo> {
+  String? email, password;
+  Future<void> signIn() async {
+    try {
+      if (email != null && password != null) {
+        await pb.collection('users').authWithPassword(email!, password!);
+
+        Navigator.pushNamed(
+          context,
+          '/home',
+        );
+        print("Ingelogd!!");
+      }
+    } catch (e) {
+      print('Error occurred during authentication: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +69,13 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
+              //Email veld
               child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    email = value;
+                  });
+                },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
@@ -59,14 +85,21 @@ class _LoginDemoState extends State<LoginDemo> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
+              //Password veld
               child: TextField(
                 obscureText: true,
+                onChanged: (value) {
+                  setState(() {
+                    password = value;
+                  });
+                },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                     hintText: 'Enter password'),
               ),
             ),
+            //Password vergeten
             TextButton(
               onPressed: () {
                 //TODO FORGOT PASSWORD SCREEN GOES HERE
@@ -84,8 +117,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()));
+                  signIn();
                 },
                 child: Text(
                   'Login',
