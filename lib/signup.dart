@@ -1,44 +1,52 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
-void main() {
-  runApp(MyApp());
-}
-
-class LoginDemo extends StatefulWidget {
-  const LoginDemo();
+class SignUp extends StatefulWidget {
+  const SignUp();
 
   static Future<void> show(BuildContext context) {
     return Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {
-          return const LoginDemo();
+          return const SignUp();
         },
       ),
     );
   }
 
   @override
-  State<LoginDemo> createState() => _LoginDemoState();
+  State<SignUp> createState() => _SignUpDemo();
 }
 
-class _LoginDemoState extends State<LoginDemo> {
-  String? username, password;
+class _SignUpDemo extends State<SignUp> {
+  String? username, email, password, passwordAgain;
   Future<void> signIn() async {
     try {
-      if (username != null && password != null) {
-        await pb.collection('users').authWithPassword(username!, password!);
+      if (username != null &&
+          email != null &&
+          password != null &&
+          passwordAgain != null) {
+        if (password == passwordAgain) {
+          final body = <String, dynamic>{
+            "username": username,
+            "email": email,
+            "emailVisibility": true,
+            "password": password,
+            "passwordConfirm": passwordAgain,
+          };
+          await pb.collection('users').create(body: body);
 
-        Navigator.pushNamed(
-          context,
-          '/home',
-        );
-        print("Ingelogd!!");
+          Navigator.pushNamed(
+            context,
+            '/home',
+          );
+          print("New user created");
+        }
       }
     } catch (e) {
       print('Error occurred during authentication: $e');
@@ -51,7 +59,7 @@ class _LoginDemoState extends State<LoginDemo> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: SizedBox(
-          child: Center(child: Text("Login Page")),
+          child: Center(child: Text("Sign Up!")),
         ),
       ),
       body: SingleChildScrollView(
@@ -69,7 +77,8 @@ class _LoginDemoState extends State<LoginDemo> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 0),
               //Email veld
               child: TextField(
                 onChanged: (value) {
@@ -86,6 +95,22 @@ class _LoginDemoState extends State<LoginDemo> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
+              //Email veld
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    email = value;
+                  });
+                },
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'email',
+                    hintText: 'Enter your email'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 0),
               //Password veld
               child: TextField(
                 obscureText: true,
@@ -97,17 +122,23 @@ class _LoginDemoState extends State<LoginDemo> {
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
-                    hintText: 'Enter password'),
+                    hintText: 'Enter your new password'),
               ),
             ),
-            //Password vergeten
-            TextButton(
-              onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
-              },
-              child: Text(
-                'Forgot Password',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 15),
+              //Email veld
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    passwordAgain = value;
+                  });
+                },
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password again',
+                    hintText: 'Enter your password again'),
               ),
             ),
             Container(
@@ -121,7 +152,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   signIn();
                 },
                 child: Text(
-                  'Login',
+                  'Sign Up',
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
               ),
@@ -130,16 +161,9 @@ class _LoginDemoState extends State<LoginDemo> {
               height: 130,
             ),
             RichText(
-                text: TextSpan(
-                    style: TextStyle(color: Colors.blue, fontSize: 20.0),
-                    children: <TextSpan>[
-                  TextSpan(
-                      text: 'SignUp!',
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushNamed(context, '/signup');
-                        }),
-                ]))
+                text: TextSpan(children: <TextSpan>[
+              TextSpan(text: "Hoi"),
+            ]))
           ],
         ),
       ),
