@@ -1,46 +1,41 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
-void main() {
-  runApp(MyApp());
-}
-
-class LoginDemo extends StatefulWidget {
-  const LoginDemo();
+class ForgotPasswordDemo extends StatefulWidget {
+  const ForgotPasswordDemo();
 
   static Future<void> show(BuildContext context) {
     return Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {
-          return const LoginDemo();
+          return const ForgotPasswordDemo();
         },
       ),
     );
   }
 
   @override
-  State<LoginDemo> createState() => _LoginDemoState();
+  State<ForgotPasswordDemo> createState() => _ForgotPasswordDemoState();
 }
 
-class _LoginDemoState extends State<LoginDemo> {
-  String? username, password;
+class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
+  String? email;
   Future<void> signIn() async {
     try {
-      if (username != null && password != null) {
-        await pb.collection('users').authWithPassword(username!, password!);
+      if (email != null) {
+        await pb.collection('users').requestPasswordReset(email!);
 
         Navigator.pushNamed(
           context,
           '/home',
         );
-        print("Ingelogd!!");
+        print("Request sent");
       }
     } catch (e) {
-      print('Error occurred during authentication: $e');
+      print('Error occurred during resetting password: $e');
     }
   }
 
@@ -68,43 +63,18 @@ class _LoginDemoState extends State<LoginDemo> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    username = value;
-                  });
-                },
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Username',
-                    hintText: 'Enter your Username'),
-              ),
-            ),
-            Padding(
               padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
+                  left: 15.0, right: 15.0, top: 15, bottom: 25),
               child: TextField(
-                obscureText: true,
                 onChanged: (value) {
                   setState(() {
-                    password = value;
+                    email = value;
                   });
                 },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    hintText: 'Enter password'),
-              ),
-            ),
-            //Password vergeten
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/fpassword');
-              },
-              child: Text(
-                'Forgot Password',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
+                    labelText: 'Email',
+                    hintText: 'Enter your Email'),
               ),
             ),
             Container(
@@ -118,7 +88,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   signIn();
                 },
                 child: Text(
-                  'Login',
+                  'Reset Password!',
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
               ),
@@ -128,13 +98,13 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/signup');
+                Navigator.pushNamed(context, '/login');
               },
               child: Text(
-                'Sign Up!',
+                'Already have an account?',
                 style: TextStyle(color: Colors.blue, fontSize: 20),
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -38,6 +38,7 @@ class _SignUpDemo extends State<SignUp> {
             "passwordConfirm": passwordAgain,
           };
           await pb.collection('users').create(body: body);
+          await pb.collection('users').requestVerification(email!);
 
           Navigator.pushNamed(
             context,

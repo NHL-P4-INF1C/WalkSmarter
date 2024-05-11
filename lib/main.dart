@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
 import 'signup.dart';
+import 'forgotpassword.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => LoginDemo(),
         '/home': (context) => MyHomePage(),
         '/signup': (context) => SignUp(),
+        '/fpassword': (context) => ForgotPasswordDemo(),
         //Voeg op de zelfde manier een route toe
       },
     );
