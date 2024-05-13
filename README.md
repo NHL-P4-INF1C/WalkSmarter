@@ -23,3 +23,7 @@ This project is supposed to connect to a custom NodeJS server that can be found 
 ## Code conventions
 
 [Link to Code conventions](CONTRIBUTING.md)
+
+# Commit style
+
+[Link to commit style guide](COMMIT.md)
