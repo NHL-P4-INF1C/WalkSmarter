@@ -34,7 +34,7 @@ class _LoginDemoState extends State<LoginDemo> {
 
         Navigator.pushNamed(
           context,
-          '/mappage',
+          '/homepage',
         );
         print("Ingelogd!!");
       }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'loginpage.dart';
 import 'signup.dart';
 import 'forgotpassword.dart';
-import 'mappage.dart';
+import 'homepage.dart';
+import 'leaderboard.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => LoginDemo(),
         '/signup': (context) => SignUp(),
         '/fpassword': (context) => ForgotPasswordDemo(),
-        '/mappage': (context) => MyHomePage(),
+        '/homepage': (context) => MyHomePage(),
+        '/leaderboard': (context) => LeaderboardPage(),
       },
     );
   }
