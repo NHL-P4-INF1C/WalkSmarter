@@ -23,7 +23,6 @@ class SignUp extends StatefulWidget {
 
 class _SignUpDemo extends State<SignUp> {
   String? username, email, password, passwordAgain;
-  String name = "Elmedin";
   Future<void> signIn() async {
     try {
       if (username != null &&
@@ -33,7 +32,6 @@ class _SignUpDemo extends State<SignUp> {
         if (password == passwordAgain) {
           final body = <String, dynamic>{
             "username": username,
-            "name": name,
             "email": email,
             "emailVisibility": true,
             "password": password,
@@ -56,107 +54,137 @@ class _SignUpDemo extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    bool _visible = true;
+    //backgroundColor: _isDarkMode ? 1.0 : 0.0,
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: SizedBox(
-          child: Center(child: Text("Sign Up!")),
-        ),
-      ),
       body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 60.0, bottom: 60.0),
-              child: Center(
-                child: SizedBox(
-                  width: 200,
-                  height: 150,
-                  //Verander hier de path naar de benodigde IMAGE PATH
-                  child: Image(image: AssetImage('assets/walksmarterlogo.png')),
+        child: Opacity(
+          opacity: _visible ? 1.0 : 0.0,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 100.0, bottom: 60.0),
+                child: Center(
+                  child: SizedBox(
+                    width: 200,
+                    height: 150,
+                    //Verander hier de path naar de benodigde IMAGE PATH
+                    child:
+                        Image(image: AssetImage('assets/walksmarterlogo.png')),
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    username = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter your new Username',
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/');
+                    },
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        color: Color.fromRGBO(0, 0, 0, 1),
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signup');
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                          color: Color.fromRGBO(0, 0, 0, 1),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
-                decoration: InputDecoration(
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      username = value;
+                    });
+                  },
+                  decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'E-mail',
-                    hintText: 'Enter your email'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                obscureText: true,
-                onChanged: (value) {
-                  setState(() {
-                    password = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter your new password',
+                    labelText: 'Enter your new Username',
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 15),
-              child: TextField(
-                obscureText: true,
-                onChanged: (value) {
-                  setState(() {
-                    passwordAgain = value;
-                  });
-                },
-                decoration: InputDecoration(
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      email = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'E-mail',
+                      hintText: 'Enter your email'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: TextField(
+                  obscureText: true,
+                  onChanged: (value) {
+                    setState(() {
+                      password = value;
+                    });
+                  },
+                  decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Re-enter your password',
-                    hintText: 'Password must be the same!'),
-              ),
-            ),
-            Container(
-              height: 50,
-              width: 250,
-              decoration: BoxDecoration(
-                  color: const Color.fromRGBO(9, 106, 46, 1),
-                  borderRadius: BorderRadius.circular(20)),
-              child: TextButton(
-                onPressed: () {
-                  signIn();
-                },
-                child: Text(
-                  'Sign Up',
-                  style: TextStyle(
-                      color: Color.fromRGBO(0, 0, 0, 1), fontSize: 25),
+                    labelText: 'Enter your new password',
+                  ),
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 15),
+                child: TextField(
+                  obscureText: true,
+                  onChanged: (value) {
+                    setState(() {
+                      passwordAgain = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Re-enter your password',
+                      hintText: 'Password must be the same!'),
+                ),
+              ),
+              Container(
+                height: 50,
+                width: 250,
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(9, 106, 46, 1),
+                    borderRadius: BorderRadius.circular(20)),
+                child: TextButton(
+                  onPressed: () {
+                    signIn();
+                  },
+                  child: Text(
+                    'Sign Up',
+                    style: TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 1), fontSize: 25),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

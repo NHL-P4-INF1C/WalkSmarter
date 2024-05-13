@@ -47,16 +47,11 @@ class _LoginDemoState extends State<LoginDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: SizedBox(
-          child: Center(child: Text("Login")),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top: 60.0, bottom: 60.0),
+              padding: const EdgeInsets.only(top: 150, bottom: 60.0),
               child: Center(
                 child: SizedBox(
                   width: 200,
@@ -65,6 +60,33 @@ class _LoginDemoState extends State<LoginDemo> {
                   child: Image(image: AssetImage('assets/walksmarterlogo.png')),
                 ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/');
+                  },
+                  child: Text('Login',
+                      style: TextStyle(
+                          color: Color.fromRGBO(0, 0, 0, 1),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/signup');
+                  },
+                  child: Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
@@ -126,19 +148,6 @@ class _LoginDemoState extends State<LoginDemo> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 90,
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/signup');
-              },
-              child: Text(
-                'Sign Up!',
-                style:
-                    TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 20),
-              ),
-            )
           ],
         ),
       ),
