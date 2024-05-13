@@ -19,3 +19,7 @@ This project is supposed to connect to a custom NodeJS server that can be found 
 - [Lucas Lübbers](https://github.com/LucasLubbers)
 - [Bram Suurd](https://github.com/BramSuurdje)
 - [Lars Kuijer](https://github.com/larsk1201)
+
+## Code conventions
+
+[Link to Code conventions](CONTRIBUTE.md)
