@@ -23,6 +23,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpDemo extends State<SignUp> {
   String? username, email, password, passwordAgain;
+  String name = "Elmedin";
   Future<void> signIn() async {
     try {
       if (username != null &&
@@ -32,6 +33,7 @@ class _SignUpDemo extends State<SignUp> {
         if (password == passwordAgain) {
           final body = <String, dynamic>{
             "username": username,
+            "name": name,
             "email": email,
             "emailVisibility": true,
             "password": password,
@@ -42,7 +44,7 @@ class _SignUpDemo extends State<SignUp> {
 
           Navigator.pushNamed(
             context,
-            '/home',
+            '/mappage',
           );
           print("New user created");
         }
