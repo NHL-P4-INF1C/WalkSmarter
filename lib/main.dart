@@ -3,6 +3,7 @@ import 'loginpage.dart';
 import 'signup.dart';
 import 'forgotpassword.dart';
 import 'mappage.dart';
+import 'profilepage.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignUp(),
         '/fpassword': (context) => ForgotPasswordDemo(),
         '/mappage': (context) => MyHomePage(),
+        '/profilepage': (context) => ProfilePage(),
       },
     );
   }

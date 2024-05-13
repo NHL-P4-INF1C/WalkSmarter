@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'profilepage.dart';
+import 'package:walk_smarter/mappage.dart';
 
-class MyHomePage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,12 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             iconSize: 40,
             icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ProfilePage(),
-              ));
-            },
-
+            onPressed: () {},
           ),
         ],
       ),
@@ -69,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           child: Center(
-            child: Text('Google Maps Widget Here'),
+            child: Text('Profile here'),
           ),
         ),
       ),
@@ -90,7 +85,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
           selectedItemColor: Color(int.parse('0xFF096A2E')),
           onTap: (index) {
-          },
+            if (index == 0) {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => MyHomePage(),
+              ));
+            }
+          }
         ),
     );
   }
