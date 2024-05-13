@@ -71,7 +71,7 @@ class _SignUpDemo extends State<SignUp> {
                   width: 200,
                   height: 150,
                   //Verander hier de path naar de benodigde IMAGE PATH
-                  child: Image(image: AssetImage('assets/logocolor.png')),
+                  child: Image(image: AssetImage('assets/walksmarterlogo.png')),
                 ),
               ),
             ),
@@ -141,7 +141,7 @@ class _SignUpDemo extends State<SignUp> {
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: const Color.fromRGBO(160, 32, 240, 1),
+                  color: const Color.fromRGBO(9, 106, 46, 1),
                   borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
@@ -149,7 +149,8 @@ class _SignUpDemo extends State<SignUp> {
                 },
                 child: Text(
                   'Sign Up',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1), fontSize: 25),
                 ),
               ),
             ),

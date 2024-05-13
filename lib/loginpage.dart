@@ -63,7 +63,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   width: 200,
                   height: 150,
                   //Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
-                  child: Image(image: AssetImage('assets/logocolor.png')),
+                  child: Image(image: AssetImage('assets/walksmarterlogo.png')),
                 ),
               ),
             ),
@@ -97,21 +97,25 @@ class _LoginDemoState extends State<LoginDemo> {
                     hintText: 'Enter password'),
               ),
             ),
-            //Password vergeten
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/fpassword');
-              },
-              child: Text(
-                'Forgot Password',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
+            Container(
+              alignment: Alignment.centerRight,
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/fpassword');
+                },
+                child: Text(
+                  'Forgot Password',
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1), fontSize: 15),
+                ),
               ),
             ),
             Container(
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: const Color.fromRGBO(160, 32, 240, 1),
+                  color: const Color.fromRGBO(9, 106, 46, 1),
                   borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
@@ -132,7 +136,8 @@ class _LoginDemoState extends State<LoginDemo> {
               },
               child: Text(
                 'Sign Up!',
-                style: TextStyle(color: Colors.blue, fontSize: 20),
+                style:
+                    TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 20),
               ),
             )
           ],

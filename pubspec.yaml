@@ -25,4 +25,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/logocolor.png
+    - assets/
+  fonts:
+    - family: Kameron
+      fonts:
+        - asset: fonts/Kameron.ttf

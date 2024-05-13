@@ -45,7 +45,7 @@ class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: SizedBox(
-          child: Center(child: Text("Login Page")),
+          child: Center(child: Text("Forgot Password")),
         ),
       ),
       body: SingleChildScrollView(
@@ -58,7 +58,7 @@ class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
                   width: 200,
                   height: 150,
                   //Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
-                  child: Image(image: AssetImage('assets/logocolor.png')),
+                  child: Image(image: AssetImage('assets/walksmarterlogo.png')),
                 ),
               ),
             ),
@@ -81,7 +81,7 @@ class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: const Color.fromRGBO(160, 32, 240, 1),
+                  color: const Color.fromRGBO(9, 106, 46, 1),
                   borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
@@ -89,7 +89,8 @@ class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
                 },
                 child: Text(
                   'Reset Password!',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
+                  style: TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 1), fontSize: 25),
                 ),
               ),
             ),
