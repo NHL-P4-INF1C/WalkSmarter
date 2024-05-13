@@ -18,16 +18,15 @@ class MyApp extends StatelessWidget {
       //Route map
       routes: {
         '/': (context) => LoginDemo(),
-        // '/home': (context) => MyHomePage(),
         '/signup': (context) => SignUp(),
         '/fpassword': (context) => ForgotPasswordDemo(),
-        '/mappage': (context) => MyHomePage(), 
+        '/mappage': (context) => MyHomePage(),
       },
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

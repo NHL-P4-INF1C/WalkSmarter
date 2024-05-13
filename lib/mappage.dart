@@ -1,15 +1,10 @@
 // my_app.dart
 
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
-
-class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
-}
 
 class MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -19,8 +14,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: Row(

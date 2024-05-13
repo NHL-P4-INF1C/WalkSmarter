@@ -10,7 +10,6 @@ void main() {
 
 class LoginDemo extends StatefulWidget {
   const LoginDemo();
-
   static Future<void> show(BuildContext context) {
     return Navigator.of(context).push(
       MaterialPageRoute(
@@ -35,7 +34,7 @@ class _LoginDemoState extends State<LoginDemo> {
 
         Navigator.pushNamed(
           context,
-          '/home',
+          '/mappage',
         );
         print("Ingelogd!!");
       }
