@@ -49,7 +49,7 @@ class _LoginDemoState extends State<LoginDemo> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: SizedBox(
-          child: Center(child: Text("Login Page")),
+          child: Center(child: Text("Login")),
         ),
       ),
       body: SingleChildScrollView(

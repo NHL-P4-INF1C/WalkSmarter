@@ -27,6 +27,6 @@ flutter:
   assets:
     - assets/
   fonts:
-    - family: Kameron
+    - family: Inter
       fonts:
-        - asset: fonts/Kameron.ttf
+        - asset: fonts/Inter.ttf
