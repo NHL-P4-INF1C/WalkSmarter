@@ -6,17 +6,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 50,
         title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center, 
           children: [
-            Text('Logo'),
+            Image(
+              image: AssetImage('assets/walksmarterlogo.png'),
+              height: 40, 
+              width: 40, 
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Walk Smarter',
+              style: TextStyle(fontSize: 14),
+            ),
             Expanded(
               child: Align(
                 alignment: Alignment.centerRight,
@@ -41,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.81,
+          height: MediaQuery.of(context).size.height * 0.85,
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
@@ -59,25 +67,25 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF096A2E),
-        onTap: _onItemTapped,
-      ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.map),
+              label: 'Map',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.leaderboard),
+              label: 'Leaderboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group),
+              label: 'Friends',
+            ),
+          ],
+          selectedItemColor: Color(int.parse('0xFF096A2E')),
+          onTap: (index) {
+          },
+        ),
     );
   }
 }
