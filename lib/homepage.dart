@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'leaderboard.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -7,6 +8,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  List<Widget> _pages = [
+    LeaderboardPage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,12 +100,13 @@ class _MyHomePageState extends State<MyHomePage> {
           });
           switch (index) {
             case 0:
+              Navigator.pushNamed(context, '/homepa'); // Navigate to MapPage
               break;
             case 1:
-              Navigator.pushNamed(context, '/leaderboard');
+              Navigator.pushNamed(context, '/leaderboard'); // Navigate to LeaderboardPage
               break;
             case 2:
-              Navigator.pushNamed(context, '/friends');
+              Navigator.pushNamed(context, '/friends'); // Navigate to FriendsPage
               break;
             default:
               break;
