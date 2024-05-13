@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'loginpage.dart';
 import 'signup.dart';
 import 'forgotpassword.dart';
+import 'mappage.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,10 +16,10 @@ class MyApp extends StatelessWidget {
       //Route map
       routes: {
         '/': (context) => LoginDemo(),
-        '/home': (context) => MyHomePage(),
+        // '/home': (context) => MyHomePage(),
         '/signup': (context) => SignUp(),
         '/fpassword': (context) => ForgotPasswordDemo(),
-        //Voeg op de zelfde manier een route toe
+        '/mappage': (context) => MyHomePage(), 
       },
     );
   }
@@ -41,7 +42,7 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  '/',
+                  '/login',
                 );
               },
               child: Text('Go to log in page'),
