@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         '/fpassword': (context) => ForgotPasswordDemo(),
         '/homepage': (context) => MyHomePage(),
         '/leaderboard': (context) => LeaderboardPage(),
-        '/profile': (context) => ProfilePage(),
+        '/profilepage': (context) => ProfilePage(),
       },
     );
   }
