@@ -99,11 +99,12 @@ class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login');
+                Navigator.pushNamed(context, '/');
               },
               child: Text(
                 'Already have an account?',
-                style: TextStyle(color: Colors.blue, fontSize: 20),
+                style:
+                    TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 20),
               ),
             ),
           ],
