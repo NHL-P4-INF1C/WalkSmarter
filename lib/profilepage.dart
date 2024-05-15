@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:walk_smarter/mappage.dart';
+import 'package:pocketbase/pocketbase.dart';
+
+final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -64,7 +67,20 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           child: Center(
-            child: Text('Profile here'),
+            child: Stack(
+              alignment: Alignment.topLeft, 
+              children: [
+                Positioned(
+                  left: 20,
+                  top: 20, 
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: Image.asset('assets/crusaderlogo.png'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
