@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:walk_smarter/loginpage.dart';
 import 'package:walk_smarter/mappage.dart';
+import 'package:pocketbase/pocketbase.dart';
+
+final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -64,7 +68,129 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           child: Center(
-            child: Text('Profile here'),
+            child: Stack(
+              alignment: Alignment.topLeft, 
+              children: [
+                Positioned(
+                  left: 10,
+                  top: 50, 
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: Image.asset('assets/crusaderlogo.png'),
+                  ),
+                ),
+                Positioned(
+                  left: 10,
+                  top: 10, 
+                  child: Text(
+                    'Gebruikersnaam',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Positioned(
+                  left: 50,
+                  top: 250,
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.group_add,
+                          size: 80,
+                        ),
+                        Text(
+                          'Friends',
+                          style: TextStyle(fontSize: 18),
+                        )
+                      ]
+                      ),
+                  )
+                ),
+                Positioned(
+                  left: 220,
+                  top: 250,
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/award.png',
+                        width: 80,
+                        height: 80,
+                        ),
+                        Text(
+                          'Achievements',
+                          style: TextStyle(fontSize: 18),
+                        )
+                      ]
+                      ),
+                  )
+                ),
+                Positioned(
+                  left: 50,
+                  top: 400,
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.groups_2,
+                          size: 80,
+                        ),
+                        Text(
+                          'Groups',
+                          style: TextStyle(fontSize: 18),
+                        )
+                      ]
+                      ),
+                  )
+                ),
+                Positioned(
+                  left: 250,
+                  top: 400,
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.settings,
+                          size: 80,
+                        ),
+                        Text(
+                          'Settings',
+                          style: TextStyle(fontSize: 18),
+                        )
+                      ]
+                      ),
+                  )
+                ),
+               Positioned(
+                left: 145,
+                top: 575,
+                child: SizedBox(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => LoginDemo(),
+                      ));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 17, 118, 20), 
+                        borderRadius: BorderRadius.circular(8), 
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12), 
+                      child: Text(
+                        'Log out',
+                        style: TextStyle(fontSize: 18, color: Colors.white), 
+                      ),
+                    ),
+                  ),
+                ),
+              )
+
+              ],
+            ),
           ),
         ),
       ),
