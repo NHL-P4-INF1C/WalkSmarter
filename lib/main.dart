@@ -5,6 +5,7 @@ import 'forgotpassword.dart';
 import 'homepage.dart';
 import 'leaderboard.dart';
 import 'profilepage.dart';
+import 'questionpage.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         '/homepage': (context) => MyHomePage(),
         '/leaderboard': (context) => LeaderboardPage(),
         '/profilepage': (context) => ProfilePage(),
+        '/questionpage': (context) => QuestionPage(),
       },
     );
   }
