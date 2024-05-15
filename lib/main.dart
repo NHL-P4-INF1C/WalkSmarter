@@ -4,7 +4,6 @@ import 'signup.dart';
 import 'forgotpassword.dart';
 import 'homepage.dart';
 import 'leaderboard.dart';
-import 'profilepage.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
         '/fpassword': (context) => ForgotPasswordDemo(),
         '/homepage': (context) => MyHomePage(),
         '/leaderboard': (context) => LeaderboardPage(),
-        '/profilepage': (context) => ProfilePage(),
+        //'/profilepage': (context) => ProfilePage(),
       },
     );
   }
