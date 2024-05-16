@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class LeaderboardPage extends StatefulWidget {
   @override
@@ -10,6 +11,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    String currentMonth = DateFormat('MMMM').format(DateTime.now());
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -49,42 +52,79 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           ),
         ],
       ),
-      body: Column(
+body: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
         children: [
-          Center(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.86,
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black,
-                    width: 1,
+          Text(
+            'Leaderboard',
+            style: TextStyle(fontSize: 20),
+          ),
+          SizedBox(width: 8),
+          Text(
+            currentMonth,
+            style: TextStyle(fontSize: 20),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Add functionality for the button here
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(9, 106, 46, 1)),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                 ),
-              ),
-              child: Center(
-                child: Text('Leaderboard'),
+                child: Text(
+                  'Selecteer maand',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
               ),
             ),
           ),
         ],
       ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white, 
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.0),
-              topRight: Radius.circular(20.0),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(1), 
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
+    ),
+    Expanded(
+      child: ListView.builder(
+        itemCount: 10, // Example number of items
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text('Item $index'),
+            // Add more widgets for each item as needed
+          );
+        },
+      ),
+    ),
+  ],
+),
+
+
+
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(1),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
         child: ClipRRect(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
