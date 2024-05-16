@@ -23,7 +23,6 @@ Future <http.Response> sendRequest(
   {
     return await http.post(
       Uri.parse(apiUrl),
-      //Setting up the header and body as a key-value array
       headers: <String, String>
       {
         'Content-Type': 'application/json'
@@ -32,7 +31,6 @@ Future <http.Response> sendRequest(
       {
         'payload': payload
       }),
-      //If the request takes longer than 5 seconds, throw a timeout error
     ).timeout(const Duration(seconds: 5));
   } 
   catch (e) 
