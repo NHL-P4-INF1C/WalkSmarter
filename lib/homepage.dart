@@ -61,10 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.black,
                     width: 1,
                   ),
-                  bottom: BorderSide(
-                    color: Colors.black,
-                    width: 1,
-                  ),
                 ),
               ),
               child: Center(
@@ -74,40 +70,64 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
+  bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, 
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              topRight: Radius.circular(20.0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(1), 
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
+          child: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.map),
+                label: 'Map',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.leaderboard),
+                label: 'Leaderboard',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.group),
+                label: 'Friends',
+              ),
+            ],
+            selectedItemColor: Color(0xFF096A2E),
+            currentIndex: _selectedIndex,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+              switch (index) {
+                case 0:
+                  Navigator.pushNamed(context, '/homepage');
+                  break;
+                case 1:
+                  Navigator.pushNamed(context, '/leaderboard');
+                  break;
+                case 2:
+                  Navigator.pushNamed(context, '/friends');
+                  break;
+                default:
+                  break;
+              }
+            },
           ),
-        ],
-        selectedItemColor: Color(0xFF096A2E),
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          switch (index) {
-            case 0:
-              break;
-            case 1:
-              Navigator.pushNamed(context, '/leaderboard');
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/friends');
-              break;
-            default:
-              break;
-          }
-        },
+        ),
       ),
     );
   }
