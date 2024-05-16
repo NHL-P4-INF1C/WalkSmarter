@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
 Future <http.Response> sendRequest(
@@ -8,13 +10,19 @@ Future <http.Response> sendRequest(
   {bool isDevBranch = false}
 ) async
 {
-  String devBranchUrl = isDevBranch ? '/dev_env/' : '/';
-  //TODO Make this a global var or something
-  devBranchUrl = 'http://192.168.178.65:3000$devBranchUrl$url';
+  try
+  {
+    await dotenv.load(fileName: '.env');
+  }
+  catch(e)
+  {
+    return http.Response('e', 500);
+  }
+  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}${isDevBranch ? '/dev_env/' : '/api/'}$url';
   try 
   {
     return await http.post(
-      Uri.parse(devBranchUrl),
+      Uri.parse(apiUrl),
       //Setting up the header and body as a key-value array
       headers: <String, String>
       {
