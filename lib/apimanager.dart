@@ -10,6 +10,7 @@ Future <http.Response> sendRequest(
   {bool isDevBranch = false}
 ) async
 {
+  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}${isDevBranch ? '/dev_env/' : '/api/'}$url';
   try
   {
     await dotenv.load(fileName: '.env');
@@ -18,7 +19,6 @@ Future <http.Response> sendRequest(
   {
     return http.Response('e', 500);
   }
-  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}${isDevBranch ? '/dev_env/' : '/api/'}$url';
   try 
   {
     return await http.post(
@@ -35,7 +35,7 @@ Future <http.Response> sendRequest(
   } 
   catch (e) 
   {
-    return http.Response('e', 500);
+    return http.Response(e.toString(), 500);
   }
 }
 
@@ -77,7 +77,6 @@ class RequestManager
   {
     http.Response response = await sendRequest(payload, url, isDevBranch: isDevBranch);
     String jsonString = response.body; 
-    print(response.body);
     if (response.statusCode == 200) 
     {
       try 
@@ -91,18 +90,16 @@ class RequestManager
     } 
     else 
     {
-      print(response.statusCode);
-      output['response'] = "Failed to connect to API. status code: ${response.statusCode}";
+      output['response'] = "Failed to connect to API. status code: ${response.statusCode}, response: $jsonString";
     }
-    print(output);
   }
 }
 
 //Temp frontend page. Everything below this comment is just example/ test code
 
-void main() {
-  runApp(MyApp());
-}
+// void main() {
+//   runApp(MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
