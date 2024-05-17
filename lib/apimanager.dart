@@ -75,6 +75,11 @@ class RequestManager
     return output;
   }
 
+  void setPayload(Map<String, dynamic> payload)
+  {
+    this.payload = payload;
+  }
+
   Future<void> updateStatus() async
   {
     http.Response response = await sendRequest(payload, url, isDevBranch: isDevBranch);
