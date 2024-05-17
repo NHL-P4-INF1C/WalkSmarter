@@ -7,10 +7,11 @@ import 'dart:convert';
 Future <http.Response> sendRequest(
   Map<String, dynamic> payload, 
   String url,
-  {bool isDevBranch = false}
+  {
+    bool isDevBranch = false
+  }
 ) async
 {
-  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}${isDevBranch ? '/dev_env/' : '/api/'}$url';
   try
   {
     await dotenv.load(fileName: '.env');
@@ -19,6 +20,7 @@ Future <http.Response> sendRequest(
   {
     return http.Response('e', 500);
   }
+  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}${isDevBranch ? '/dev_env/' : '/api/'}$url';
   try 
   {
     return await http.post(
