@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Inter'),
-      initialRoute: '/',
+      initialRoute: '/homepage',
       //Route map
       routes: {
         '/': (context) => LoginDemo(),

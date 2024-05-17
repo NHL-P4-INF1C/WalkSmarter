@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class LeaderboardPage extends StatefulWidget {
   @override
@@ -10,8 +11,14 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   int _selectedIndex = 1;
 
   @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('nl', null);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String currentMonth = DateFormat('MMMM').format(DateTime.now());
+    String currentMonth = DateFormat.MMMM('nl').format(DateTime.now());
 
     return Scaffold(
       appBar: AppBar(
@@ -66,28 +73,24 @@ body: Column(
           SizedBox(width: 8),
           Text(
             currentMonth,
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(color: Color.fromRGBO(9, 106, 46, 1), fontSize: 20),
           ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add functionality for the button here
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(9, 106, 46, 1)),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                ),
-                child: Text(
-                  'Selecteer maand',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+          Spacer(),
+          ElevatedButton(
+            onPressed: () {
+              // Add functionality for the button here
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(9, 106, 46, 1)),
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
+            ),
+            child: Text(
+              'Selecteer maand',
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
           ),
         ],
@@ -95,19 +98,84 @@ body: Column(
     ),
     Expanded(
       child: ListView.builder(
-        itemCount: 10, // Example number of items
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: 20,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('Item $index'),
-            // Add more widgets for each item as needed
+          String position;
+          String emoji;
+          switch (index) {
+            case 0:
+              position = '1';
+              emoji = '🏆';
+              break;
+            case 1:
+              position = '2';
+              emoji = '🥈';
+              break;
+            case 2:
+              position = '3';
+              emoji = '🥉';
+              break;
+            default:
+              position = '${index + 1}';
+              emoji = '';
+          }
+          return Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.grey),
+                bottom: BorderSide(color: Colors.grey),
+              ),
+            ),
+            child: ListTile(
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 50, // Set a fixed width for the ranking column
+                    child: Text(
+                      position,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ), // Display the position
+                    SizedBox(width: 8), // Add spacing between ranking and profile picture
+                    CircleAvatar(
+                      radius: 20, // Adjust the radius as needed
+                      child: Icon(Icons.account_circle, size: 40), // Use Icon widget instead of icon property
+                    ),
+                  SizedBox(width: 8), // Add spacing between profile picture and name
+                  Text(
+                    'Gebruikersnaam',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ), // Replace with actual name
+                  SizedBox(width: 4), // Add spacing between name and emoji
+                  Text(
+                    emoji,
+                    style: TextStyle(fontSize: 20),
+                  ), // Replace with actual emoji
+                  Spacer(), // Add spacer to push points to the end
+                  Text(
+                    '1000',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ), // Replace with actual points
+                  SizedBox(width: 4), // Add spacing between points and 'Points'
+                  Text(
+                    'Punten',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
           );
         },
       ),
     ),
   ],
 ),
-
-
 
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
