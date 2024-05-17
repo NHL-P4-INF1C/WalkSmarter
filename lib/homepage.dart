@@ -1,12 +1,96 @@
 import 'package:flutter/material.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class UserDialog extends StatelessWidget {
+  final PocketBase client =
+      PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Friends'),
+      content: FutureBuilder<List<RecordModel>>(
+        future: fetchAllUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Text('No users found');
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final user = snapshot.data![index];
+                return ListTile(
+                  title: Text(user.getStringValue('name')),
+                  subtitle: Text(user.getStringValue('email')),
+                  // Add more fields as needed
+                );
+              },
+            );
+          }
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Close'),
+        ),
+      ],
+    );
+  }
+
+  Future<List<RecordModel>> fetchAllUsers() async {
+    final resultList =
+        await client.collection('users').getFullList(fields: "friends");
+    return resultList;
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+
+  void handleSwitchCase(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/leaderboard');
+        break;
+      case 2:
+        showDialogFriendList(context);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void showDialogFriendList(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: UserDialog(),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Close'),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,6 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.black,
                     width: 1,
                   ),
+                  bottom: BorderSide(
+                    color: Colors.black,
+                    width: 1,
+                  ),
                 ),
               ),
               child: Center(
@@ -70,64 +158,29 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-  bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white, 
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.0),
-              topRight: Radius.circular(20.0),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(1), 
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Map',
           ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.leaderboard),
+            label: 'Leaderboard',
           ),
-          child: BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.map),
-                label: 'Map',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.leaderboard),
-                label: 'Leaderboard',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.group),
-                label: 'Friends',
-              ),
-            ],
-            selectedItemColor: Color(0xFF096A2E),
-            currentIndex: _selectedIndex,
-            onTap: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-              switch (index) {
-                case 0:
-                  Navigator.pushNamed(context, '/homepage');
-                  break;
-                case 1:
-                  Navigator.pushNamed(context, '/leaderboard');
-                  break;
-                case 2:
-                  Navigator.pushNamed(context, '/friends');
-                  break;
-                default:
-                  break;
-              }
-            },
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Friends',
           ),
-        ),
+        ],
+        selectedItemColor: Color(0xFF096A2E),
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          handleSwitchCase(context, index);
+        },
       ),
     );
   }
