@@ -75,8 +75,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 10,
                   top: 50, 
                   child: SizedBox(
-                    width: 120,
-                    height: 120,
+                    width: 130,
+                    height: 130,
                     child: Image.asset('assets/crusaderlogo.png'),
                   ),
                 ),
@@ -89,84 +89,35 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Positioned(
-                  left: 50,
-                  top: 250,
-                  child: SizedBox(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.group_add,
-                          size: 80,
-                        ),
-                        Text(
-                          'Friends',
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ]
-                      ),
-                  )
+                  left: 150,
+                  top: 50, 
+                  child: Text(
+                    'Laatste Trofee',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 Positioned(
-                  left: 220,
-                  top: 250,
+                  left: 150,
+                  top: 80,
                   child: SizedBox(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset('assets/award.png',
-                        width: 80,
-                        height: 80,
+                        width: 40,
+                        height: 40,
                         ),
                         Text(
-                          'Achievements',
-                          style: TextStyle(fontSize: 18),
+                          'April 2024',
+                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
                         )
                       ]
                       ),
                   )
                 ),
                 Positioned(
-                  left: 50,
-                  top: 400,
-                  child: SizedBox(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.groups_2,
-                          size: 80,
-                        ),
-                        Text(
-                          'Groups',
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ]
-                      ),
-                  )
-                ),
-                Positioned(
-                  left: 250,
-                  top: 400,
-                  child: SizedBox(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.settings,
-                          size: 80,
-                        ),
-                        Text(
-                          'Settings',
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ]
-                      ),
-                  )
-                ),
-               Positioned(
-                left: 145,
-                top: 575,
+                left: 150,
+                top: 145,
                 child: SizedBox(
                   child: GestureDetector(
                     onTap: () {
@@ -176,19 +127,167 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 17, 118, 20), 
+                        color: Color.fromARGB(255, 216, 219, 216), 
                         borderRadius: BorderRadius.circular(8), 
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12), 
+                      padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14), 
                       child: Text(
-                        'Log out',
-                        style: TextStyle(fontSize: 18, color: Colors.white), 
+                        'Profiel aanpassen',
+                        style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)), 
                       ),
                     ),
                   ),
                 ),
-              )
-
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 300,
+                child: Container(
+                  height: 1,
+                  color: Colors.black,
+                ),
+              ),
+              Positioned(
+                  left: 30,
+                  top: 320, 
+                  child: Text(
+                    'Vrienden',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Positioned(
+                  left: 200,
+                  top: 320,
+                  child: SizedBox(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LoginDemo(),
+                        ));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 9, 106, 46), 
+                          borderRadius: BorderRadius.circular(8), 
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
+                        child: Text(
+                          'Meer weergeven',
+                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                left: 20,
+                top: 380,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '1',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.account_circle,
+                        size: 40
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        '{gebruikersnaam}',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      SizedBox(width: 100),
+                      Icon(
+                        Icons.more_horiz,
+                        size: 40,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 20,
+                top: 480,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '2',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.account_circle,
+                        size: 40
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        '{gebruikersnaam}',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      SizedBox(width: 100),
+                      Icon(
+                        Icons.more_horiz,
+                        size: 40,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 20,
+                top: 580,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '3',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.account_circle,
+                        size: 40
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        '{gebruikersnaam}',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      SizedBox(width: 100),
+                      Icon(
+                        Icons.more_horiz,
+                        size: 40,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               ],
             ),
           ),
