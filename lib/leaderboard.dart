@@ -48,7 +48,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: Text(
-                    '1000 Points',
+                    '1001 Punten',
                     style: TextStyle(fontSize: 14),
                   ),
                 ),
@@ -104,79 +104,91 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               ],
             ),
           ),
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(9, 106, 46, 1),
+              borderRadius: BorderRadius.only(
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  height: 180,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(9, 106, 46, 1),
+                    borderRadius: BorderRadius.only(
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)), // Silver border
+                      SizedBox(width: 20),
+                      _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true), // Gold border
+                      SizedBox(width: 20),
+                      _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)), // Bronze border
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(thickness: 2),
           Expanded(
             child: ListView.builder(
               physics: AlwaysScrollableScrollPhysics(),
-              itemCount: 20,
+              itemCount: 17,
               itemBuilder: (context, index) {
-                String position;
-                String emoji;
-                switch (index) {
-                  case 0:
-                    position = '1';
-                    emoji = '🏆';
-                    break;
-                  case 1:
-                    position = '2';
-                    emoji = '🥈';
-                    break;
-                  case 2:
-                    position = '3';
-                    emoji = '🥉';
-                    break;
-                  default:
-                    position = '${index + 1}';
-                    emoji = '';
-                }
-                return Container(
-                  decoration: BoxDecoration(
-                    // border: Border(
-                    //   top: BorderSide(color: Colors.grey),
-                    //   bottom: BorderSide(color: Colors.grey),
-                    // ),
-                  ),
-                  child: ListTile(
-                    title: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 25, // Set a fixed width for the ranking column
-                          child: Text(
-                            position,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                String position = (index + 4).toString();
+                return ListTile(
+                  title: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 25,
+                        child: Text(
+                          position,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                        ), // Display the position
-                        SizedBox(width: 8), // Add spacing between ranking and profile picture
-                        CircleAvatar(
-                          radius: 20, // Adjust the radius as needed
-                          child: Icon(Icons.account_circle, size: 40), // Use Icon widget instead of icon property
                         ),
-                        SizedBox(width: 8), // Add spacing between profile picture and name
-                        Text(
-                          'Gebruikersnaam',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ), // Replace with actual name
-                        SizedBox(width: 4), // Add spacing between name and emoji
-                        Text(
-                          emoji,
-                          style: TextStyle(fontSize: 20),
-                        ), // Replace with actual emoji
-                        Spacer(), // Add spacer to push points to the end
-                        Text(
-                          '1000',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ), // Replace with actual points
-                        SizedBox(width: 4), // Add spacing between points and 'Points'
-                        Text(
-                          'Punten',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(width: 8),
+                      CircleAvatar(
+                        radius: 20,
+                        child: Icon(Icons.account_circle, size: 40),
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Gebruikersnaam',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Spacer(),
+                      Text(
+                        '1001',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        'Punten',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -245,4 +257,39 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       ),
     );
   }
+Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
+  return Column(
+    children: [
+      Stack(
+        alignment: Alignment.center,
+        children: [
+          CircleAvatar(
+            radius: size + 3,
+            backgroundColor: borderColor,
+            child: CircleAvatar(
+              radius: size,
+              backgroundColor: circleColor,
+              child: Icon(Icons.account_circle, size: size * 2),
+            ),
+          ),
+          if (isCrowned)
+            Positioned(
+              top: -10,
+              child: Text(
+                '👑',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+        ],
+      ),
+      Text(
+        '{gebruikersnaam}',
+        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      Text('1001',
+      style: TextStyle(color: Colors.white),
+      ),
+    ],
+  );
 }
+  }
