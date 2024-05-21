@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -12,14 +13,7 @@ Future <http.Response> sendRequest(
   }
 ) async
 {
-  try
-  {
-    await dotenv.load(fileName: '.env');
-  }
-  catch(e)
-  {
-    return http.Response('e', 500);
-  }
+  await dotenv.load(fileName: '.env');
   String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}${isDevBranch ? '/dev_env/' : '/api/'}$url';
   try 
   {
@@ -104,9 +98,9 @@ class RequestManager
 
 //Temp frontend page. Everything below this comment is just example/ test code
 
-// void main() {
-//   runApp(MyApp());
-// }
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
