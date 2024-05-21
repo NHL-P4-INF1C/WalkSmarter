@@ -52,9 +52,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.85,
+          height: 800,
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
@@ -142,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Positioned(
                 left: 0,
                 right: 0,
-                top: 300,
+                top: 400,
                 child: Container(
                   height: 1,
                   color: Colors.black,
@@ -150,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Positioned(
                   left: 30,
-                  top: 320, 
+                  top: 420, 
                   child: Text(
                     'Vrienden',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -158,7 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Positioned(
                   left: 200,
-                  top: 320,
+                  top: 420,
                   child: SizedBox(
                     child: GestureDetector(
                       onTap: () {
@@ -182,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Positioned(
                 left: 20,
-                top: 380,
+                top: 480,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
@@ -218,7 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Positioned(
                 left: 20,
-                top: 480,
+                top: 580,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
@@ -254,7 +254,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Positioned(
                 left: 20,
-                top: 580,
+                top: 680,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
