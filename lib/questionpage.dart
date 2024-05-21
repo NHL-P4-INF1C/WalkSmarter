@@ -77,8 +77,8 @@ class _QuestionPageState extends State<QuestionPage> {
                     );
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 130, 130, 130)), // fix ik later 
-                    foregroundColor: MaterialStateProperty.all(Colors.white), // fix ik later
+                    backgroundColor: WidgetStateProperty.all(Color.fromARGB(255, 130, 130, 130)),
+                    foregroundColor: WidgetStateProperty.all(Colors.white),
                   ),
                   child: Text(
                     "Ga terug",
@@ -114,7 +114,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Column(
-                children: List.generate(4, (index) {
+                children: List.generate(3, (index) {
                   return RadioListTile<int>(
                     title: Text('antwoord ${index + 1}'),
                     value: index,
@@ -134,8 +134,8 @@ class _QuestionPageState extends State<QuestionPage> {
                     // logica om vraag te controleren mist nog
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 23, 113, 26)), // fix ik later
-                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // fix ik later
+                    backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(255, 23, 113, 26)),
+                    foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   ),
                   child: Text('Vraag controleren'),
                 ),
