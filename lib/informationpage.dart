@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'profilepage.dart';
-import 'questionpage.dart';
 
 class InformationPage extends StatefulWidget {
   @override
@@ -8,7 +7,6 @@ class InformationPage extends StatefulWidget {
 }
 
 class _InformationPageState extends State<InformationPage> {
-  int? _selectedOption; 
 
   @override
   Widget build(BuildContext context) {
