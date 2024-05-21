@@ -136,7 +136,6 @@ class _QuestionPageState extends State<QuestionPage> {
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(255, 23, 113, 26)),
                     foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                    // test
                   ),
                   child: Text('Vraag controleren'),
                 ),
