@@ -76,9 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: double.infinity,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/questionpage');
+                        Navigator.pushNamed(context, '/informationpage');
                       },
-                      child: Text('Question Available'),
+                      child: Text('Vraag'),
                     ),
                   ),
                   SizedBox(height: 20),

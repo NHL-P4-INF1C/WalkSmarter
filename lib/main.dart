@@ -6,6 +6,7 @@ import 'homepage.dart';
 import 'leaderboard.dart';
 import 'profilepage.dart';
 import 'questionpage.dart';
+import 'informationpage.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/leaderboard': (context) => LeaderboardPage(),
         '/profilepage': (context) => ProfilePage(),
         '/questionpage': (context) => QuestionPage(),
+        '/informationpage': (context) => InformationPage(),
       },
     );
   }
