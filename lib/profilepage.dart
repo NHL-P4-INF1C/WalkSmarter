@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:walk_smarter/loginpage.dart';
 import 'package:walk_smarter/mappage.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'dart:convert';
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
@@ -11,6 +12,48 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String _username = 'Loading...';
+  String _profilePicture = '';
+  String _userID = "9mk86rq53y5xuri";
+
+  @override
+  void initState() 
+  {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try
+    {
+      final jsonString = await pb.collection('users').getFirstListItem(
+        'id="$_userID"' 
+      );
+      final record = jsonDecode(jsonString.toString());
+      setState(() 
+      {
+        _username = record["username"];
+        if(record['avatar'] != null)
+        {
+          _profilePicture = pb.files.getUrl(jsonString, record['avatar']).toString();          
+        }
+        else
+        {
+          _profilePicture = '';
+        }
+      });
+    } 
+    catch (e) 
+    {
+      print('Error fetching user data: $e');
+      setState(() 
+      {
+        _username = 'Error loading username';
+        _profilePicture = '';
+      });
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,14 +120,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: SizedBox(
                     width: 130,
                     height: 130,
-                    child: Image.asset('assets/crusaderlogo.png'),
+                    child: CircleAvatar(
+                      radius: 0,
+                      backgroundImage: _profilePicture.startsWith('http')
+                        ? NetworkImage(_profilePicture) 
+                        : AssetImage('assets/standardProfilePicture.png') as ImageProvider
+                    ) 
                   ),
                 ),
                 Positioned(
                   left: 10,
                   top: 10, 
                   child: Text(
-                    'Gebruikersnaam',
+                    _username,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -104,8 +152,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset('assets/award.png',
-                        width: 40,
-                        height: 40,
+                          width: 40,
+                          height: 40,
                         ),
                         Text(
                           'April 2024',
