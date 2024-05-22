@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -8,13 +7,10 @@ import 'dart:convert';
 Future <http.Response> sendRequest(
   Map<String, dynamic> payload, 
   String url,
-  {
-    bool isDevBranch = false
-  }
 ) async
 {
   await dotenv.load(fileName: '.env');
-  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}${isDevBranch ? '/dev_env/' : '/api/'}$url';
+  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}/api/$url';
   try 
   {
     return await http.post(
@@ -37,7 +33,6 @@ Future <http.Response> sendRequest(
 
 class RequestManager
 {
-  bool isDevBranch;
   String url;
   late Map<String, dynamic> payload;
   late Map<String, dynamic> output =
@@ -49,9 +44,6 @@ class RequestManager
     Map<String, dynamic> defaultState, 
     Map<String, dynamic> payloadData, 
     this.url, 
-    {
-      this.isDevBranch = false
-    }
   )
   {
     payload = payloadData; 
@@ -76,7 +68,7 @@ class RequestManager
 
   Future<void> updateStatus() async
   {
-    http.Response response = await sendRequest(payload, url, isDevBranch: isDevBranch);
+    http.Response response = await sendRequest(payload, url);
     String jsonString = response.body; 
     if (response.statusCode == 200) 
     {
@@ -148,7 +140,6 @@ class SelectionButton extends StatefulWidget
       defaultState,
       payloadData,
       url,
-      isDevBranch: isDevBranch
     );
   }
 
