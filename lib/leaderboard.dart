@@ -108,8 +108,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             height: 200,
             decoration: BoxDecoration(
               color: Color.fromRGBO(9, 106, 46, 1),
-              borderRadius: BorderRadius.only(
-              ),
+              borderRadius: BorderRadius.only(),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.2),
@@ -120,28 +119,21 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               ],
             ),
             child: Stack(
-              alignment: Alignment.topCenter,
+              alignment: Alignment.bottomCenter,
               children: [
-                Container(
-                  height: 180,
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(9, 106, 46, 1),
-                    borderRadius: BorderRadius.only(
-                    ),
-                  ),
+                Positioned(
+                  bottom: 0,
+                  left: MediaQuery.of(context).size.width * 0.2 - 60, // Increase spacing
+                  child: _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)), // Silver border
                 ),
                 Positioned(
-                  top: 40,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)), // Silver border
-                      SizedBox(width: 20),
-                      _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true), // Gold border
-                      SizedBox(width: 20),
-                      _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)), // Bronze border
-                    ],
-                  ),
+                  bottom: 30,
+                  child: _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true), // Gold border
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: MediaQuery.of(context).size.width * 0.2 - 60, // Increase spacing
+                  child: _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)), // Bronze border
                 ),
               ],
             ),
@@ -257,39 +249,46 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       ),
     );
   }
-Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
-  return Column(
-    children: [
-      Stack(
-        alignment: Alignment.center,
-        children: [
-          CircleAvatar(
-            radius: size + 3,
-            backgroundColor: borderColor,
-            child: CircleAvatar(
-              radius: size,
-              backgroundColor: circleColor,
-              child: Icon(Icons.account_circle, size: size * 2),
-            ),
-          ),
-          if (isCrowned)
-            Positioned(
-              top: -10,
-              child: Text(
-                '👑',
-                style: TextStyle(fontSize: 24),
+
+  Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            CircleAvatar(
+              radius: size + 3,
+              backgroundColor: borderColor,
+              child: CircleAvatar(
+                radius: size,
+                backgroundColor: circleColor,
+                child: Icon(Icons.account_circle, size: size * 2),
               ),
             ),
-        ],
-      ),
-      Text(
-        '{gebruikersnaam}',
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-      ),
-      Text('1001',
-      style: TextStyle(color: Colors.white),
-      ),
-    ],
-  );
-}
+            if (isCrowned)
+              Positioned(
+                top: -10,
+                child: Text(
+                  '👑',
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
+          ],
+        ),
+        SizedBox(height: 5), // Adjust the gap here as needed
+        Column(
+          children: [
+            Text(
+              '{gebruikersnaam}',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            Text(
+              '1001',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      ],
+    );
   }
+}
