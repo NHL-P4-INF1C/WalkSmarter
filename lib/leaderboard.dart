@@ -149,54 +149,61 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               ],
             ),
           ),
-          Expanded(
+            Expanded(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 235, 235, 235),
+              color: Color.fromARGB(255, 235, 235, 235),
               ),
               child: ListView.builder(
-                physics: AlwaysScrollableScrollPhysics(),
-                itemCount: 17,
-                itemBuilder: (context, index) {
-                  String position = (index + 4).toString();
-                  return ListTile(
-                    title: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 25,
-                          child: Text(
-                            position,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        CircleAvatar(
-                          radius: 20,
-                          child: Icon(Icons.account_circle, size: 40),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Username',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        Spacer(),
-                        Text(
-                          '1001',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(width: 4),
-                      ],
+              physics: AlwaysScrollableScrollPhysics(),
+              itemCount: 17,
+              itemBuilder: (context, index) {
+                String position = (index + 4).toString();
+                return Container(
+                margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: ListTile(
+                  title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                    width: 25,
+                    child: Text(
+                      position,
+                      style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      ),
                     ),
-                  );
-                },
+                    ),
+                    SizedBox(width: 8),
+                    CircleAvatar(
+                    radius: 20,
+                    child: Icon(Icons.account_circle, size: 40),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                    'Username',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    Spacer(),
+                    Text(
+                    '1001',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 4),
+                  ],
+                  ),
+                ),
+                );
+              },
               ),
             ),
-          ),
+            ),
         ],
       ),
       bottomNavigationBar: Container(
