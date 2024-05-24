@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
@@ -85,92 +83,5 @@ class RequestManager
     {
       output['response'] = "Failed to connect to API. status code: ${response.statusCode}, response: $jsonString";
     }
-  }
-}
-
-//Temp frontend page. Everything below this comment is just example/ test code
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context)
-  {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("Hello, World!"),
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              SelectionButton(
-                {'test': 'HELLO, wORLD!'}, 
-                {'test': 1}, 
-                'param_test')
-              ],
-          )
-        ),
-      ),
-    );
-  }
-}
-
-//This is an example button that makes an HTTP request using the RequestManager class
-
-class SelectionButton extends StatefulWidget
-{
-  late final RequestManager requestManager;
-
-  SelectionButton(    
-    Map<String, dynamic> defaultState,
-    Map<String, dynamic> payloadData,
-    String url,
-    {
-      isDevBranch = false, 
-      super.key
-    }
-  )
-  {
-    requestManager = RequestManager(
-      defaultState,
-      payloadData,
-      url,
-    );
-  }
-
-  @override
-  State<SelectionButton> createState() => _SelectionButtonState();
-}
-
-class _SelectionButtonState extends State<SelectionButton>
-{
-  bool _requestMade = false;
-  late Map<String, dynamic> _response;
-
-  @override
-  Widget build(BuildContext context)
-  {
-    //This is cursed... but it works :3
-    return ElevatedButton(
-      onPressed: () async {
-        //Wait for the RequestManager to finish it's makeApiCall() function before going on
-        _response = await widget.requestManager.makeApiCall();
-        setState(() {
-          _requestMade = true;
-        });
-      },
-      child: Text(
-        !_requestMade 
-          //Default message setup in the constructor of the button
-          ? widget.requestManager.getCurrentOutput()['response']['test'].toString()
-          //Output of the API
-          : _response['response'].toString(),
-      ),
-    );
   }
 }
