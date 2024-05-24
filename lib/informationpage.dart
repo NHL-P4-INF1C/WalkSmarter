@@ -27,7 +27,7 @@ class _InformationPageState extends State<InformationPage> {
                     child: Text(
                       '< Ga Terug',
                       style: TextStyle(
-                        color: Color.fromARGB(255, 11, 91, 14),
+                        color: Color.fromARGB(255, 9, 106, 46),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -65,7 +65,7 @@ class _InformationPageState extends State<InformationPage> {
                         fontSize: 24,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     Container(
                     height: 100,
                     width: double.infinity,
@@ -80,17 +80,78 @@ class _InformationPageState extends State<InformationPage> {
                       ),
                     ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/questionpage');
-                      },
-                      child: Text('Ga naar vraag'),
+                    SizedBox(height: 20),
+                    Container(
+                      height: 380,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                    child: Center(
+                      child: Text(
+                        "{informatie over monument}",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      ),
                     ),
+                    SizedBox(height: 20),
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/questionpage');
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: Text(
+                          "Ga naar vraag",
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
             ),
           ],
+        ),
+      ),
+       bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Map',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.leaderboard),
+            label: 'Leaderboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Friends',
+          ),
+        ],
+
+        selectedItemColor: Color(int.parse('0xFF096A2E')),
+        onTap: (index) {
+        },
+      ),
+      bottomSheet: PreferredSize(
+        preferredSize: Size.fromHeight(1.0),
+        child: Container(
+          color: Colors.black,
+          height: 1.0,
         ),
       ),
     );
