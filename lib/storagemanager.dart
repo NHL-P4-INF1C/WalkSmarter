@@ -12,6 +12,11 @@ class StorageManager
 
   StorageManager._internal();
 
+  Future<bool> isKeyValid(String key) async
+  {
+    return await _storage.read(key: key) != null;
+  }
+
   Future<String?> getData(String key) async
   {
     return await _storage.read(key: key);
