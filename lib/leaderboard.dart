@@ -68,13 +68,13 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            color: Color.fromRGBO(9, 106, 46, 1), // Green background color
+            color: Color.fromRGBO(9, 106, 46, 1),
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Text(
                   'Leaderboard',
-                  style: TextStyle(fontSize: 20, color: Colors.white), // White text color
+                  style: TextStyle(fontSize: 20, color: Colors.white), 
                 ),
                 SizedBox(width: 8),
                 DropdownButton<String>(
@@ -88,7 +88,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   ),
                   underline: Container(
                     height: 2,
-                    color: Colors.white, // White underline color
+                    color: Colors.white, 
                   ),
                   onChanged: (String? newValue) {
                     setState(() {
@@ -100,7 +100,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       value: value,
                       child: Text(
                         value,
-                        style: TextStyle(color: Colors.white), // White dropdown text color
+                        style: TextStyle(color: Colors.white), 
                       ),
                     );
                   }).toList(),
@@ -108,83 +108,93 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               ],
             ),
           ),
-
           Container(
-            height: 200,
+            height: 300,
             decoration: BoxDecoration(
               color: Color.fromRGBO(9, 106, 46, 1),
               borderRadius: BorderRadius.only(),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: Offset(0, 3),
-                ),
-              ],
             ),
             child: Stack(
               alignment: Alignment.topCenter,
               children: [
                 Positioned(
-                  bottom: 40,
-                  left: MediaQuery.of(context).size.width * 0.2 - 60, // Increase spacing
-                  child: _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)), // Silver border
+                  bottom: 120,
+                  left: MediaQuery.of(context).size.width * 0.2 - 60, 
+                  child: _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)), 
                 ),
                 Positioned(
-                  bottom: 70,
-                  child: _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true), // Gold border
+                  bottom: 150,
+                  child: _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true), 
                 ),
                 Positioned(
-                  bottom: 40,
-                  right: MediaQuery.of(context).size.width * 0.2 - 60, // Increase spacing
-                  child: _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)), // Bronze border
+                  bottom: 120,
+                  right: MediaQuery.of(context).size.width * 0.2 - 60, 
+                  child: _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)),
+                ),
+                Positioned(
+                  bottom: -10,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 235, 235, 235),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(300.200),
+                        topRight: Radius.circular(300.200),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          Divider(thickness: 2),
           Expanded(
-            child: ListView.builder(
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: 17,
-              itemBuilder: (context, index) {
-                String position = (index + 4).toString();
-                return ListTile(
-                  title: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 25,
-                        child: Text(
-                          position,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 235, 235, 235),
+              ),
+              child: ListView.builder(
+                physics: AlwaysScrollableScrollPhysics(),
+                itemCount: 17,
+                itemBuilder: (context, index) {
+                  String position = (index + 4).toString();
+                  return ListTile(
+                    title: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 25,
+                          child: Text(
+                            position,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      CircleAvatar(
-                        radius: 20,
-                        child: Icon(Icons.account_circle, size: 40),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Gebruikersnaam',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      Spacer(),
-                      Text(
-                        '1001',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(width: 4),
-                    ],
-                  ),
-                );
-              },
+                        SizedBox(width: 8),
+                        CircleAvatar(
+                          radius: 20,
+                          child: Icon(Icons.account_circle, size: 40),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Username',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        Spacer(),
+                        Text(
+                          '1001',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 4),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -255,12 +265,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 ),
     );
 }
-
-
 Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
   return Column(
     children: [
-      SizedBox(height: 10), // Add space at the top
+      SizedBox(height: 10),
       Stack(
         alignment: Alignment.topCenter,
         children: [
@@ -281,9 +289,16 @@ Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool 
                 style: TextStyle(fontSize: 24),
               ),
             ),
+            Positioned(
+              top: 62,
+              child: Text(
+              '1',
+              style: TextStyle(color: Colors.white),
+            ),
+            )
         ],
       ),
-      SizedBox(height: 5), // Add space between elements
+      SizedBox(height: 5), 
       Column(
         children: [
           Text(
