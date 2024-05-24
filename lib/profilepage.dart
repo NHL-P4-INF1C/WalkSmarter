@@ -4,6 +4,8 @@ import 'package:walk_smarter/mappage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'dart:convert';
 
+import 'package:walk_smarter/profilesettings.dart';
+
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
 class ProfilePage extends StatefulWidget {
@@ -99,6 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Container(
           height: 800,
           decoration: BoxDecoration(
+            color: Color.fromARGB(255, 245, 243, 243),
             border: Border(
               top: BorderSide(
                 color: Colors.black,
@@ -170,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LoginDemo(),
+                        builder: (context) => ProfilePageSettings(),
                       ));
                     },
                     child: Container(
