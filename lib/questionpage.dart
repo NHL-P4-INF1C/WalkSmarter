@@ -1,65 +1,97 @@
 import 'package:flutter/material.dart';
-import 'profilepage.dart';
+import 'dart:math' as math;
+
+class TimerPainter extends CustomPainter {
+  final Animation<double> animation;
+  final Color backgroundColor;
+  final Color color;
+
+  TimerPainter(
+    {
+    required this.animation,
+    required this.backgroundColor,
+    required this.color,
+    }
+  ) : super(repaint: animation);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = backgroundColor
+      ..strokeWidth = 5.0
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawCircle(size.center(Offset.zero), size.width / 2, paint);
+
+    paint.color = color;
+    double progress = (1.0 - animation.value) * 2 * math.pi;
+    canvas.drawArc(
+      Rect.fromCircle(center: size.center(Offset.zero), radius: size.width / 2),
+      -math.pi / 2,
+      -progress,
+      false,
+      paint,
+    );
+
+    TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: '${(animation.value * 60).ceil()}',
+        style: TextStyle(color: Colors.black, fontSize: 20.0),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height / 2 - textPainter.height / 2));
+  }
+
+  @override
+  bool shouldRepaint(TimerPainter oldDelegate) {
+    return animation.value != oldDelegate.animation.value ||
+        color != oldDelegate.color ||
+        backgroundColor != oldDelegate.backgroundColor;
+  }
+}
 
 class QuestionPage extends StatefulWidget {
   @override
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> {
-  int? _selectedOption; 
+class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  int duration = 60;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: duration),
+    )..addListener(() {
+      setState(() {});
+    });
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        // logica mist nog
+      }
+    });
+
+    _controller.reverse(from: 1.0);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 50,
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image(
-              image: AssetImage('assets/walksmarterlogo.png'),
-              height: 40,
-              width: 40,
-            ),
-            SizedBox(width: 8),
-            Text(
-              'Walk Smarter',
-              style: TextStyle(fontSize: 14),
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Text(
-                    '1000 Points',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            iconSize: 40,
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ProfilePage(),
-              ));
-            },
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.black,
-            height: 1.0,
-          ),
-        ),
+        // Your AppBar code
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -67,110 +99,23 @@ class _QuestionPageState extends State<QuestionPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 150,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/homepage',
-                    );
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Color.fromARGB(255, 130, 130, 130)),
-                    foregroundColor: WidgetStateProperty.all(Colors.white),
+              Center(
+                child: CustomPaint(
+                  size: Size(100, 100),
+                  painter: TimerPainter(
+                    animation: _controller,
+                    backgroundColor: Colors.green,
+                    color: Colors.grey,
                   ),
-                  child: Text(
-                    "Ga terug",
-                    style: TextStyle(fontSize: 18),
-                    ),
                 ),
               ),
               SizedBox(height: 20),
-              Row(
-                children: [
-                  Container(
-                    height: 150,
-                    width: 150,
-                    color: Colors.grey[300], // placeholder voor foto
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      'monument naam placeholder',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis id aliquet ipsum, nec posuere risus. Phasellus egestas sollicitudin nunc interdum hendrerit. Phasellus nec sollicitudin felis. Aenean convallis enim in tempus iaculis. Quisque mattis accumsan turpis, ut viverra velit euismod vitae. Aenean semper, risus ac pretium rhoncus, lectus lectus sollicitudin velit, et dictum leo nibh porta augue. Morbi condimentum est quis risus aliquam, in ullamcorper diam dapibus. Praesent fermentum ullamcorper justo, eu laoreet ex venenatis ac. Vestibulum dapibus, mauris eu malesuada varius, arcu ligula faucibus enim, pellentesque ornare eros lectus sed ligula. Nunc tincidunt aliquet congue. Pellentesque placerat a ligula at eleifend. Sed ipsum velit, ullamcorper vitae neque eu, finibus volutpat est.',
-                style: TextStyle(fontSize: 14),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'vraag',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Column(
-                children: List.generate(3, (index) {
-                  return RadioListTile<int>(
-                    title: Text('antwoord ${index + 1}'),
-                    value: index,
-                    groupValue: _selectedOption,
-                    onChanged: (int? value) {
-                      setState(() {
-                        _selectedOption = value;
-                      });
-                    },
-                  );
-                }),
-              ),
-              SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // logica om vraag te controleren mist nog
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(255, 23, 113, 26)),
-                    foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                  ),
-                  child: Text('Vraag controleren'),
-                ),
-              ),
+              // Other widgets in the body
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
-          ),
-        ],
-
-        selectedItemColor: Color(int.parse('0xFF096A2E')),
-        onTap: (index) {
-        },
-      ),
-      bottomSheet: PreferredSize(
-        preferredSize: Size.fromHeight(1.0),
-        child: Container(
-          color: Colors.black,
-          height: 1.0,
-        ),
-      ),
+      // Other parts of your Scaffold
     );
   }
 }
