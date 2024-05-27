@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:walk_smarter/profilesettings.dart';
+import 'profilesettings.dart';
+import 'profileusersettings.dart';
 import 'loginpage.dart';
 import 'signup.dart';
 import 'forgotpassword.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/leaderboard': (context) => LeaderboardPage(),
         '/profilepage': (context) => ProfilePage(),
         '/profilepagesettings': (context) => ProfilePageSettings(),
+        '/profileusersettings': (context) => ProfileUserSettings(),
       },
     );
   }

@@ -1,62 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:walk_smarter/loginpage.dart';
 import 'package:walk_smarter/mappage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'dart:convert';
 
-import 'profileusersettings.dart';
-
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
-class ProfilePageSettings extends StatefulWidget {
+class ProfileUserSettings extends StatefulWidget {
   @override
-  State<ProfilePageSettings> createState() => _ProfilePageSettingsState();
+  State<ProfileUserSettings> createState() => _ProfileUserSettingsState();
 }
 
-class _ProfilePageSettingsState extends State<ProfilePageSettings> {
+class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   String _username = 'Loading...';
   String _profilePicture = '';
   String _userID = "08ars3msi5hgi5o";
 
   @override
-  void initState() 
-  {
+  void initState() {
     super.initState();
     _fetchUserData();
   }
 
   Future<void> _fetchUserData() async {
-    try
-    {
+    try {
       final jsonString = await pb.collection('users').getFirstListItem(
-        'id="$_userID"' 
+        'id="$_userID"',
       );
       final record = jsonDecode(jsonString.toString());
-      setState(() 
-      {
+      setState(() {
         _username = record["username"];
-        if(record['avatar'] != null)
-        {
-          _profilePicture = pb.files.getUrl(jsonString, record['avatar']).toString();          
-        }
-        else
-        {
+        if (record['avatar'] != null) {
+          _profilePicture = pb.files.getUrl(jsonString, record['avatar']).toString();
+        } else {
           _profilePicture = '';
         }
       });
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       print('Error fetching user data: $e');
-      setState(() 
-      {
+      setState(() {
         _username = 'Error loading username';
         _profilePicture = '';
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,12 +52,12 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
         automaticallyImplyLeading: false,
         toolbarHeight: 50,
         title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center, 
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image(
               image: AssetImage('assets/walksmarterlogo.png'),
-              height: 40, 
-              width: 40, 
+              height: 40,
+              width: 40,
             ),
             SizedBox(width: 8),
             Text(
@@ -120,6 +108,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
               children: [
                 Positioned(
                   top: 50,
+                  left: 30,
                   child: SizedBox(
                     width: 130,
                     height: 130,
@@ -132,7 +121,8 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                   ),
                 ),
                 Positioned(
-                  top: 200,
+                  top: 50,
+                  left: 200,
                   child: Text(
                     _username,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -140,34 +130,27 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                 ),
                 Positioned(
                   top: 245,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ProfileUserSettings(),
-                      ));
-                    },
-                    child: Container(
-                      width: 355,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(width: 10),
-                          Icon(
-                            Icons.person_outline,
-                            size: 30,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            'Profiel instellingen',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                          ),
-                        ],
-                      ),
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(width: 10),
+                        Icon(
+                          Icons.person_outline,
+                          size: 30,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Gebruikersnaam veranderen',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -185,12 +168,12 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                       children: [
                         SizedBox(width: 10),
                         Icon(
-                          Icons.settings_outlined,
+                          Icons.key,
                           size: 30,
                         ),
                         SizedBox(width: 10),
                         Text(
-                          'App instellingen',
+                          'Wachtwoord veranderen',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ],
@@ -198,7 +181,15 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                   ),
                 ),
                 Positioned(
-                  top: 375,
+                  top: 410,
+                  left: 20,
+                  child: Text(
+                    'Danger Zone',
+                    style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 148, 147, 147),),
+                  ),
+                ),
+                Positioned(
+                  top: 435,
                   child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -210,6 +201,10 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
                         borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Color.fromARGB(255, 255, 0, 0),
+                          width: 2,
+                        ),
                       ),
                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       child: Row(
@@ -217,13 +212,14 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                         children: [
                           SizedBox(width: 10),
                           Icon(
-                            Icons.logout_outlined,
+                            Icons.delete_outline,
                             size: 30,
+                            color: Color.fromARGB(255, 255, 0, 0),
                           ),
                           SizedBox(width: 10),
                           Text(
-                            'Log uit',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                            'Account verwijderen',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 0, 0)),
                           ),
                         ],
                       ),
