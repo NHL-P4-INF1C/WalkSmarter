@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 150,
                   top: 50, 
                   child: Text(
-                    'Laatste Trofee',
+                    'Last Trophy',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -183,7 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14), 
                       child: Text(
-                        'Profiel aanpassen',
+                        'Edit profile',
                         style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)), 
                       ),
                     ),
@@ -203,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 30,
                   top: 420, 
                   child: Text(
-                    'Vrienden',
+                    'Friends',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -224,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
                         child: Text(
-                          'Meer weergeven',
+                          'View more',
                           style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
                         ),
                       ),
@@ -235,6 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 left: 20,
                 top: 480,
                 child: Container(
+                  width: 355,
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(8),
@@ -254,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        '{gebruikersnaam}',
+                        '{username}',
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                       ),
                       SizedBox(width: 100),
@@ -271,6 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 left: 20,
                 top: 580,
                 child: Container(
+                  width: 355,
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(8),
@@ -290,7 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        '{gebruikersnaam}',
+                        '{username}',
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                       ),
                       SizedBox(width: 100),
@@ -307,6 +309,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 left: 20,
                 top: 680,
                 child: Container(
+                  width: 355,
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(8),
@@ -326,7 +329,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        '{gebruikersnaam}',
+                        '{username}',
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                       ),
                       SizedBox(width: 100),

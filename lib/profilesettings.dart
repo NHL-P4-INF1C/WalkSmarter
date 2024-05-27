@@ -64,12 +64,12 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
         automaticallyImplyLeading: false,
         toolbarHeight: 50,
         title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center, 
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image(
               image: AssetImage('assets/walksmarterlogo.png'),
-              height: 40, 
-              width: 40, 
+              height: 40,
+              width: 40,
             ),
             SizedBox(width: 8),
             Text(
@@ -94,7 +94,9 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
           IconButton(
             iconSize: 40,
             icon: Icon(Icons.account_circle),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/profilepage');
+            },
           ),
         ],
       ),
@@ -163,7 +165,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            'Profiel instellingen',
+                            'User settings',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],
@@ -190,7 +192,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          'App instellingen',
+                          'App settings',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ],
@@ -222,7 +224,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            'Log uit',
+                            'Log out',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],

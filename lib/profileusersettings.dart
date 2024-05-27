@@ -147,7 +147,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          'Gebruikersnaam veranderen',
+                          'Change username',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ],
@@ -173,7 +173,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          'Wachtwoord veranderen',
+                          'Change password',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ],
@@ -218,7 +218,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            'Account verwijderen',
+                            'Delete account',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 0, 0)),
                           ),
                         ],
