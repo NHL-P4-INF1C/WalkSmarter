@@ -25,7 +25,7 @@ class _InformationPageState extends State<InformationPage> {
                       Navigator.pushNamed(context, '/homepage');
                     },
                     child: Text(
-                      '< Ga Terug',
+                      '< Go back',
                       style: TextStyle(
                         color: Color.fromARGB(255, 9, 106, 46),
                         fontWeight: FontWeight.bold,
@@ -60,7 +60,7 @@ class _InformationPageState extends State<InformationPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '{Monument naam}',
+                      '{Monument name}',
                       style: TextStyle(
                         fontSize: 24,
                       ),
@@ -75,7 +75,7 @@ class _InformationPageState extends State<InformationPage> {
                     ),
                     child: Center(
                       child: Text(
-                        "{Banner afbeelding van monument}",
+                        "{banner picture of monument}",
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -90,7 +90,7 @@ class _InformationPageState extends State<InformationPage> {
                       ),
                     child: Center(
                       child: Text(
-                        "{informatie over monument}",
+                        "{information about monument}",
                         style: TextStyle(
                           fontSize: 16,
                         ),
@@ -113,7 +113,7 @@ class _InformationPageState extends State<InformationPage> {
                           foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
-                          "Ga naar vraag",
+                          "Go to question",
                           style: TextStyle(
                             fontSize: 18,
                           ),

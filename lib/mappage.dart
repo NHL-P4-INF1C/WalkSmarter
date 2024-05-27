@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         Navigator.pushNamed(context, '/informationpage');
                       },
-                      child: Text('Vraag'),
+                      child: Text('Question'),
                     ),
                   ),
                   SizedBox(height: 20),

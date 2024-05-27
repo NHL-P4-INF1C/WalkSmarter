@@ -111,7 +111,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                       Navigator.pushNamed(context, '/homepage');
                     },
                     child: Text(
-                      '< Ga Terug',
+                      '< Go back',
                       style: TextStyle(
                         color: Color.fromARGB(255, 9, 106, 46),
                         fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           ),
                           child: Center(
                             child: Text(
-                              "{vraag}",
+                              "{question}",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -204,7 +204,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                'antwoord ${index + 1}',
+                                                'Answer ${index + 1}',
                                                 style: TextStyle(fontSize: 16),
                                               ),
                                             ),
@@ -252,7 +252,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
-                          'Vraag controleren',
+                          'Submit answer',
                           style: TextStyle(
                             fontSize: 18,
                           ),
