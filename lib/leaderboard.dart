@@ -96,35 +96,39 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     SizedBox(width: 8),
-                    DropdownButton<String>(
-                      value: _selectedMonth,
-                      dropdownColor: Color.fromRGBO(9, 106, 46, 1),
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                      iconSize: 24,
-                      elevation: 0,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                      underline: Container(
-                        height: 2,
-                        color: Colors.white,
-                      ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedMonth = newValue!;
-                        });
-                      },
-                      items: months.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(
-                            value,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                    PopupMenuButton<String>(
+  offset: Offset(0, 30), // Adjust the vertical position
+  itemBuilder: (BuildContext context) {
+    return months.map((String value) {
+      return PopupMenuItem<String>(
+        value: value,
+        child: Text(value),
+      );
+    }).toList();
+  },
+  onSelected: (String newValue) {
+    setState(() {
+      _selectedMonth = newValue;
+    });
+  },
+  child: Container(
+    padding: EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.white),
+      borderRadius: BorderRadius.circular(5),
+    ),
+    child: Row(
+      children: [
+        Text(
+          _selectedMonth,
+          style: TextStyle(color: Colors.white),
+        ),
+        Icon(Icons.arrow_drop_down, color: Colors.white),
+      ],
+    ),
+  ),
+),
+
                   ],
                 ),
               ),
