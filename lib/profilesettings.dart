@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:walk_smarter/loginpage.dart';
-import 'package:walk_smarter/mappage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'dart:convert';
 
@@ -18,6 +17,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
   String _username = 'Loading...';
   String _profilePicture = '';
   String _userID = "08ars3msi5hgi5o";
+  int currentIndex = 0;
 
   @override
   void initState() 
@@ -60,61 +60,60 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 50,
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image(
-              image: AssetImage('assets/walksmarterlogo.png'),
-              height: 40,
-              width: 40,
-            ),
-            SizedBox(width: 8),
-            Text(
-              'Walk Smarter',
-              style: TextStyle(fontSize: 14),
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Text(
-                    '1000 Points',
-                    style: TextStyle(fontSize: 14),
+      backgroundColor: Color.fromARGB(255, 245, 243, 243),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 50,
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image(
+                image: AssetImage('assets/walksmarterlogo.png'),
+                height: 40,
+                width: 40,
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Walk Smarter',
+                style: TextStyle(fontSize: 14),
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: Text(
+                      '1001 Punten',
+                      style: TextStyle(fontSize: 14),
+                    ),
                   ),
                 ),
               ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              iconSize: 40,
+              icon: Icon(Icons.account_circle),
+              onPressed: () {},
             ),
           ],
-        ),
-        actions: [
-          IconButton(
-            iconSize: 40,
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profilepage');
-            },
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
           ),
-        ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: 665,
+          height: 600,
           decoration: BoxDecoration(
             color: Color.fromARGB(255, 245, 243, 243),
-            border: Border(
-              top: BorderSide(
-                color: Colors.black,
-                width: 1,
-              ),
-              bottom: BorderSide(
-                color: Colors.black,
-                width: 1,
-              ),
-            ),
           ),
           child: Center(
             child: Stack(
@@ -237,29 +236,57 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
+            border: Border.all(
+              color: Color(0xFF096A2E),
+              width: 2.0,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30.0),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: 'Map',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.leaderboard),
+                  label: 'Leaderboard',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.group),
+                  label: 'Friends',
+                ),
+              ],
+              selectedItemColor: Color(0xFF096A2E),
+              currentIndex: 1,
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                  switch (index) {
+                    case 0:
+                      Navigator.pushNamed(context, '/homepage');
+                      break;
+                    case 1:
+                      Navigator.pushNamed(context, '/leaderboard');
+                      break;
+                    case 2:
+                      Navigator.pushNamed(context, '/friends');
+                      break;
+                    default:
+                      break;
+                  }
+                });
+              },
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
-          ),
-        ],
-        selectedItemColor: Color(int.parse('0xFF096A2E')),
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => MyHomePage(),
-            ));
-          }
-        },
+        ),
       ),
     );
   }
