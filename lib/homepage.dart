@@ -139,6 +139,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
+                actions: [
+                  IconButton(
+                    iconSize: 40,
+                    icon: Icon(Icons.account_circle),
+                    onPressed: () {},
+                  ),
+                ],
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
