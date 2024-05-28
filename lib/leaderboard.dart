@@ -14,15 +14,15 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('nl', null);
-    _selectedMonth = DateFormat.MMMM('nl').format(DateTime.now());
+    initializeDateFormatting('en', null);
+    _selectedMonth = DateFormat.MMMM('en').format(DateTime.now());
   }
 
   @override
   Widget build(BuildContext context) {
     List<String> months = [
-      'januari', 'februari', 'maart', 'april', 'mei', 'juni',
-      'juli', 'augustus', 'september', 'oktober', 'november', 'december'
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
     return Scaffold(
@@ -33,10 +33,62 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             height: double.infinity,
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Stack(
+                children: [
+                  Container(
+                    color: Color.fromRGBO(9, 106, 46, 1),
+                  ),
+                  AppBar(
+                    automaticallyImplyLeading: false,
+                    toolbarHeight: 50,
+                    title: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image(
+                          image: AssetImage('assets/walksmarterlogo.png'),
+                          height: 40,
+                          width: 40,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Walk Smarter',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 15),
+                              child: Text(
+                                '1001 Points',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      IconButton(
+                        iconSize: 40,
+                        icon: Icon(Icons.account_circle),
+                        onPressed: () {},
+                      ),
+                    ],
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               Container(
                 padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.only(top: 10),
                 child: Row(
                   children: [
                     Text(
@@ -46,11 +98,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     SizedBox(width: 8),
                     DropdownButton<String>(
                       value: _selectedMonth,
+                      dropdownColor: Color.fromRGBO(9, 106, 46, 1),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.white),
                       iconSize: 24,
                       elevation: 0,
                       style: TextStyle(
-                        color: Color.fromRGBO(9, 106, 46, 1),
+                        color: Colors.white,
                         fontSize: 20,
                       ),
                       underline: Container(
@@ -170,59 +223,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             ],
           ),
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: PreferredSize(
-              preferredSize: Size.fromHeight(80.0),
-              child: AppBar(
-                automaticallyImplyLeading: false,
-                toolbarHeight: 50,
-                title: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image(
-                      image: AssetImage('assets/walksmarterlogo.png'),
-                      height: 40,
-                      width: 40,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Walk Smarter',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 15),
-                          child: Text(
-                            '1001 Punten',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                actions: [
-                  IconButton(
-                    iconSize: 40,
-                    icon: Icon(Icons.account_circle),
-                    onPressed: () {},
-                  ),
-                ],
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
             left: 20,
             right: 20,
             bottom: 10,
@@ -252,7 +252,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       label: 'Friends',
                     ),
                   ],
-selectedItemColor: Color(0xFF096A2E),
+                  selectedItemColor: Color(0xFF096A2E),
                   currentIndex: _selectedIndex,
                   onTap: (index) {
                     setState(() {
@@ -325,7 +325,7 @@ selectedItemColor: Color(0xFF096A2E),
         Column(
           children: [
             Text(
-              '{gebruikersnaam}',
+              '{username}',
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
             ),
             Text(
