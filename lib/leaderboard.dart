@@ -97,38 +97,37 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     ),
                     SizedBox(width: 8),
                     PopupMenuButton<String>(
-  offset: Offset(0, 30), // Adjust the vertical position
-  itemBuilder: (BuildContext context) {
-    return months.map((String value) {
-      return PopupMenuItem<String>(
-        value: value,
-        child: Text(value),
-      );
-    }).toList();
-  },
-  onSelected: (String newValue) {
-    setState(() {
-      _selectedMonth = newValue;
-    });
-  },
-  child: Container(
-    padding: EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.white),
-      borderRadius: BorderRadius.circular(5),
-    ),
-    child: Row(
-      children: [
-        Text(
-          _selectedMonth,
-          style: TextStyle(color: Colors.white),
-        ),
-        Icon(Icons.arrow_drop_down, color: Colors.white),
-      ],
-    ),
-  ),
-),
-
+                        offset: Offset(0, 35),
+                        itemBuilder: (BuildContext context) {
+                          return months.map((String value) {
+                            return PopupMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList();
+                        },
+                        onSelected: (String newValue) {
+                          setState(() {
+                            _selectedMonth = newValue;
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0), 
+                          decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(color: Colors.white)), 
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _selectedMonth,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              Icon(Icons.arrow_drop_down, color: Colors.white),
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -164,7 +163,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 250),
+                      margin: EdgeInsets.only(top: 200),
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 235, 235, 235),
                         borderRadius: BorderRadius.only(
