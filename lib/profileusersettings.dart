@@ -88,7 +88,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: 800,
+          height: 665,
           decoration: BoxDecoration(
             color: Color.fromARGB(255, 245, 243, 243),
             border: Border(
