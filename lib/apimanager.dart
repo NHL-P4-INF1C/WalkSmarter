@@ -2,6 +2,29 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
+import 'package:pocketbase/pocketbase.dart';
+
+final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+
+Future<String> getHashToken() async
+{
+  try 
+  {
+    final result =  await pb.collection('api').getList(
+      page:    1,
+      perPage: 1,
+      sort:    '-created',
+    );
+
+    final record = result.items.first;
+    return record.data['hash'] as String;
+  } 
+  catch (e) 
+  {
+    return 'NULL';
+  }
+}
+
 Future <http.Response> sendRequest(
   Map<String, dynamic> payload, 
   String url,
@@ -9,19 +32,23 @@ Future <http.Response> sendRequest(
 {
   await dotenv.load(fileName: '.env');
   String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}/api/$url';
+
   try 
   {
+    String token = await getHashToken();
+
     return await http.post(
       Uri.parse(apiUrl),
       headers: <String, String>
       {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'jwt': token,
       },
       body: jsonEncode(<String, dynamic>
       {
         'payload': payload
       }),
-    ).timeout(const Duration(seconds: 5));
+    ).timeout(const Duration(seconds: 30));
   } 
   catch (e) 
   {
