@@ -6,56 +6,6 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class UserDialog extends StatelessWidget {
-  final PocketBase client =
-      PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Friends'),
-      content: FutureBuilder<List<RecordModel>>(
-        future: fetchAllUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Text('No users found');
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final user = snapshot.data![index];
-                return ListTile(
-                  title: Text(user.getStringValue('name')),
-                  subtitle: Text(user.getStringValue('email')),
-                  // Add more fields as needed
-                );
-              },
-            );
-          }
-        },
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('Close'),
-        ),
-      ],
-    );
-  }
-
-  Future<List<RecordModel>> fetchAllUsers() async {
-    final resultList =
-        await client.collection('users').getFullList(fields: "friends");
-    return resultList;
-  }
-}
-
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
@@ -77,17 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void showDialogFriendList(BuildContext context) {
     showDialog<void>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        content: UserDialog(),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Close'),
-          )
-        ],
-      ),
+      builder: (BuildContext context) => UserDialog(),
     );
   }
 
@@ -138,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Center(
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.86,
+              height: MediaQuery.of(context).size.height * 0.70,
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
@@ -183,5 +123,96 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
+  }
+}
+
+class UserDialog extends StatelessWidget {
+  final PocketBase client =
+      PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Friends'),
+      content: FutureBuilder<List<RecordModel>>(
+        future: fetchAllUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Text('No users found');
+          } else {
+            final data = snapshot.data!;
+            return Container(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final user = data[index];
+                  final friends = user.data['friends'];
+
+                  if (friends == null || friends.isEmpty) {
+                    return ListTile(
+                      title: Text('No friends'),
+                    );
+                  } else if (friends is List) {
+                    return FutureBuilder<List<String>>(
+                      future: fetchFriendNames(friends.cast<String>()),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return ListTile(
+                            title: Text('Loading friends...'),
+                          );
+                        } else if (snapshot.hasError) {
+                          return ListTile(
+                            title: Text('Error loading friends'),
+                          );
+                        } else {
+                          final friendNames = snapshot.data!;
+                          return ListTile(
+                            title: Text(friendNames.join(', ')),
+                          );
+                        }
+                      },
+                    );
+                  } else {
+                    return ListTile(
+                      title: Text('Invalid friends data'),
+                    );
+                  }
+                },
+              ),
+            );
+          }
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Close'),
+        ),
+      ],
+    );
+  }
+
+  Future<List<RecordModel>> fetchAllUsers() async {
+    final record = await client.collection('users').getFullList();
+    return record;
+  }
+
+  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
+    final List<String> friendNames = [];
+    for (var id in friendIds) {
+      final record = await client.collection('users').getOne(id);
+      friendNames.add(record.data[
+          'username']); // Assuming 'username' is the field for friend's name
+    }
+    return friendNames;
   }
 }
