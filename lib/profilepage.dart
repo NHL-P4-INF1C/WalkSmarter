@@ -93,10 +93,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           actions: [
-            IconButton(
-              iconSize: 40,
-              icon: Icon(Icons.account_circle),
-              onPressed: () {},
+            Padding(
+              padding: EdgeInsets.only(right: 10.0), 
+              child: CircleAvatar(
+                radius: 23,
+                backgroundImage: _profilePicture.startsWith('http')
+                  ? NetworkImage(_profilePicture) 
+                  : AssetImage('assets/standardProfilePicture.png') as ImageProvider
+              ),
             ),
           ],
           backgroundColor: Colors.white,
@@ -376,7 +380,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   label: 'Friends',
                 ),
               ],
-              selectedItemColor: Color(0xFF096A2E),
+              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
               onTap: (index) {
                 setState(() {

@@ -51,45 +51,49 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
-      appBar: PreferredSize(
+       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
-          automaticallyImplyLeading: false,
           toolbarHeight: 50,
+          automaticallyImplyLeading: false,
           title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image(
-                image: AssetImage('assets/walksmarterlogo.png'),
-                height: 40,
-                width: 40,
+              IconButton(
+                icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
               SizedBox(width: 8),
-              Text(
-                'Walk Smarter',
-                style: TextStyle(fontSize: 14),
+              Row( 
+                children: [
+                  Text(
+                    'Go Back',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E))
+                  ),
+                  SizedBox(width: 8),
+                ],
               ),
               Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 15),
-                    child: Text(
-                      '1001 Punten',
-                      style: TextStyle(fontSize: 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Walk Smarter',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    Image(
+                      image: AssetImage('assets/walksmarterlogo.png'),
+                      height: 40,
+                      width: 40,
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          actions: [
-            IconButton(
-              iconSize: 40,
-              icon: Icon(Icons.account_circle),
-              onPressed: () {},
-            ),
-          ],
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
@@ -277,7 +281,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                   label: 'Friends',
                 ),
               ],
-              selectedItemColor: Color(0xFF096A2E),
+              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
               onTap: (index) {
                 setState(() {
