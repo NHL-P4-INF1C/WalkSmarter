@@ -8,6 +8,8 @@ import 'forgotpassword.dart';
 import 'homepage.dart';
 import 'leaderboard.dart';
 import 'profilepage.dart';
+import 'questionpage.dart';
+import 'informationpage.dart';
 
 void main() {
   runApp(MyApp());
@@ -43,6 +45,8 @@ class MyApp extends StatelessWidget {
         '/profilepagesettings': (context) => ProfilePageSettings(),
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/changeusername': (context) => ChangeUsernamePage(userId: 'l9vygx1ssoio1ny', currentUsername: 'lars',),
+        '/questionpage': (context) => QuestionPage(),
+        '/informationpage': (context) => InformationPage(),
       },
     );
   }
