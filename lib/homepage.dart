@@ -50,30 +50,41 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Center(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.86,
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black,
-                    width: 1,
-                  ),
-                  bottom: BorderSide(
-                    color: Colors.black,
-                    width: 1,
-                  ),
+      body: Center(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.81,
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: Colors.black,
+                  width: 1,
+                ),
+                bottom: BorderSide(
+                  color: Colors.black,
+                  width: 1,
                 ),
               ),
-              child: Center(
-                child: Text('Google Maps Widget Here'),
+            ),
+            child: Center(
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/informationpage');
+                      },
+                      child: Text('Question'),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text("Google Maps widget here"),
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
