@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         '/profilepage': (context) => ProfilePage(),
         '/profilepagesettings': (context) => ProfilePageSettings(),
         '/profileusersettings': (context) => ProfileUserSettings(),
-        '/changeusername': (context) => ChangeUsernamePage(userId: '08ars3msi5hgi5o', currentUsername: 'lars',),
+        '/changeusername': (context) => ChangeUsernamePage(userId: 'l9vygx1ssoio1ny', currentUsername: 'lars',),
       },
     );
   }
