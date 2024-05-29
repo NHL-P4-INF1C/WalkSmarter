@@ -248,8 +248,8 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           // logica om vraag te controleren mist nog
                         },
                         style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),
-                          foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           'Submit answer',
