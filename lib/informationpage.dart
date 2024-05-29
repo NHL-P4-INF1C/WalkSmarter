@@ -109,8 +109,8 @@ class _InformationPageState extends State<InformationPage> {
                           Navigator.pushNamed(context, '/questionpage');
                         },
                         style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 9, 106, 46)),
-                          foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           "Go to question",
