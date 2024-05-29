@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
-
-void main() {
-  runApp(MyApp());
-}
 
 class LoginDemo extends StatefulWidget {
   const LoginDemo();
