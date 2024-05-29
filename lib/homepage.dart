@@ -6,6 +6,155 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class UserDialog extends StatelessWidget {
+  final PocketBase client = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Friends'),
+      content: FutureBuilder<List<RecordModel>>(
+        future: fetchAllUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Text('No users found');
+          } else {
+            final data = snapshot.data!
+                .where((user) => user.data['friends'] != null && user.data['friends'].isNotEmpty)
+                .toList();
+
+            if (data.isEmpty) {
+              return Text('No friends found');
+            }
+
+            return Container(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final user = data[index];
+                  final friends = user.data['friends'];
+
+                  if (friends is List) {
+                    return FutureBuilder<List<String>>(
+                      future: fetchFriendNames(friends.cast<String>()),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return ListTile(
+                            title: Text('Loading friends...'),
+                          );
+                        } else if (snapshot.hasError) {
+                          return ListTile(
+                            title: Text('Error loading friends'),
+                          );
+                        } else {
+                          final friendNames = snapshot.data!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 5),
+                              ...friendNames.asMap().entries.map((entry) {
+                                final rank = entry.key + 1;
+                                final friendName = entry.value;
+                                return ListTile(
+                                  title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(Icons.person, size: 24, color: Colors.amber),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            '$friendName',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.chat, size: 24, color: Colors.blue),
+                                            onPressed: () {
+                                              // Add your chat function here
+                                              print('Chat with $friendName');
+                                            },
+                                          ),
+                                          SizedBox(width: 10),
+                                          IconButton(
+                                            icon: Icon(Icons.delete, size: 24, color: Colors.red),
+                                            onPressed: () async {
+                                              // Add your delete function here
+                                              //await deleteUser(user.id);
+                                              print('Deleted $friendName');
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              SizedBox(height: 10),
+                            ],
+                          );
+                        }
+                      },
+                    );
+                  } else {
+                    return ListTile(
+                      title: Text('Invalid friends data'),
+                    );
+                  }
+                },
+              ),
+            );
+          }
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Close'),
+        ),
+      ],
+    );
+  }
+
+  Future<List<RecordModel>> fetchAllUsers() async {
+    final record = await client.collection('users').getFullList();
+    return record;
+  }
+
+  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
+    List<String> friendNames = [];
+    for (String id in friendIds) {
+      final friend = await client.collection('users').getOne(id);
+      friendNames.add(friend.data['username']);
+    }
+    return friendNames;
+  }
+
+  // Future<void> deleteUser(String recordId) async {
+  //   try {
+  //     await client.collection('users').delete(recordId);
+  //     print('User with ID $recordId deleted successfully.');
+  //   } catch (e) {
+  //     print('Error deleting user: $e');
+  //   }
+  // }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
@@ -123,96 +272,5 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
-  }
-}
-
-class UserDialog extends StatelessWidget {
-  final PocketBase client =
-      PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Friends'),
-      content: FutureBuilder<List<RecordModel>>(
-        future: fetchAllUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Text('No users found');
-          } else {
-            final data = snapshot.data!;
-            return Container(
-              width: double.maxFinite,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  final user = data[index];
-                  final friends = user.data['friends'];
-
-                  if (friends == null || friends.isEmpty) {
-                    return ListTile(
-                      title: Text('No friends'),
-                    );
-                  } else if (friends is List) {
-                    return FutureBuilder<List<String>>(
-                      future: fetchFriendNames(friends.cast<String>()),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return ListTile(
-                            title: Text('Loading friends...'),
-                          );
-                        } else if (snapshot.hasError) {
-                          return ListTile(
-                            title: Text('Error loading friends'),
-                          );
-                        } else {
-                          final friendNames = snapshot.data!;
-                          return ListTile(
-                            title: Text(friendNames.join(', ')),
-                          );
-                        }
-                      },
-                    );
-                  } else {
-                    return ListTile(
-                      title: Text('Invalid friends data'),
-                    );
-                  }
-                },
-              ),
-            );
-          }
-        },
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('Close'),
-        ),
-      ],
-    );
-  }
-
-  Future<List<RecordModel>> fetchAllUsers() async {
-    final record = await client.collection('users').getFullList();
-    return record;
-  }
-
-  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
-    final List<String> friendNames = [];
-    for (var id in friendIds) {
-      final record = await client.collection('users').getOne(id);
-      friendNames.add(record.data[
-          'username']); // Assuming 'username' is the field for friend's name
-    }
-    return friendNames;
   }
 }
