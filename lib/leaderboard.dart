@@ -4,7 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 class LeaderboardPage extends StatefulWidget {
   @override
-  _LeaderboardPageState createState() => _LeaderboardPageState();
+  State<LeaderboardPage> createState() => _LeaderboardPageState();
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
@@ -21,8 +21,18 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   @override
   Widget build(BuildContext context) {
     List<String> months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
 
     return Scaffold(
@@ -97,37 +107,39 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     ),
                     SizedBox(width: 8),
                     PopupMenuButton<String>(
-                        offset: Offset(0, 35),
-                        itemBuilder: (BuildContext context) {
-                          return months.map((String value) {
-                            return PopupMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList();
-                        },
-                        onSelected: (String newValue) {
-                          setState(() {
-                            _selectedMonth = newValue;
-                          });
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0), 
-                          decoration: BoxDecoration(
-                            border: Border(bottom: BorderSide(color: Colors.white)), 
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _selectedMonth,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Icon(Icons.arrow_drop_down, color: Colors.white),
-                            ],
-                          ),
+                      offset: Offset(0, 35),
+                      itemBuilder: (BuildContext context) {
+                        return months.map((String value) {
+                          return PopupMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList();
+                      },
+                      onSelected: (String newValue) {
+                        setState(() {
+                          _selectedMonth = newValue;
+                        });
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                        decoration: BoxDecoration(
+                          border:
+                              Border(bottom: BorderSide(color: Colors.white)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedMonth,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Icon(Icons.arrow_drop_down, color: Colors.white),
+                          ],
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -146,17 +158,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           children: [
                             Positioned(
                               bottom: 120,
-                              left: MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)),
+                              left:
+                                  MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(
+                                  2, Colors.grey[300]!, 30,
+                                  borderColor: Color(0xFFC0C0C0)),
                             ),
                             Positioned(
                               bottom: 150,
-                              child: _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true),
+                              child: _buildTopThreeCircle(
+                                  1, Colors.grey[300]!, 35,
+                                  borderColor: Color(0xFFFFD700),
+                                  isCrowned: true),
                             ),
                             Positioned(
                               bottom: 120,
-                              right: MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)),
+                              right:
+                                  MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(
+                                  3, Colors.grey[300]!, 30,
+                                  borderColor: Color(0xFFCD7F32)),
                             ),
                           ],
                         ),
@@ -177,7 +198,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         itemBuilder: (context, index) {
                           String position = (index + 4).toString();
                           return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 10),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30),
@@ -205,12 +227,15 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                   SizedBox(width: 8),
                                   Text(
                                     'Username',
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
                                   ),
                                   Spacer(),
                                   Text(
                                     '1001',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   SizedBox(width: 4),
                                 ],
@@ -263,13 +288,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       switch (index) {
                         case 0:
                           Navigator.pushNamed(context, '/homepage');
-                          break;
                         case 1:
                           Navigator.pushNamed(context, '/leaderboard');
-                          break;
                         case 2:
-                          Navigator.pushNamed(context, '/friends');
-                          break;
+                          Navigator.pushNamed(context, '/friendspage');
                         default:
                           break;
                       }
@@ -284,7 +306,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 
-  Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
+  Widget _buildTopThreeCircle(int position, Color circleColor, double size,
+      {bool isCrowned = false, required Color borderColor}) {
     return Column(
       children: [
         SizedBox(height: 10),
@@ -318,7 +341,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 ),
                 child: Text(
                   '$position',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -329,7 +353,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           children: [
             Text(
               '{username}',
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 14),
             ),
             Text(
               '1001',
