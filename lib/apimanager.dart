@@ -10,14 +10,15 @@ Future<String> getHashToken() async
 {
   try 
   {
+    final authData = await pb.admins.authWithPassword(dotenv.env["ADMIN_EMAIL"]!, dotenv.env["ADMIN_PASSWORD"]!);
     final result =  await pb.collection('api').getList(
-      page:    1,
+      page: 1,
       perPage: 1,
-      sort:    '-created',
+      sort: '-created',
     );
+    pb.authStore.clear();
 
-    final record = result.items.first;
-    return record.data['hash'] as String;
+    return result.items.first.data['hash'] as String;
   } 
   catch (e) 
   {
@@ -31,7 +32,7 @@ Future <http.Response> sendRequest(
 ) async
 {
   await dotenv.load(fileName: '.env');
-  String apiUrl = '${dotenv.env["API_URL"]!}:${dotenv.env["API_PORT"]!}/api/$url';
+  String apiUrl = '${dotenv.env["API_URL"]!}/api/$url';
 
   try 
   {
@@ -48,7 +49,7 @@ Future <http.Response> sendRequest(
       {
         'payload': payload
       }),
-    ).timeout(const Duration(seconds: 30));
+    ).timeout(const Duration(seconds: 10));
   } 
   catch (e) 
   {
@@ -66,13 +67,11 @@ class RequestManager
   };
 
   RequestManager(
-    Map<String, dynamic> defaultState, 
     Map<String, dynamic> payloadData, 
     this.url, 
   )
   {
-    payload = payloadData; 
-    output['response'] = defaultState;
+    payload = payloadData;
   }
 
   Future<Map<String, dynamic>> makeApiCall() async
