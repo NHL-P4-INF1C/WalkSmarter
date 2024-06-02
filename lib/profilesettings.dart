@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:walk_smarter/loginpage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'dart:convert';
 
@@ -220,9 +219,29 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                   top: 375,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LoginDemo(),
-                      ));
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Log out?'),
+                            content: Text('Are you sure you want to log out?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed (context, '/');
+                                },
+                                child: Text('Log out'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     child: Container(
                       width: 355,
