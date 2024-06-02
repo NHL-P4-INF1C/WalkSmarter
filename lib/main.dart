@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'changeusername.dart';
+import 'profileappsettings.dart';
 import 'profilesettings.dart';
 import 'profileusersettings.dart';
 import 'loginpage.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/profilepage': (context) => ProfilePage(),
         '/profilepagesettings': (context) => ProfilePageSettings(),
         '/profileusersettings': (context) => ProfileUserSettings(),
+        '/profileappsettings': (context) => ProfileAppSettings(),
         '/changeusername': (context) => ChangeUsernamePage(userId: 'l9vygx1ssoio1ny', currentUsername: 'lars',),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),

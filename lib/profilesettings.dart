@@ -4,6 +4,7 @@ import 'package:walk_smarter/loginpage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'dart:convert';
 
+import 'profileappsettings.dart';
 import 'profileusersettings.dart';
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
@@ -184,27 +185,34 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                 ),
                 Positioned(
                   top: 310,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.settings_outlined,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          'App settings',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                      ],
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ProfileAppSettings(),
+                      ));
+                    },
+                    child: Container(
+                      width: 355,
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(width: 10),
+                          Icon(
+                            Icons.settings_outlined,
+                            size: 30,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            'App settings',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
