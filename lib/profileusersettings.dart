@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:walk_smarter/loginpage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -367,9 +366,83 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                   top: 435,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LoginDemo(),
-                      ));
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          String password = '';
+                          return AlertDialog(
+                            title: Text('Delete Account?'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Enter your password to delete your account:'),
+                                SizedBox(height: 10),
+                                TextField(
+                                  obscureText: true,
+                                  onChanged: (value) {
+                                    password = value;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Password',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  try {
+                                    await pb.collection('users').delete(_userID, body: {
+                                      'password': password,
+                                    });
+                                    Navigator.pushNamed(context, '/');
+                                  } catch (e) {
+                                    print('Error deleting account: $e');
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Failed to delete account. Please try again.'),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(
+                                      color: Color.fromARGB(255, 255, 0, 0),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(width: 10),
+                                      Icon(
+                                        Icons.delete_outline,
+                                        size: 30,
+                                        color: Color.fromARGB(255, 255, 0, 0),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Delete account',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 0, 0)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     child: Container(
                       width: 355,
