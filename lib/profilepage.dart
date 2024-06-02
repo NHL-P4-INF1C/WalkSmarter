@@ -120,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: 800,
+          height: 1000,
           decoration: BoxDecoration(
             color: Color.fromARGB(255, 245, 243, 243),
           ),
@@ -204,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Positioned(
                 left: 0,
                 right: 0,
-                top: 400,
+                top: 200,
                 child: Container(
                   height: 1,
                   color: Colors.black,
@@ -212,7 +212,237 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Positioned(
                   left: 30,
-                  top: 420, 
+                  top: 220, 
+                  child: Text(
+                    'Trophies',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Positioned(
+                  left: 200,
+                  top: 220,
+                  child: SizedBox(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LoginDemo(),
+                        ));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 9, 106, 46), 
+                          borderRadius: BorderRadius.circular(8), 
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
+                        child: Text(
+                          'View more',
+                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 280,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/award.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Champion',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    'Earned in April 2024',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 380,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/award.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '2nd place',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    'Earned in April 2024',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 480,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/award.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '3rd place',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    'Earned in April 2024',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 600,
+                child: Container(
+                  height: 1,
+                  color: Colors.black,
+                ),
+              ),
+              Positioned(
+                  left: 30,
+                  top: 620, 
                   child: Text(
                     'Friends',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -220,7 +450,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Positioned(
                   left: 200,
-                  top: 420,
+                  top: 620,
                   child: SizedBox(
                     child: GestureDetector(
                       onTap: () {
@@ -244,7 +474,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Positioned(
                 left: 20,
-                top: 480,
+                top: 680,
                 child: Container(
                   width: 355,
                   decoration: BoxDecoration(
@@ -281,7 +511,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Positioned(
                 left: 20,
-                top: 580,
+                top: 780,
                 child: Container(
                   width: 355,
                   decoration: BoxDecoration(
@@ -318,7 +548,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Positioned(
                 left: 20,
-                top: 680,
+                top: 880,
                 child: Container(
                   width: 355,
                   decoration: BoxDecoration(
