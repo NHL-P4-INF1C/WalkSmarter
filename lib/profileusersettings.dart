@@ -16,7 +16,7 @@ class ProfileUserSettings extends StatefulWidget {
 class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   String _username = 'Loading...';
   String _profilePicture = '';
-  String _userID = "l9vygx1ssoio1ny";
+  String _userID = "ycusksdnjo5rtcc";
   int currentIndex = 0;
 
   @override
@@ -102,27 +102,46 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   }
 
   Future<void> _deleteProfilePicture() async {
-  try {
-    await pb.collection('users').update(_userID, body: {
-      'avatar': null,
-    });
-    setState(() {
-      _profilePicture = ''; 
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Profile picture deleted successfully!'),
-      ),
-    );
-  } catch (e) {
-    print('Error deleting profile picture: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Failed to delete profile picture'),
-      ),
-    );
+    try {
+      await pb.collection('users').update(_userID, body: {
+        'avatar': null,
+      });
+      setState(() {
+        _profilePicture = ''; 
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Profile picture deleted successfully!'),
+        ),
+      );
+    } catch (e) {
+      print('Error deleting profile picture: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete profile picture'),
+        ),
+      );
+    }
   }
-}
+
+  Future<void> _deleteAccount() async {
+    String password = '';
+    try {
+      await pb.collection('users').delete(_userID, body: {
+        'password': password,
+      });
+      Navigator.pushNamed(context, '/');
+    } catch (e) {
+      print('Error deleting account: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete account. Please try again.'),
+        ),
+      );
+    }
+  }
+
+  
 
   @override
   void didChangeDependencies() {
@@ -268,7 +287,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       child: Text(
-                        'Delete Profile Picture',
+                        'Delete profile picture',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
                       ),
                     ),
@@ -369,7 +388,6 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          String password = '';
                           return AlertDialog(
                             title: Text('Delete Account?'),
                             content: Column(
@@ -380,7 +398,6 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                 TextField(
                                   obscureText: true,
                                   onChanged: (value) {
-                                    password = value;
                                   },
                                   decoration: InputDecoration(
                                     hintText: 'Password',
@@ -396,21 +413,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                 child: Text('Cancel'),
                               ),
                               TextButton(
-                                onPressed: () async {
-                                  try {
-                                    await pb.collection('users').delete(_userID, body: {
-                                      'password': password,
-                                    });
-                                    Navigator.pushNamed(context, '/');
-                                  } catch (e) {
-                                    print('Error deleting account: $e');
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Failed to delete account. Please try again.'),
-                                      ),
-                                    );
-                                  }
-                                },
+                                onPressed: _deleteAccount,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Color.fromARGB(255, 255, 255, 255),
