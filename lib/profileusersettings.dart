@@ -102,6 +102,29 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     }
   }
 
+  Future<void> _deleteProfilePicture() async {
+  try {
+    await pb.collection('users').update(_userID, body: {
+      'avatar': null,
+    });
+    setState(() {
+      _profilePicture = ''; 
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Profile picture deleted successfully!'),
+      ),
+    );
+  } catch (e) {
+    print('Error deleting profile picture: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to delete profile picture'),
+      ),
+    );
+  }
+}
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -209,6 +232,45 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 150,
+                  left: 150,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Delete Profile Picture?'),
+                            content: Text('Are you sure you want to delete your profile picture?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  _deleteProfilePicture();
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Delete'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      child: Text(
+                        'Delete Profile Picture',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
                       ),
                     ),
                   ),
