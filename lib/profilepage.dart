@@ -1,21 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:walk_smarter/loginpage.dart';
-import 'package:pocketbase/pocketbase.dart';
-import 'dart:convert';
+import "package:flutter/material.dart";
+import "package:walk_smarter/loginpage.dart";
+import "package:pocketbase/pocketbase.dart";
+import "dart:convert";
 
-import 'package:walk_smarter/profilesettings.dart';
+import "package:walk_smarter/profilesettings.dart";
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+final pb = PocketBase("https://inf1c-p4-pocketbase.bramsuurd.nl");
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends StatefulWidget 
+{
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  String _username = 'Loading...';
-  String _profilePicture = '';
-  String _userID = "ycusksdnjo5rtcc";
+class _ProfilePageState extends State<ProfilePage> 
+{
+  String _username = "Loading...";
+  String _profilePicture = "";
+  String _userID = "5iwzvti4kqaf2zb";
   int currentIndex = 0;
 
   @override
@@ -25,45 +27,47 @@ class _ProfilePageState extends State<ProfilePage> {
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async {
-    try
-    {
-      final jsonString = await pb.collection('users').getFirstListItem(
-        'id="$_userID"' 
+  Future<void> _fetchUserData() async 
+  {
+    try {
+      final jsonString = await pb.collection("users").getFirstListItem(
+        "id=\"$_userID\"" 
       );
       final record = jsonDecode(jsonString.toString());
       setState(() 
       {
         _username = record["username"];
-        if(record['avatar'] != null)
+        if(record["avatar"] != null)
         {
-          _profilePicture = pb.files.getUrl(jsonString, record['avatar']).toString();          
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();          
         }
-        else
+        else 
         {
-          _profilePicture = '';
+          _profilePicture = "";
         }
       });
     } 
     catch (e) 
     {
-      print('Error fetching user data: $e');
+      print("Error fetching user data: $e");
       setState(() 
       {
-        _username = 'Error loading username';
-        _profilePicture = '';
+        _username = "Error loading username";
+        _profilePicture = "";
       });
     }
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() 
+  {
     super.didChangeDependencies();
     _fetchUserData();
   }
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -75,13 +79,13 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image(
-                image: AssetImage('assets/walksmarterlogo.png'),
+                image: AssetImage("assets/walksmarterlogo.png"),
                 height: 40,
                 width: 40,
               ),
               SizedBox(width: 8),
               Text(
-                'Walk Smarter',
+                "Walk Smarter",
                 style: TextStyle(fontSize: 14),
               ),
               Expanded(
@@ -90,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Padding(
                     padding: const EdgeInsets.only(right: 15),
                     child: Text(
-                      '1001 Punten',
+                      "1001 Punten",
                       style: TextStyle(fontSize: 14),
                     ),
                   ),
@@ -103,9 +107,9 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.only(right: 10.0), 
               child: CircleAvatar(
                 radius: 23,
-                backgroundImage: _profilePicture.startsWith('http')
+                backgroundImage: _profilePicture.startsWith("http")
                   ? NetworkImage(_profilePicture) 
-                  : AssetImage('assets/standardProfilePicture.png') as ImageProvider
+                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider
               ),
             ),
           ],
@@ -136,9 +140,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 130,
                     child: CircleAvatar(
                       radius: 0,
-                      backgroundImage: _profilePicture.startsWith('http')
+                      backgroundImage: _profilePicture.startsWith("http")
                         ? NetworkImage(_profilePicture) 
-                        : AssetImage('assets/standardProfilePicture.png') as ImageProvider
+                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider
                     ) 
                   ),
                 ),
@@ -154,7 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 150,
                   top: 50, 
                   child: Text(
-                    'Last Trophy',
+                    "Last Trophy",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -165,12 +169,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/award.png',
+                        Image.asset("assets/award.png",
                           width: 40,
                           height: 40,
                         ),
                         Text(
-                          'April 2024',
+                          "April 2024",
                           style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
                         )
                       ]
@@ -178,43 +182,44 @@ class _ProfilePageState extends State<ProfilePage> {
                   )
                 ),
                 Positioned(
-                left: 150,
-                top: 145,
-                child: SizedBox(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ProfilePageSettings(),
-                      ));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 216, 219, 216), 
-                        borderRadius: BorderRadius.circular(8), 
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14), 
-                      child: Text(
-                        'Edit profile',
-                        style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)), 
+                  left: 150,
+                  top: 145,
+                  child: SizedBox(
+                    child: GestureDetector(
+                      onTap: () 
+                      {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ProfilePageSettings(),
+                        ));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 216, 219, 216), 
+                          borderRadius: BorderRadius.circular(8), 
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14), 
+                        child: Text(
+                          "Edit profile",
+                          style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)), 
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 200,
-                child: Container(
-                  height: 1,
-                  color: Colors.black,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 200,
+                  child: Container(
+                    height: 1,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              Positioned(
+                Positioned(
                   left: 30,
                   top: 220, 
                   child: Text(
-                    'Trophies',
+                    "Trophies",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -223,7 +228,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   top: 220,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: ()
+                       {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => LoginDemo(),
                         ));
@@ -235,7 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
                         child: Text(
-                          'View more',
+                          "View more",
                           style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
                         ),
                       ),
@@ -265,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           child: Center(
                             child: Image.asset(
-                              'assets/award.png',
+                              "assets/award.png",
                               width: 40,
                               height: 40,
                             ),
@@ -279,7 +285,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Champion',
+                                  "Champion",
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -290,7 +296,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    'Earned in April 2024',
+                                    "Earned in April 2024",
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Color.fromARGB(255, 0, 0, 0),
@@ -328,7 +334,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           child: Center(
                             child: Image.asset(
-                              'assets/award.png',
+                              "assets/award.png",
                               width: 40,
                               height: 40,
                             ),
@@ -342,7 +348,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '2nd place',
+                                  "2nd place",
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -353,7 +359,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    'Earned in April 2024',
+                                    "Earned in April 2024",
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Color.fromARGB(255, 0, 0, 0),
@@ -391,7 +397,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           child: Center(
                             child: Image.asset(
-                              'assets/award.png',
+                              "assets/award.png",
                               width: 40,
                               height: 40,
                             ),
@@ -405,7 +411,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '3rd place',
+                                  "3rd place",
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -416,7 +422,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    'Earned in April 2024',
+                                    "Earned in April 2024",
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Color.fromARGB(255, 0, 0, 0),
@@ -431,20 +437,20 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 600,
-                child: Container(
-                  height: 1,
-                  color: Colors.black,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 600,
+                  child: Container(
+                    height: 1,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              Positioned(
+                Positioned(
                   left: 30,
                   top: 620, 
                   child: Text(
-                    'Friends',
+                    "Friends",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -453,7 +459,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   top: 620,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () 
+                      {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => LoginDemo(),
                         ));
@@ -465,7 +472,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
                         child: Text(
-                          'View more',
+                          "View more",
                           style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
                         ),
                       ),
@@ -473,116 +480,117 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Positioned(
-                left: 20,
-                top: 680,
-                child: Container(
-                  width: 355,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '1',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.account_circle,
-                        size: 40
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        '{username}',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                      ),
-                      SizedBox(width: 100),
-                      Icon(
-                        Icons.more_horiz,
-                        size: 40,
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 20,
-                top: 780,
-                child: Container(
-                  width: 355,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '2',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.account_circle,
-                        size: 40
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        '{username}',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                      ),
-                      SizedBox(width: 100),
-                      Icon(
-                        Icons.more_horiz,
-                        size: 40,
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
-                    ],
+                  left: 20,
+                  top: 680,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "1",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          Icons.account_circle,
+                          size: 40
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "{username}",
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 100),
+                        Icon(
+                          Icons.more_horiz,
+                          size: 40,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 20,
-                top: 880,
-                child: Container(
-                  width: 355,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '3',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.account_circle,
-                        size: 40
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        '{username}',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                      ),
-                      SizedBox(width: 100),
-                      Icon(
-                        Icons.more_horiz,
-                        size: 40,
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
-                    ],
+                Positioned(
+                  left: 20,
+                  top: 780,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text
+                        (
+                          "2",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          Icons.account_circle,
+                          size: 40
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "{username}",
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 100),
+                        Icon(
+                          Icons.more_horiz,
+                          size: 40,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+                Positioned(
+                  left: 20,
+                  top: 880,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "3",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          Icons.account_circle,
+                          size: 40
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "{username}",
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 100),
+                        Icon(
+                          Icons.more_horiz,
+                          size: 40,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -605,31 +613,34 @@ class _ProfilePageState extends State<ProfilePage> {
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Icon(Icons.map),
-                  label: 'Map',
+                  label: "Map",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.leaderboard),
-                  label: 'Leaderboard',
+                  label: "Leaderboard",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.group),
-                  label: 'Friends',
+                  label: "Friends",
                 ),
               ],
               selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
-              onTap: (index) {
-                setState(() {
+              onTap: (index)
+               {
+                setState(() 
+                {
                   currentIndex = index;
-                  switch (index) {
+                  switch (index) 
+                  {
                     case 0:
-                      Navigator.pushNamed(context, '/homepage');
+                      Navigator.pushNamed(context, "/homepage");
                       break;
                     case 1:
-                      Navigator.pushNamed(context, '/leaderboard');
+                      Navigator.pushNamed(context, "/leaderboard");
                       break;
                     case 2:
-                      Navigator.pushNamed(context, '/friends');
+                      Navigator.pushNamed(context, "/friends");
                       break;
                     default:
                       break;
@@ -643,3 +654,5 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
+

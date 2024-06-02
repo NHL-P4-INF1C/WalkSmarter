@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         '/profilepagesettings': (context) => ProfilePageSettings(),
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/profileappsettings': (context) => ProfileAppSettings(),
-        '/changeusername': (context) => ChangeUsernamePage(userId: 'ycusksdnjo5rtcc', currentUsername: 'lars',),
+        '/changeusername': (context) => ChangeUsernamePage(userId: '5iwzvti4kqaf2zb', currentUsername: 'lars',),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
       },
