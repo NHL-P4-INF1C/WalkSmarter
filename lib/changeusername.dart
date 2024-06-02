@@ -32,7 +32,7 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage> {
       } catch (e) {
         print('Error updating username: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('This username is already taken')),
+          SnackBar(content: Text('Error updating username')),
         );
       }
     }

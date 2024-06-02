@@ -55,6 +55,12 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchUserData();
+  }
   
   @override
   Widget build(BuildContext context) {

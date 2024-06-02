@@ -56,6 +56,12 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
       });
     }
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchUserData();
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -72,7 +78,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
               IconButton(
                 icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/profilepage');
                 },
               ),
               SizedBox(width: 8),

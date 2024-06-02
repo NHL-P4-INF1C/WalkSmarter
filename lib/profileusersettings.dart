@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:walk_smarter/loginpage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'changeusername.dart';
 
@@ -47,11 +49,70 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     }
   }
 
+  Future<void> _changeProfilePicture() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      try {
+        var request = http.MultipartRequest(
+          'PATCH',
+          Uri.parse('https://inf1c-p4-pocketbase.bramsuurd.nl/api/collections/users/records/$_userID'),
+        );
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'avatar',
+            image.path,
+          ),
+        );
+        request.headers.addAll({
+          'Authorization': 'Bearer ${pb.authStore.token}',
+        });
+
+        var response = await request.send();
+
+        if (response.statusCode == 200) {
+          var responseBody = await http.Response.fromStream(response);
+          var responseData = jsonDecode(responseBody.body);
+          setState(() {
+            _profilePicture = responseData['avatar'];
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Profile picture changed successfully!'),
+            ),
+          );
+          
+          await _fetchUserData();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to change profile picture'),
+            ),
+          );
+        }
+      } catch (e) {
+        print('Error uploading image: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error changing profile picture'),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchUserData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
-       appBar: PreferredSize(
+      appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
           toolbarHeight: 50,
@@ -62,15 +123,15 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
               IconButton(
                 icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/profilepagesettings');
                 },
               ),
               SizedBox(width: 8),
-              Row( 
+              Row(
                 children: [
                   Text(
                     'Go Back',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E))
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E)),
                   ),
                   SizedBox(width: 8),
                 ],
@@ -116,14 +177,39 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                 Positioned(
                   top: 50,
                   left: 30,
-                  child: SizedBox(
-                    width: 130,
-                    height: 130,
-                    child: CircleAvatar(
-                      radius: 0,
-                      backgroundImage: _profilePicture.startsWith('http')
-                          ? NetworkImage(_profilePicture)
-                          : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
+                  child: GestureDetector(
+                    onTap: _changeProfilePicture,
+                    child: SizedBox(
+                      width: 130,
+                      height: 130,
+                      child: Stack(
+                        children: [
+                          ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Colors.white.withOpacity(0.5), 
+                              BlendMode.modulate,
+                            ),
+                            child: CircleAvatar(
+                              radius: 65,
+                              backgroundImage: _profilePicture.startsWith('http')
+                                  ? NetworkImage(_profilePicture)
+                                  : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 43,
+                            right: 43,
+                            child: GestureDetector(
+                              onTap: _changeProfilePicture,
+                              child: Image.asset(
+                                'assets/pencil.png',
+                                width: 40,
+                                height: 40,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -148,7 +234,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                         ),
                       );
                       if (result == true) {
-                        _fetchUserData(); // Refresh user data
+                        _fetchUserData();
                       }
                     },
                     child: Container(
@@ -178,27 +264,32 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                 ),
                 Positioned(
                   top: 310,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.key,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          'Change password',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                      ],
+                  child: GestureDetector(
+                    onTap: () {
+                      // Navigate to change password page or show change password dialog
+                    },
+                    child: Container(
+                      width: 355,
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(width: 10),
+                          Icon(
+                            Icons.key,
+                            size: 30,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            'Change password',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -207,7 +298,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                   left: 20,
                   child: Text(
                     'Danger Zone',
-                    style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 148, 147, 147),),
+                    style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 148, 147, 147)),
                   ),
                 ),
                 Positioned(
