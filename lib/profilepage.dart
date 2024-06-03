@@ -21,8 +21,7 @@ class _ProfilePageState extends State<ProfilePage>
   int currentIndex = 0;
 
   @override
-  void initState() 
-  {
+  void initState() {
     super.initState();
     _fetchUserData();
   }
@@ -34,8 +33,7 @@ class _ProfilePageState extends State<ProfilePage>
         "id=\"$_userID\"" 
       );
       final record = jsonDecode(jsonString.toString());
-      setState(() 
-      {
+      setState(() {
         _username = record["username"];
         if(record["avatar"] != null)
         {
@@ -64,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage>
     super.didChangeDependencies();
     _fetchUserData();
   }
-  
+ 
   @override
   Widget build(BuildContext context) 
   {
@@ -104,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage>
           ),
           actions: [
             Padding(
-              padding: EdgeInsets.only(right: 10.0), 
+              padding: EdgeInsets.only(right: 10.0),
               child: CircleAvatar(
                 radius: 23,
                 backgroundImage: _profilePicture.startsWith("http")
@@ -130,11 +128,11 @@ class _ProfilePageState extends State<ProfilePage>
           ),
           child: Center(
             child: Stack(
-              alignment: Alignment.topLeft, 
+              alignment: Alignment.topLeft,
               children: [
                 Positioned(
                   left: 10,
-                  top: 50, 
+                  top: 50,
                   child: SizedBox(
                     width: 130,
                     height: 130,
@@ -148,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 Positioned(
                   left: 10,
-                  top: 10, 
+                  top: 10,
                   child: Text(
                     _username,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -156,15 +154,34 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 Positioned(
                   left: 150,
-                  top: 50, 
+                  top: 50,
                   child: Text(
                     "Last Trophy",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Positioned(
+                    left: 150,
+                    top: 80,
+                    child: SizedBox(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/award.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                            Text(
+                              'April 2024',
+                              style: TextStyle(
+                                  fontSize: 9, fontWeight: FontWeight.bold),
+                            )
+                          ]),
+                    )),
+                Positioned(
                   left: 150,
-                  top: 80,
+                  top: 145,
                   child: SizedBox(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -236,10 +253,11 @@ class _ProfilePageState extends State<ProfilePage>
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 9, 106, 46), 
-                          borderRadius: BorderRadius.circular(8), 
+                          color: Color.fromARGB(255, 9, 106, 46),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
                           style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
@@ -634,14 +652,11 @@ class _ProfilePageState extends State<ProfilePage>
                   switch (index) 
                   {
                     case 0:
-                      Navigator.pushNamed(context, "/homepage");
-                      break;
+                      Navigator.pushNamed(context, '/homepage');
                     case 1:
-                      Navigator.pushNamed(context, "/leaderboard");
-                      break;
+                      Navigator.pushNamed(context, '/leaderboard');
                     case 2:
-                      Navigator.pushNamed(context, "/friends");
-                      break;
+                      Navigator.pushNamed(context, '/friendspage');
                     default:
                       break;
                   }
@@ -654,5 +669,3 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 }
-
-

@@ -10,6 +10,7 @@ import 'homepage.dart';
 import 'leaderboard.dart';
 import 'profilepage.dart';
 import 'questionpage.dart';
+import 'friendspage.dart';
 import 'informationpage.dart';
 
 void main() {
@@ -25,8 +26,8 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
         primaryColor: Color.fromARGB(255, 9, 106, 46),
         colorScheme: ColorScheme.light(
-        primary: Color.fromARGB(255, 9, 106, 46),
-        secondary: Color.fromARGB(255, 9, 106, 46),
+          primary: Color.fromARGB(255, 9, 106, 46),
+          secondary: Color.fromARGB(255, 9, 106, 46),
         ),
         textSelectionTheme: TextSelectionThemeData(
           cursorColor: Color.fromARGB(255, 9, 106, 46),
@@ -49,36 +50,8 @@ class MyApp extends StatelessWidget {
         '/changeusername': (context) => ChangeUsernamePage(userId: '5iwzvti4kqaf2zb', currentUsername: 'lars',),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
+        '/friendspage': (context) => MyFriendsPage(),
       },
-    );
-  }
-}
-
-class MainPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Home page",
-              style: TextStyle(fontSize: 24.0),
-            ),
-            SizedBox(height: 16.0),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/login',
-                );
-              },
-              child: Text('Go to log in page'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
