@@ -12,6 +12,25 @@ import 'profilepage.dart';
 import 'questionpage.dart';
 import 'friendspage.dart';
 import 'informationpage.dart';
+import 'pocketbase.dart';
+
+class MyNavigatorObserver extends NavigatorObserver {
+  @override
+  Future<void> didPush(Route route, Route? previousRoute) async {
+    try {
+      print('Navigating to ${route.settings.name}');
+      var pb = PocketBaseSingleton().instance;
+      var authData = await pb.collection('users').authRefresh();
+      print("Valid status: ${pb.authStore.isValid}");
+      print("Token: ${pb.authStore.token}");
+      print("Total auth data: $authData");
+
+      super.didPush(route, previousRoute);
+    } catch (error) {
+      print('Error during navigation: $error');
+    }
+  }
+}
 
 void main() {
   runApp(MyApp());
@@ -19,9 +38,11 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [MyNavigatorObserver()],
       theme: ThemeData(
         fontFamily: 'Inter',
         primaryColor: Color.fromARGB(255, 9, 106, 46),
@@ -36,7 +57,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initialRoute: '/',
-      //Route map
+      // Route map
       routes: {
         '/': (context) => LoginDemo(),
         '/signup': (context) => SignUp(),
@@ -47,7 +68,10 @@ class MyApp extends StatelessWidget {
         '/profilepagesettings': (context) => ProfilePageSettings(),
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/profileappsettings': (context) => ProfileAppSettings(),
-        '/changeusername': (context) => ChangeUsernamePage(userId: '5iwzvti4kqaf2zb', currentUsername: 'lars',),
+        '/changeusername': (context) => ChangeUsernamePage(
+          userId: '5iwzvti4kqaf2zb', 
+          currentUsername: 'lars',
+        ),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),
