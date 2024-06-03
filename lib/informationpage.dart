@@ -6,6 +6,8 @@ class InformationPage extends StatefulWidget {
 }
 
 class _InformationPageState extends State<InformationPage> {
+  int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,18 +69,18 @@ class _InformationPageState extends State<InformationPage> {
                     ),
                     SizedBox(height: 20),
                     Container(
-                    height: 100,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300], // placeholder banner afbeelding monument
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "{banner picture of monument}",
-                        textAlign: TextAlign.center,
+                      height: 100,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300], // placeholder banner afbeelding monument
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
-                    ),
+                      child: Center(
+                        child: Text(
+                          "{banner picture of monument}",
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                     SizedBox(height: 20),
                     Container(
@@ -88,13 +90,13 @@ class _InformationPageState extends State<InformationPage> {
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
-                    child: Center(
-                      child: Text(
-                        "{information about monument}",
-                        style: TextStyle(
-                          fontSize: 16,
+                      child: Center(
+                        child: Text(
+                          "{information about monument}",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
                       ),
                     ),
                     SizedBox(height: 20),
@@ -127,31 +129,56 @@ class _InformationPageState extends State<InformationPage> {
           ],
         ),
       ),
-       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
-          ),
-        ],
-
-        selectedItemColor: Color(int.parse('0xFF096A2E')),
-        onTap: (index) {
-        },
-      ),
-      bottomSheet: PreferredSize(
-        preferredSize: Size.fromHeight(1.0),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
         child: Container(
-          color: Colors.black,
-          height: 1.0,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
+            border: Border.all(
+              color: Color(0xFF096A2E),
+              width: 2.0,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30.0),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: 'Map',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.leaderboard),
+                  label: 'Leaderboard',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.group),
+                  label: 'Friends',
+                ),
+              ],
+              currentIndex: currentIndex,
+              selectedItemColor: Color.fromARGB(255, 9, 106, 46),
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                });
+                switch (index) {
+                  case 0:
+                    Navigator.pushNamed(context, '/homepage');
+                    break;
+                  case 1:
+                    Navigator.pushNamed(context, '/leaderboard');
+                    break;
+                  case 2:
+                    Navigator.pushNamed(context, '/friendspage');
+                    break;
+                  default:
+                    break;
+                }
+              },
+            ),
+          ),
         ),
       ),
     );

@@ -68,6 +68,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
   final _requestManager = RequestManager({"pointOfInterest":"NHL Stenden Emmen","locationOfOrigin":"The Netherlands"}, "openai");
   String _question = "loading...";
   List<String> answers = ["answer1", "answer2", "answer3"];
+  int currentIndex = 0;
 
   @override
   void initState() {
@@ -81,7 +82,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // logica mist nog wanneer timer voorbij is
+        // logic for when the timer is complete
       }
     });
 
@@ -136,7 +137,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
           ],
         ),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 80),
@@ -274,30 +275,56 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
-          ),
-        ],
-        selectedItemColor: Color(int.parse('0xFF096A2E')),
-        onTap: (index) {
-        },
-      ),
-      bottomSheet: PreferredSize(
-        preferredSize: Size.fromHeight(1.0),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
         child: Container(
-          color: Colors.black,
-          height: 1.0,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
+            border: Border.all(
+              color: Color(0xFF096A2E),
+              width: 2.0,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30.0),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: 'Map',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.leaderboard),
+                  label: 'Leaderboard',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.group),
+                  label: 'Friends',
+                ),
+              ],
+              currentIndex: currentIndex,
+              selectedItemColor: Color.fromARGB(255, 9, 106, 46),
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                });
+                switch (index) {
+                  case 0:
+                    Navigator.pushNamed(context, '/homepage');
+                    break;
+                  case 1:
+                    Navigator.pushNamed(context, '/leaderboard');
+                    break;
+                  case 2:
+                    Navigator.pushNamed(context, '/friendspage');
+                    break;
+                  default:
+                    break;
+                }
+              },
+            ),
+          ),
         ),
       ),
     );
