@@ -18,7 +18,6 @@ class storagemanager extends AuthStore {
       if (modelString != null) {
         _model = json.decode(modelString);
       }
-      print("Storage loaded: token=$_token, model=$_model");
     } catch (e) {
       print("Error loading storage: $e");
     }
@@ -37,7 +36,6 @@ class storagemanager extends AuthStore {
 
       _token = newToken;
       await _secureStorage.write(key: 'auth_token', value: newToken);
-      print("Storage saved: token=$_token, model=$_model");
     } catch (e) {
       print("Error saving storage: $e");
     }
@@ -49,7 +47,6 @@ class storagemanager extends AuthStore {
       _model = null;
       await _secureStorage.delete(key: 'auth_token');
       await _secureStorage.delete(key: 'auth_model');
-      print("Storage removed");
     } catch (e) {
       print("Error removing storage: $e");
     }

@@ -13,18 +13,14 @@ import 'questionpage.dart';
 import 'friendspage.dart';
 import 'informationpage.dart';
 import 'pocketbase.dart';
+import 'package:flutter/services.dart';
 
 class MyNavigatorObserver extends NavigatorObserver {
   @override
   Future<void> didPush(Route route, Route? previousRoute) async {
     try {
-      print('Navigating to ${route.settings.name}');
       var pb = PocketBaseSingleton().instance;
-      var authData = await pb.collection('users').authRefresh();
-      print("Valid status: ${pb.authStore.isValid}");
-      print("Token: ${pb.authStore.token}");
-      print("Total auth data: $authData");
-
+      await pb.collection('users').authRefresh();
       super.didPush(route, previousRoute);
     } catch (error) {
       print('Error during navigation: $error');
@@ -33,6 +29,10 @@ class MyNavigatorObserver extends NavigatorObserver {
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+  [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
   runApp(MyApp());
 }
 
