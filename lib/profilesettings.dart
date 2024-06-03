@@ -328,7 +328,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                       Navigator.pushNamed(context, "/leaderboard");
                       break;
                     case 2:
-                      Navigator.pushNamed(context, "/friends");
+                      Navigator.pushNamed(context, "/friendspage");
                       break;
                     default:
                       break;

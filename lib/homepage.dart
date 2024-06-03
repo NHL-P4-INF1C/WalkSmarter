@@ -24,7 +24,6 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pushNamed(context, '/leaderboard');
       case 2:
         Navigator.pushNamed(context, '/friendspage');
-        print('we gaan naar de FRIENDSPAGE');
       default:
         break;
     }
