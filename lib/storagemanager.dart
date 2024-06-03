@@ -27,10 +27,16 @@ class storagemanager extends AuthStore {
   @override
   Future<void> save(String newToken, dynamic newModel) async {
     try {
+        if (newModel is RecordModel) {
+          Map<String, dynamic> dataMap = newModel.toJson();
+          _model = dataMap;
+          await _secureStorage.write(key: 'auth_model', value: json.encode(dataMap));
+        } else {
+          throw Exception('Invalid data type');
+        }
+
       _token = newToken;
-      _model = newModel;
       await _secureStorage.write(key: 'auth_token', value: newToken);
-      await _secureStorage.write(key: 'auth_model', value: json.encode(newModel));
       print("Storage saved: token=$_token, model=$_model");
     } catch (e) {
       print("Error saving storage: $e");
@@ -53,5 +59,5 @@ class storagemanager extends AuthStore {
   String get token => _token;
 
   @override
-  Map<String, dynamic>? get model => _model;
+  dynamic get model => _model;
 }
