@@ -1,22 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:walk_smarter/loginpage.dart';
-import 'package:pocketbase/pocketbase.dart';
-import 'dart:convert';
+import "package:flutter/material.dart";
+import "package:pocketbase/pocketbase.dart";
+import "dart:convert";
 
-import 'profileusersettings.dart';
+import "profileappsettings.dart";
+import "profileusersettings.dart";
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+final pb = PocketBase("https://inf1c-p4-pocketbase.bramsuurd.nl");
 
-class ProfilePageSettings extends StatefulWidget {
+class ProfilePageSettings extends StatefulWidget 
+{
   @override
   State<ProfilePageSettings> createState() => _ProfilePageSettingsState();
 }
 
-class _ProfilePageSettingsState extends State<ProfilePageSettings> {
-  String _username = 'Loading...';
-  String _profilePicture = '';
-  String _userID = "l9vygx1ssoio1ny";
+class _ProfilePageSettingsState extends State<ProfilePageSettings> 
+{
+  String _username = "Loading...";
+  String _profilePicture = "";
+  String _userID = "5iwzvti4kqaf2zb";
   int currentIndex = 0;
 
   @override
@@ -26,39 +27,48 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async {
+  Future<void> _fetchUserData() async 
+  {
     try
     {
-      final jsonString = await pb.collection('users').getFirstListItem(
-        'id="$_userID"' 
+      final jsonString = await pb.collection("users").getFirstListItem(
+        "id=\"$_userID\"" 
       );
       final record = jsonDecode(jsonString.toString());
       setState(() 
       {
         _username = record["username"];
-        if(record['avatar'] != null)
+        if(record["avatar"] != null)
         {
-          _profilePicture = pb.files.getUrl(jsonString, record['avatar']).toString();          
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();          
         }
         else
         {
-          _profilePicture = '';
+          _profilePicture = "";
         }
       });
     } 
     catch (e) 
     {
-      print('Error fetching user data: $e');
+      print("Error fetching user data: $e");
       setState(() 
       {
-        _username = 'Error loading username';
-        _profilePicture = '';
+        _username = "Error loading username";
+        _profilePicture = "";
       });
     }
   }
+
+  @override
+  void didChangeDependencies() 
+  {
+    super.didChangeDependencies();
+    _fetchUserData();
+  }
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -71,15 +81,16 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
             children: [
               IconButton(
                 icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
-                onPressed: () {
-                  Navigator.of(context).pop();
+                onPressed: () 
+                {
+                  Navigator.pushNamed(context, "/profilepage");
                 },
               ),
               SizedBox(width: 8),
               Row( 
                 children: [
                   Text(
-                    'Go Back',
+                    "Go Back",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E))
                   ),
                   SizedBox(width: 8),
@@ -90,12 +101,12 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'Walk Smarter',
+                      "Walk Smarter",
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 8),
                     Image(
-                      image: AssetImage('assets/walksmarterlogo.png'),
+                      image: AssetImage("assets/walksmarterlogo.png"),
                       height: 40,
                       width: 40,
                     ),
@@ -130,9 +141,9 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                     height: 130,
                     child: CircleAvatar(
                       radius: 0,
-                      backgroundImage: _profilePicture.startsWith('http')
+                      backgroundImage: _profilePicture.startsWith("http")
                           ? NetworkImage(_profilePicture)
-                          : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
+                          : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
                     ),
                   ),
                 ),
@@ -146,7 +157,8 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                 Positioned(
                   top: 245,
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () 
+                    {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ProfileUserSettings(),
                       ));
@@ -168,7 +180,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            'User settings',
+                            "User settings",
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],
@@ -178,37 +190,69 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                 ),
                 Positioned(
                   top: 310,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.settings_outlined,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          'App settings',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                      ],
+                  child: GestureDetector(
+                    onTap: () 
+                    {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ProfileAppSettings(),
+                      ));
+                    },
+                    child: Container(
+                      width: 355,
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(width: 10),
+                          Icon(
+                            Icons.settings_outlined,
+                            size: 30,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "App settings",
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Positioned(
                   top: 375,
                   child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LoginDemo(),
-                      ));
+                    onTap: () 
+                    {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) 
+                        {
+                          return AlertDialog(
+                            title: Text("Log out?"),
+                            content: Text("Are you sure you want to log out?"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () 
+                                {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () 
+                                {
+                                  Navigator.pushNamed (context, "/");
+                                },
+                                child: Text("Log out"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     child: Container(
                       width: 355,
@@ -227,7 +271,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            'Log out',
+                            "Log out",
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],
@@ -257,31 +301,34 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Icon(Icons.map),
-                  label: 'Map',
+                  label: "Map",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.leaderboard),
-                  label: 'Leaderboard',
+                  label: "Leaderboard",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.group),
-                  label: 'Friends',
+                  label: "Friends",
                 ),
               ],
               selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
-              onTap: (index) {
-                setState(() {
+              onTap: (index) 
+              {
+                setState(() 
+                {
                   currentIndex = index;
-                  switch (index) {
+                  switch (index) 
+                  {
                     case 0:
-                      Navigator.pushNamed(context, '/homepage');
+                      Navigator.pushNamed(context, "/homepage");
                       break;
                     case 1:
-                      Navigator.pushNamed(context, '/leaderboard');
+                      Navigator.pushNamed(context, "/leaderboard");
                       break;
                     case 2:
-                      Navigator.pushNamed(context, '/friends');
+                      Navigator.pushNamed(context, "/friends");
                       break;
                     default:
                       break;
