@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
-import "package:walk_smarter/loginpage.dart";
+import "package:walk_smarter/friendspage.dart";
+import "package:walk_smarter/leaderboard.dart";
 import "package:pocketbase/pocketbase.dart";
 import "dart:convert";
 
@@ -229,7 +230,7 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: ()
                        {
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => LoginDemo(),
+                          builder: (context) => LeaderboardPage(),
                         ));
                       },
                       child: Container(
@@ -461,7 +462,7 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: () 
                       {
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => LoginDemo(),
+                          builder: (context) => MyFriendsPage(),
                         ));
                       },
                       child: Container(
