@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'pocketbase.dart';
+
+var pb = PocketBaseSingleton().instance;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -8,6 +10,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+
+    Future<String> fetchPoints() async {
+    try{
+    final response = await pb.collection('users').getOne(pb.authStore.model['id']);
+    return response.data['points'].toString();
+    }
+    catch(error)
+    {
+    print('Error: $error');
+    }
+    
+      return 'Err';
+    }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -53,9 +68,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
-                  child: Text(
-                    '1001 Points',
-                    style: TextStyle(fontSize: 14),
+                  child: FutureBuilder<String>(
+                    future: fetchPoints(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'Error',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else if (snapshot.hasData) {
+                        return Text(
+                          '${snapshot.data} Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else {
+                        return Text(
+                          '0 Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),
