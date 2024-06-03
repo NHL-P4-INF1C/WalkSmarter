@@ -183,25 +183,6 @@ class _ProfilePageState extends State<ProfilePage>
                   left: 150,
                   top: 145,
                   child: SizedBox(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset("assets/award.png",
-                          width: 40,
-                          height: 40,
-                        ),
-                        Text(
-                          "April 2024",
-                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
-                        )
-                      ]
-                      ),
-                  )
-                ),
-                Positioned(
-                  left: 150,
-                  top: 145,
-                  child: SizedBox(
                     child: GestureDetector(
                       onTap: () 
                       {
