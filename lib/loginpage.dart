@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'pocketbase.dart';
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+var pb = PocketBaseSingleton().instance;
 
 class LoginDemo extends StatefulWidget {
   const LoginDemo();
@@ -26,6 +26,9 @@ class _LoginDemoState extends State<LoginDemo> {
     try {
       if (username != null && password != null) {
         await pb.collection('users').authWithPassword(username!, password!);
+        
+
+      if(!mounted) return;
 
         Navigator.pushNamed(
           context,
@@ -92,9 +95,16 @@ class _LoginDemoState extends State<LoginDemo> {
                   });
                 },
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Username',
-                    hintText: 'Enter your Username'),
+                  border: OutlineInputBorder(),
+                  labelText: 'Username',
+                  hintText: 'Enter your Username',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                  hintStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -108,9 +118,16 @@ class _LoginDemoState extends State<LoginDemo> {
                   });
                 },
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    hintText: 'Enter password'),
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                  hintText: 'Enter password',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                  hintStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                ),
               ),
             ),
             Container(

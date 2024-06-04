@@ -83,7 +83,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       IconButton(
                         iconSize: 40,
                         icon: Icon(Icons.account_circle),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/profilepage');
+                        },
                       ),
                     ],
                     backgroundColor: Colors.white,

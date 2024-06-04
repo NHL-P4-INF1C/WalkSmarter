@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'changeusername.dart';
+import 'profileappsettings.dart';
 import 'profilesettings.dart';
 import 'profileusersettings.dart';
 import 'loginpage.dart';
@@ -11,16 +12,37 @@ import 'profilepage.dart';
 import 'questionpage.dart';
 import 'friendspage.dart';
 import 'informationpage.dart';
+import 'pocketbase.dart';
+import 'package:flutter/services.dart';
+
+class MyNavigatorObserver extends NavigatorObserver {
+  @override
+  Future<void> didPush(Route route, Route? previousRoute) async {
+    try {
+      var pb = PocketBaseSingleton().instance;
+      await pb.collection('users').authRefresh();
+      super.didPush(route, previousRoute);
+    } catch (error) {
+      print('Error during navigation: $error');
+    }
+  }
+}
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+  [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [MyNavigatorObserver()],
       theme: ThemeData(
         fontFamily: 'Inter',
         primaryColor: Color.fromARGB(255, 9, 106, 46),
@@ -35,7 +57,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initialRoute: '/',
-      //Route map
+      // Route map
       routes: {
         '/': (context) => LoginDemo(),
         '/signup': (context) => SignUp(),
@@ -45,10 +67,11 @@ class MyApp extends StatelessWidget {
         '/profilepage': (context) => ProfilePage(),
         '/profilepagesettings': (context) => ProfilePageSettings(),
         '/profileusersettings': (context) => ProfileUserSettings(),
+        '/profileappsettings': (context) => ProfileAppSettings(),
         '/changeusername': (context) => ChangeUsernamePage(
-              userId: 'l9vygx1ssoio1ny',
-              currentUsername: 'lars',
-            ),
+          userId: '5iwzvti4kqaf2zb', 
+          currentUsername: 'lars',
+        ),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),

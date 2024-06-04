@@ -1,21 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:walk_smarter/loginpage.dart';
-import 'package:pocketbase/pocketbase.dart';
-import 'dart:convert';
+import "package:flutter/material.dart";
+import "package:walk_smarter/friendspage.dart";
+import "package:walk_smarter/leaderboard.dart";
+import "package:pocketbase/pocketbase.dart";
+import "dart:convert";
 
-import 'package:walk_smarter/profilesettings.dart';
+import "package:walk_smarter/profilesettings.dart";
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+final pb = PocketBase("https://inf1c-p4-pocketbase.bramsuurd.nl");
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends StatefulWidget 
+{
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  String _username = 'Loading...';
-  String _profilePicture = '';
-  String _userID = "l9vygx1ssoio1ny";
+class _ProfilePageState extends State<ProfilePage> 
+{
+  String _username = "Loading...";
+  String _profilePicture = "";
+  String _userID = "5iwzvti4kqaf2zb";
   int currentIndex = 0;
 
   @override
@@ -24,31 +27,46 @@ class _ProfilePageState extends State<ProfilePage> {
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async {
+  Future<void> _fetchUserData() async 
+  {
     try {
-      final jsonString =
-          await pb.collection('users').getFirstListItem('id="$_userID"');
+      final jsonString = await pb.collection("users").getFirstListItem(
+        "id=\"$_userID\"" 
+      );
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _username = record["username"];
-        if (record['avatar'] != null) {
-          _profilePicture =
-              pb.files.getUrl(jsonString, record['avatar']).toString();
-        } else {
-          _profilePicture = '';
+        if(record["avatar"] != null)
+        {
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();          
+        }
+        else 
+        {
+          _profilePicture = "";
         }
       });
-    } catch (e) {
-      print('Error fetching user data: $e');
-      setState(() {
-        _username = 'Error loading username';
-        _profilePicture = '';
+    } 
+    catch (e) 
+    {
+      print("Error fetching user data: $e");
+      setState(() 
+      {
+        _username = "Error loading username";
+        _profilePicture = "";
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() 
+  {
+    super.didChangeDependencies();
+    _fetchUserData();
+  }
+ 
+  @override
+  Widget build(BuildContext context) 
+  {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -60,13 +78,13 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image(
-                image: AssetImage('assets/walksmarterlogo.png'),
+                image: AssetImage("assets/walksmarterlogo.png"),
                 height: 40,
                 width: 40,
               ),
               SizedBox(width: 8),
               Text(
-                'Walk Smarter',
+                "Walk Smarter",
                 style: TextStyle(fontSize: 14),
               ),
               Expanded(
@@ -75,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Padding(
                     padding: const EdgeInsets.only(right: 15),
                     child: Text(
-                      '1001 Punten',
+                      "1001 Punten",
                       style: TextStyle(fontSize: 14),
                     ),
                   ),
@@ -87,11 +105,11 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: EdgeInsets.only(right: 10.0),
               child: CircleAvatar(
-                  radius: 23,
-                  backgroundImage: _profilePicture.startsWith('http')
-                      ? NetworkImage(_profilePicture)
-                      : AssetImage('assets/standardProfilePicture.png')
-                          as ImageProvider),
+                radius: 23,
+                backgroundImage: _profilePicture.startsWith("http")
+                  ? NetworkImage(_profilePicture) 
+                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider
+              ),
             ),
           ],
           backgroundColor: Colors.white,
@@ -105,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: 800,
+          height: 1000,
           decoration: BoxDecoration(
             color: Color.fromARGB(255, 245, 243, 243),
           ),
@@ -117,14 +135,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 10,
                   top: 50,
                   child: SizedBox(
-                      width: 130,
-                      height: 130,
-                      child: CircleAvatar(
-                          radius: 0,
-                          backgroundImage: _profilePicture.startsWith('http')
-                              ? NetworkImage(_profilePicture)
-                              : AssetImage('assets/standardProfilePicture.png')
-                                  as ImageProvider)),
+                    width: 130,
+                    height: 130,
+                    child: CircleAvatar(
+                      radius: 0,
+                      backgroundImage: _profilePicture.startsWith("http")
+                        ? NetworkImage(_profilePicture) 
+                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider
+                    ) 
+                  ),
                 ),
                 Positioned(
                   left: 10,
@@ -138,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 150,
                   top: 50,
                   child: Text(
-                    'Last Trophy',
+                    "Last Trophy",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -166,23 +185,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   top: 145,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () 
+                      {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ProfilePageSettings(),
                         ));
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 216, 219, 216),
-                          borderRadius: BorderRadius.circular(8),
+                          color: Color.fromARGB(255, 216, 219, 216), 
+                          borderRadius: BorderRadius.circular(8), 
                         ),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 7, horizontal: 14),
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14), 
                         child: Text(
-                          'Edit profile',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                          "Edit profile",
+                          style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)), 
                         ),
                       ),
                     ),
@@ -191,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: 400,
+                  top: 200,
                   child: Container(
                     height: 1,
                     color: Colors.black,
@@ -199,20 +216,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Positioned(
                   left: 30,
-                  top: 420,
+                  top: 220, 
                   child: Text(
-                    'Friends',
+                    "Trophies",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Positioned(
                   left: 200,
-                  top: 420,
+                  top: 220,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: ()
+                       {
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => LoginDemo(),
+                          builder: (context) => LeaderboardPage(),
                         ));
                       },
                       child: Container(
@@ -223,12 +241,136 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding:
                             EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
-                          'View more',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 255, 255, 255)),
+                          "View more",
+                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
                         ),
                       ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 280,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/award.png",
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Champion",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "Earned in April 2024",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 380,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/award.png",
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "2nd place",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "Earned in April 2024",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -241,74 +383,99 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: Color.fromARGB(255, 255, 255, 255),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          '1',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/award.png",
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
                         ),
-                        SizedBox(width: 10),
-                        Icon(Icons.account_circle, size: 40),
-                        SizedBox(width: 10),
-                        Text(
-                          '{username}',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(width: 100),
-                        Icon(
-                          Icons.more_horiz,
-                          size: 40,
-                          color: Color.fromARGB(255, 0, 0, 0),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "3rd place",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "Earned in April 2024",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
                 Positioned(
-                  left: 20,
-                  top: 580,
+                  left: 0,
+                  right: 0,
+                  top: 600,
                   child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '2',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                    height: 1,
+                    color: Colors.black,
+                  ),
+                ),
+                Positioned(
+                  left: 30,
+                  top: 620, 
+                  child: Text(
+                    "Friends",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Positioned(
+                  left: 200,
+                  top: 620,
+                  child: SizedBox(
+                    child: GestureDetector(
+                      onTap: () 
+                      {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => MyFriendsPage(),
+                        ));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 9, 106, 46), 
+                          borderRadius: BorderRadius.circular(8), 
                         ),
-                        SizedBox(width: 10),
-                        Icon(Icons.account_circle, size: 40),
-                        SizedBox(width: 10),
-                        Text(
-                          '{username}',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
+                        child: Text(
+                          "View more",
+                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
                         ),
-                        SizedBox(width: 100),
-                        Icon(
-                          Icons.more_horiz,
-                          size: 40,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -326,21 +493,93 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '3',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                          "1",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                         SizedBox(width: 10),
-                        Icon(Icons.account_circle, size: 40),
+                        Icon(
+                          Icons.account_circle,
+                          size: 40
+                        ),
                         SizedBox(width: 10),
                         Text(
-                          '{username}',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                          "{username}",
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 100),
+                        Icon(
+                          Icons.more_horiz,
+                          size: 40,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 780,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text
+                        (
+                          "2",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          Icons.account_circle,
+                          size: 40
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "{username}",
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 100),
+                        Icon(
+                          Icons.more_horiz,
+                          size: 40,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 880,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "3",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          Icons.account_circle,
+                          size: 40
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "{username}",
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                         SizedBox(width: 100),
                         Icon(
@@ -374,23 +613,26 @@ class _ProfilePageState extends State<ProfilePage> {
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Icon(Icons.map),
-                  label: 'Map',
+                  label: "Map",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.leaderboard),
-                  label: 'Leaderboard',
+                  label: "Leaderboard",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.group),
-                  label: 'Friends',
+                  label: "Friends",
                 ),
               ],
               selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
-              onTap: (index) {
-                setState(() {
+              onTap: (index)
+               {
+                setState(() 
+                {
                   currentIndex = index;
-                  switch (index) {
+                  switch (index) 
+                  {
                     case 0:
                       Navigator.pushNamed(context, '/homepage');
                     case 1:

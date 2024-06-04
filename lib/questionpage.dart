@@ -1,3 +1,4 @@
+import 'apimanager.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -6,13 +7,11 @@ class TimerPainter extends CustomPainter {
   final Color backgroundColor;
   final Color color;
 
-  TimerPainter(
-    {
+  TimerPainter({
     required this.animation,
     required this.backgroundColor,
     required this.color,
-    }
-  ) : super(repaint: animation);
+  }) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -65,7 +64,10 @@ class QuestionPage extends StatefulWidget {
 class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int duration = 60;
-  int? _selectedOption; 
+  int? _selectedOption;
+  final _requestManager = RequestManager({"pointOfInterest":"NHL Stenden Emmen","locationOfOrigin":"The Netherlands"}, "openai");
+  String _question = "loading...";
+  List<String> answers = ["answer1", "answer2", "answer3"];
 
   @override
   void initState() {
@@ -158,7 +160,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           ),
                           child: Center(
                             child: Text(
-                              "{question}",
+                              _question,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -167,7 +169,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           ),
                         ),
                         Positioned(
-                          top: -70, 
+                          top: -70,
                           left: (MediaQuery.of(context).size.width / 2) - 70,
                           child: CustomPaint(
                             size: Size(100, 100),
@@ -182,7 +184,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                     ),
                     SizedBox(height: 30),
                     Column(
-                      children: List.generate(3, (index) {
+                      children: List.generate(answers.length, (index) {
                         return Container(
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
@@ -204,7 +206,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                'Answer ${index + 1}',
+                                                answers[index],
                                                 style: TextStyle(fontSize: 16),
                                               ),
                                             ),
@@ -244,8 +246,14 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // logica om vraag te controleren mist nog
+                        onPressed: () async {
+                          _question = "Getting question...";
+                          final _payload = await _requestManager.makeApiCall();
+                          print(_payload);
+                          _question = _payload['response']['question'];
+                          answers[0] = _payload['response']['correct_answer'];
+                          answers[1] = _payload['response']['wrong_answer'][0];
+                          answers[2] = _payload['response']['wrong_answer'][1];
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),
@@ -281,7 +289,6 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
             label: 'Friends',
           ),
         ],
-
         selectedItemColor: Color(int.parse('0xFF096A2E')),
         onTap: (index) {
         },
