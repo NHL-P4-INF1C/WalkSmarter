@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'changeusername.dart';
 import 'profileappsettings.dart';
 import 'profilesettings.dart';
@@ -28,10 +29,11 @@ class MyNavigatorObserver extends NavigatorObserver {
   }
 }
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
   [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await dotenv.load(fileName: '.env');
 
   runApp(MyApp());
 }

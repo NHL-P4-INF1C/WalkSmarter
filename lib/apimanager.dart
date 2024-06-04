@@ -6,23 +6,22 @@ import 'package:pocketbase/pocketbase.dart';
 
 final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
 
-Future<String> getHashToken() async
+Future<String?> getHashToken() async
 {
   try 
   {
-    final authData = await pb.admins.authWithPassword(dotenv.env["ADMIN_EMAIL"]!, dotenv.env["ADMIN_PASSWORD"]!);
+    await pb.admins.authWithPassword(dotenv.env["ADMIN_EMAIL"]!, dotenv.env["ADMIN_PASSWORD"]!);
     final result =  await pb.collection('api').getList(
       page: 1,
       perPage: 1,
       sort: '-created',
     );
     pb.authStore.clear();
-
     return result.items.first.data['hash'] as String;
   } 
   catch (e) 
   {
-    return 'NULL';
+    return null;
   }
 }
 
@@ -31,12 +30,20 @@ Future <http.Response> sendRequest(
   String url,
 ) async
 {
-  await dotenv.load(fileName: '.env');
   String apiUrl = '${dotenv.env["API_URL"]!}/api/$url';
 
   try 
   {
-    String token = await getHashToken();
+    String? token = await getHashToken();
+    token = null;
+    if(token == null)
+    {
+      return http.Response('{"response": "Failed to connect to PocketBase: Failed to get API token", "statusCode": 404}', 404);
+    }
+    else
+    {
+      token.toString();
+    }
 
     return await http.post(
       Uri.parse(apiUrl),
