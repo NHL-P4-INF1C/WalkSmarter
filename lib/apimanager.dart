@@ -109,14 +109,17 @@ class RequestManager
       {
         output['response'] = "Failed to decode package: ${e.toString()}";
       }
+      output['statusCode'] = response.statusCode;
     }
     else if(response.statusCode == 600)
     {
       output = jsonDecode(jsonString);
+      output['statusCode'] = 404;
     }
     else 
     {
       output['response'] = "Failed to connect to API, response: $jsonString";
+      output['statusCode'] = response.statusCode;
     }
   }
 }
