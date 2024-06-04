@@ -2,9 +2,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
-import 'package:pocketbase/pocketbase.dart';
+import 'pocketbase.dart';
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+var pb = PocketBaseSingleton().instance;
 
 Future<String?> getHashToken() async
 {
@@ -38,7 +38,8 @@ Future <http.Response> sendRequest(
     token = null;
     if(token == null)
     {
-      return http.Response('{"response": "Failed to connect to PocketBase: Failed to get API token", "statusCode": 404}', 404);
+      // Returning a fake status code to trick the rest of the manager into outputting this response. It's ugly, but it works
+      return http.Response('{"response": "Failed to connect to PocketBase: Failed to get API token"}', 600);
     }
     else
     {
@@ -68,10 +69,7 @@ class RequestManager
 {
   String url;
   late Map<String, dynamic> payload;
-  late Map<String, dynamic> output =
-  {
-    'response': 0
-  };
+  late Map<String, dynamic> output = {};
 
   RequestManager(
     Map<String, dynamic> payloadData, 
@@ -111,10 +109,14 @@ class RequestManager
       {
         output['response'] = "Failed to decode package: ${e.toString()}";
       }
-    } 
+    }
+    else if(response.statusCode == 600)
+    {
+      output = jsonDecode(jsonString);
+    }
     else 
     {
-      output['response'] = "Failed to connect to API. status code: ${response.statusCode}, response: $jsonString";
+      output['response'] = "Failed to connect to API, response: $jsonString";
     }
   }
 }
