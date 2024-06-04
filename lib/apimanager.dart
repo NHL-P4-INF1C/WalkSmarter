@@ -35,7 +35,6 @@ Future <http.Response> sendRequest(
   try 
   {
     String? token = await getHashToken();
-    token = null;
     if(token == null)
     {
       // Returning a fake status code to trick the rest of the manager into outputting this response. It's ugly, but it works
