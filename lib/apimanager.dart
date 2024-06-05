@@ -17,7 +17,16 @@ Future<String?> getHashToken() async
       sort: '-created',
     );
     pb.authStore.clear();
-    return result.items.first.data['hash'] as String;
+
+    if(result.items.isNotEmpty)
+    {
+      final hash = result.items.first.data['hash'];
+      if(hash is String) 
+      {
+        return hash;
+      }
+    }
+    return null;
   } 
   catch (e) 
   {
@@ -34,15 +43,19 @@ Future <http.Response> sendRequest(
 
   try 
   {
-    String? token = await getHashToken();
-    if(token == null)
+    String token = '';
+    if(dotenv.env["DEV_ENV"] == null)
     {
-      // Returning a fake status code to trick the rest of the manager into outputting this response. It's ugly, but it works
-      return http.Response('{"response": "Failed to connect to PocketBase: Failed to get API token"}', 600);
+      String? token = await getHashToken();
+      if(token == null)
+      {
+        // Returning a fake status code to trick the rest of the manager into outputting this response. It's ugly, but it works
+        return http.Response('{"response": "Failed to connect to PocketBase: Failed to get API token"}', 600);
+      }
     }
     else
     {
-      token.toString();
+      token = dotenv.env["DEV_ENV"]!;
     }
 
     return await http.post(
