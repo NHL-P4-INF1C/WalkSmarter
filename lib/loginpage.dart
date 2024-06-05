@@ -23,6 +23,10 @@ class LoginDemo extends StatefulWidget {
 class _LoginDemoState extends State<LoginDemo> {
   String? username, password;
   Future<void> signIn() async {
+            Navigator.pushNamed(
+          context,
+          '/homepage',
+        );
     try {
       if (username != null && password != null) {
         await pb.collection('users').authWithPassword(username!, password!);

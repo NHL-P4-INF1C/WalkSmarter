@@ -43,11 +43,11 @@ Future <http.Response> sendRequest(
 
   try 
   {
-    String token = '';
+    String? token;
     if(dotenv.env["DEV_ENV"] == null)
     {
-      String? token = await getHashToken();
-      if(token == null)
+      String? token = await getHashToken() ?? '';
+      if(token.isEmpty)
       {
         // Returning a fake status code to trick the rest of the manager into outputting this response. It's ugly, but it works
         return http.Response('{"response": "Failed to connect to PocketBase: Failed to get API token"}', 600);
@@ -63,7 +63,7 @@ Future <http.Response> sendRequest(
       headers: <String, String>
       {
         'Content-Type': 'application/json',
-        'jwt': token,
+        'jwt': token!,
       },
       body: jsonEncode(<String, dynamic>
       {
