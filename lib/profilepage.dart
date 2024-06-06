@@ -1,12 +1,12 @@
 import "package:flutter/material.dart";
 import "package:walk_smarter/friendspage.dart";
 import "package:walk_smarter/leaderboard.dart";
-import "package:pocketbase/pocketbase.dart";
 import "dart:convert";
+import "pocketbase.dart";
 
 import "package:walk_smarter/profilesettings.dart";
 
-final pb = PocketBase("https://inf1c-p4-pocketbase.bramsuurd.nl");
+var pb = PocketBaseSingleton().instance;
 
 class ProfilePage extends StatefulWidget 
 {
@@ -18,7 +18,7 @@ class _ProfilePageState extends State<ProfilePage>
 {
   String _username = "Loading...";
   String _profilePicture = "";
-  String _userID = "5iwzvti4kqaf2zb";
+  String _userID = pb.authStore.model['id'];
   int currentIndex = 0;
 
   @override
