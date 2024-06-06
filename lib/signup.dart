@@ -42,7 +42,7 @@ class _SignUpDemo extends State<SignUp> {
 
           Navigator.pushNamed(
             context,
-            '/mappage',
+            '/homepage',
           );
           print("New user created");
         }
