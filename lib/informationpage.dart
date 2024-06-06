@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
-class InformationPage extends StatefulWidget {
+class InformationPage extends StatefulWidget 
+{
   @override
   State<InformationPage> createState() => _InformationPageState();
 }
 
-class _InformationPageState extends State<InformationPage> {
+class _InformationPageState extends State<InformationPage> 
+{
   int currentIndex = 0;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -23,11 +26,12 @@ class _InformationPageState extends State<InformationPage> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/homepage');
+                    onPressed: () 
+                    {
+                      Navigator.pushNamed(context, "/homepage");
                     },
                     child: Text(
-                      '< Go back',
+                      "< Go back",
                       style: TextStyle(
                         color: Color.fromARGB(255, 9, 106, 46),
                         fontWeight: FontWeight.bold,
@@ -39,11 +43,11 @@ class _InformationPageState extends State<InformationPage> {
             ),
             SizedBox(width: 8),
             Text(
-              'Walk Smarter',
+              "Walk Smarter",
               style: TextStyle(fontSize: 14),
             ),
             Image(
-              image: AssetImage('assets/walksmarterlogo.png'),
+              image: AssetImage("assets/walksmarterlogo.png"),
               height: 40,
               width: 40,
             ),
@@ -62,7 +66,7 @@ class _InformationPageState extends State<InformationPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '{Monument name}',
+                      "{Monument name}",
                       style: TextStyle(
                         fontSize: 24,
                       ),
@@ -107,8 +111,9 @@ class _InformationPageState extends State<InformationPage> {
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/questionpage');
+                        onPressed: () 
+                        {
+                          Navigator.pushNamed(context, "/questionpage");
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 9, 106, 46)),
@@ -146,32 +151,34 @@ class _InformationPageState extends State<InformationPage> {
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Icon(Icons.map),
-                  label: 'Map',
+                  label: "Map",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.leaderboard),
-                  label: 'Leaderboard',
+                  label: "Leaderboard",
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.group),
-                  label: 'Friends',
+                  label: "Friends",
                 ),
               ],
               currentIndex: currentIndex,
               selectedItemColor: Color.fromARGB(255, 9, 106, 46),
-              onTap: (index) {
-                setState(() {
+              onTap: (index) 
+              {
+                setState(() 
+                {
                   currentIndex = index;
                 });
                 switch (index) {
                   case 0:
-                    Navigator.pushNamed(context, '/homepage');
+                    Navigator.pushNamed(context, "/homepage");
                     break;
                   case 1:
-                    Navigator.pushNamed(context, '/leaderboard');
+                    Navigator.pushNamed(context, "/leaderboard");
                     break;
                   case 2:
-                    Navigator.pushNamed(context, '/friendspage');
+                    Navigator.pushNamed(context, "/friendspage");
                     break;
                   default:
                     break;
