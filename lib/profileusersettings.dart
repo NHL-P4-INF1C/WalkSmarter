@@ -1,12 +1,12 @@
 import "package:flutter/material.dart";
 import "package:image_picker/image_picker.dart";
-import "package:pocketbase/pocketbase.dart";
+import "pocketbase.dart";
 import "dart:convert";
 import "package:http/http.dart" as http;
 
 import "changeusername.dart";
 
-final pb = PocketBase("https://inf1c-p4-pocketbase.bramsuurd.nl");
+var pb = PocketBaseSingleton().instance;
 
 class ProfileUserSettings extends StatefulWidget 
 {
@@ -18,8 +18,9 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings>
 {
   String _username = "Loading...";
   String _profilePicture = "";
-  String _userID = "5iwzvti4kqaf2zb";
+  String _userID = pb.authStore.model['id'];
   int currentIndex = 0;
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() 
@@ -69,7 +70,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings>
       {
         var request = http.MultipartRequest(
           "PATCH",
-          Uri.parse("https://inf1c-p4-pocketbase.bramsuurd.nl/api/collections/users/records/$_userID"),
+          Uri.parse("https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/records/$_userID"),
         );
         request.files.add(
           await http.MultipartFile.fromPath(
@@ -146,21 +147,57 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings>
     }
   }
 
-  Future<void> _deleteAccount() async 
+  Future<bool> _verifyPassword(String password) async 
   {
-    String password = "";
-    try {
-      await pb.collection("users").delete(_userID, body: 
+    try 
+    {
+      final response = await http.post(
+        Uri.parse('https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/auth-with-password'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'identity': _username,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) 
       {
-        "password": password,
-      });
-      Navigator.pushNamed(context, "/");
+        return true;
+      } else 
+      {
+        return false;
+      }
     } catch (e) 
     {
-      print("Error deleting account: $e");
+      print("Error verifying password: $e");
+      return false;
+    }
+  }
+
+  Future<void> _deleteAccount(String password) async 
+  {
+    if (await _verifyPassword(password)) 
+    {
+      try 
+      {
+        await pb.collection("users").delete(_userID);
+        Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
+      } catch (e) 
+      {
+        print("Error deleting account: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to delete account. Please try again."),
+          ),
+        );
+      }
+    } else 
+    {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Failed to delete account. Please try again."),
+          content: Text("Incorrect password. Please try again."),
         ),
       );
     }
@@ -377,9 +414,26 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings>
                 Positioned(
                   top: 310,
                   child: GestureDetector(
-                    onTap: () 
+                    onTap: () async
                     {
-                      // Navigate to change password page or show change password dialog
+                      await pb.collection('users').requestPasswordReset(pb.authStore.model['email']);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Email Sent"),
+                            content: Text("An email has been sent to reset your password."),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("OK"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     child: Container(
                       width: 355,
@@ -431,6 +485,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings>
                                 Text("Enter your password to delete your account:"),
                                 SizedBox(height: 10),
                                 TextField(
+                                  controller: _passwordController,
                                   obscureText: true,
                                   onChanged: (value) 
                                   {
@@ -450,7 +505,19 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings>
                                 child: Text("Cancel"),
                               ),
                               TextButton(
-                                onPressed: _deleteAccount,
+                                onPressed: () 
+                                {
+                                  String password = _passwordController.text.trim();
+                                  if (password.isNotEmpty) {
+                                    _deleteAccount(password);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Please enter your password."),
+                                      ),
+                                    );
+                                  }
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Color.fromARGB(255, 255, 255, 255),
@@ -576,3 +643,4 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings>
     );
   }
 }
+

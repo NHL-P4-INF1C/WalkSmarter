@@ -41,7 +41,8 @@ class storagemanager extends AuthStore {
     }
   }
 
-  Future<void> remove() async {
+  @override
+  void clear() async {
     try {
       _token = "";
       _model = null;
