@@ -405,7 +405,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                       await pb.collection('users').requestPasswordReset(pb.authStore.model['email']);
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) {
+                        builder: (BuildContext context) 
+                        {
                           return AlertDialog(
                             title: Text("Email Sent"),
                             content: Text("An email has been sent to reset your password."),
