@@ -31,7 +31,7 @@ class MyNavigatorObserver extends NavigatorObserver {
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
-  [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   runApp(MyApp());
 }
@@ -69,9 +69,9 @@ class MyApp extends StatelessWidget {
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/profileappsettings': (context) => ProfileAppSettings(),
         '/changeusername': (context) => ChangeUsernamePage(
-          userId: '5iwzvti4kqaf2zb', 
-          currentUsername: 'lars',
-        ),
+              userId: '5iwzvti4kqaf2zb',
+              currentUsername: 'lars',
+            ),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),

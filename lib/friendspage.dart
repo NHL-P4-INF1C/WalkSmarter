@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'pocketbase.dart';
 
 class MyFriendsPage extends StatefulWidget {
   @override
@@ -7,13 +7,13 @@ class MyFriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<MyFriendsPage> {
-  final PocketBase client =
-      PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+  final pb = PocketBaseSingleton().instance;
   int _selectedIndex = 2;
+  String? username;
 
   Future<void> deleteUser(String recordId) async {
     try {
-      await client.collection('users').delete(recordId);
+      await pb.collection('users').delete(recordId);
       print('User with ID $recordId deleted successfully.');
     } catch (e) {
       print('Error deleting user: $e');
@@ -43,6 +43,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
+    //var userId = pb.authStore.model['id'];
     return Scaffold(
       body: Stack(
         children: [
@@ -138,8 +139,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: FutureBuilder<List<RecordModel>>(
-                        future: fetchAllUsers(),
+                      child: FutureBuilder<List<String>>(
+                        future: fetchFriendNamesForUser(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -149,134 +150,68 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 child: Text('Error: ${snapshot.error}'));
                           } else if (!snapshot.hasData ||
                               snapshot.data!.isEmpty) {
-                            return Center(child: Text('No users found'));
+                            return Center(child: Text('No friends found'));
                           } else {
-                            final data = snapshot.data!
-                                .where((user) =>
-                                    user.data['friends'] != null &&
-                                    user.data['friends'].isNotEmpty)
-                                .toList();
-
-                            if (data.isEmpty) {
-                              return Center(child: Text('No friends found'));
-                            }
-
+                            final friendNames = snapshot.data!;
                             return ListView.builder(
                               physics: AlwaysScrollableScrollPhysics(),
-                              itemCount: data.length,
+                              itemCount: friendNames.length,
                               itemBuilder: (context, index) {
-                                final user = data[index];
-                                final friends = user.data['friends'];
-
-                                if (friends is List) {
-                                  return FutureBuilder<List<String>>(
-                                    future: fetchFriendNames(
-                                        friends.cast<String>()),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return ListTile(
-                                          title: Text('Loading friends...'),
-                                        );
-                                      } else if (snapshot.hasError) {
-                                        return ListTile(
-                                          title: Text('Error loading friends'),
-                                        );
-                                      } else {
-                                        final friendNames = snapshot.data!;
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(height: 5),
-                                            ...friendNames
-                                                .asMap()
-                                                .entries
-                                                .map((entry) {
-                                              final friendName = entry.value;
-                                              return Container(
-                                                margin: EdgeInsets.symmetric(
-                                                  horizontal: 30,
-                                                  vertical: 10,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                ),
-                                                child: ListTile(
-                                                  title: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Icon(Icons.person,
-                                                              size: 24,
-                                                              color:
-                                                                  Colors.amber),
-                                                          SizedBox(width: 10),
-                                                          Text(
-                                                            '$friendName',
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          IconButton(
-                                                            icon: Icon(
-                                                                Icons.chat,
-                                                                size: 24,
-                                                                color: Colors
-                                                                    .blue),
-                                                            onPressed: () {
-                                                              // Add your chat function here
-                                                              print(
-                                                                  'Chat with $friendName');
-                                                            },
-                                                          ),
-                                                          SizedBox(width: 10),
-                                                          IconButton(
-                                                            icon: Icon(
-                                                                Icons.delete,
-                                                                size: 24,
-                                                                color:
-                                                                    Colors.red),
-                                                            onPressed:
-                                                                () async {
-                                                              await deleteUser(
-                                                                  user.id);
-                                                              print(
-                                                                  'Deleted $friendName');
-                                                            },
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            }).toList(),
-                                            SizedBox(height: 10),
-                                          ],
-                                        );
-                                      }
+                                final friendName = friendNames[index];
+                                return Container(
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: 30,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, '/profilepage');
                                     },
-                                  );
-                                } else {
-                                  return ListTile(
-                                    title: Text('Invalid friends data'),
-                                  );
-                                }
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(Icons.person,
+                                                size: 24, color: Colors.amber),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '$friendName',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            SizedBox(width: 10),
+                                            IconButton(
+                                              icon: Icon(Icons.delete,
+                                                  size: 24, color: Colors.red),
+                                              onPressed: () async {
+                                                // Assuming you have the user ID of the friend to delete
+                                                final userIdToDelete =
+                                                    "user-id-to-delete";
+                                                await deleteUser(
+                                                    userIdToDelete);
+                                                print('Deleted $friendName');
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
                               },
                             );
                           }
@@ -330,16 +265,28 @@ class _FriendsPageState extends State<MyFriendsPage> {
     );
   }
 
-  Future<List<RecordModel>> fetchAllUsers() async {
-    final record = await client.collection('users').getFullList();
-    return record;
+  Future<List<String>> fetchFriendNamesForUser() async {
+    print(pb.authStore.model['id']);
+    try {
+      final user =
+          await pb.collection('users').getOne(pb.authStore.model['id']);
+      final friendIds = user.data['friends'] as List<dynamic>;
+      return fetchFriendNames(friendIds.cast<String>());
+    } catch (e) {
+      print('Error fetching friends: $e');
+      return [];
+    }
   }
 
   Future<List<String>> fetchFriendNames(List<String> friendIds) async {
     List<String> friendNames = [];
     for (String id in friendIds) {
-      final friend = await client.collection('users').getOne(id);
-      friendNames.add(friend.data['username']);
+      try {
+        final friend = await pb.collection('users').getOne(id);
+        friendNames.add(friend.data['username']);
+      } catch (e) {
+        print('Error fetching friend with ID $id: $e');
+      }
     }
     return friendNames;
   }

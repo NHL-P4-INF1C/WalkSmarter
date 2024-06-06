@@ -26,13 +26,13 @@ class _LoginDemoState extends State<LoginDemo> {
     try {
       if (username != null && password != null) {
         await pb.collection('users').authWithPassword(username!, password!);
-        
 
-      if(!mounted) return;
+        if (!mounted) return;
 
         Navigator.pushNamed(
           context,
           '/homepage',
+          arguments: username,
         );
         print("Ingelogd!!");
       }
