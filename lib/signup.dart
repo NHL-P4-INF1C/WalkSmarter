@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+final pb = PocketBase('https://inf1c-p4-pocketbase-backup.bramsuurd.nl');
 
 class SignUp extends StatefulWidget {
   const SignUp();
@@ -42,7 +42,7 @@ class _SignUpDemo extends State<SignUp> {
 
           Navigator.pushNamed(
             context,
-            '/mappage',
+            '/homepage',
           );
           print("New user created");
         }
