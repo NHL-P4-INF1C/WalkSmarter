@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'pocketbase.dart';
 
 var pb = PocketBaseSingleton().instance;
@@ -23,6 +24,13 @@ class LoginDemo extends StatefulWidget {
 class _LoginDemoState extends State<LoginDemo> {
   String? username, password;
   Future<void> signIn() async {
+    if(dotenv.env["DEV_ENV"] != null)
+    {
+      Navigator.pushNamed(
+        context,
+        '/homepage',
+      );
+    }
     try {
       if (username != null && password != null) {
         await pb.collection('users').authWithPassword(username!, password!);

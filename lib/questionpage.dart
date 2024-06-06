@@ -250,10 +250,17 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           _question = "Getting question...";
                           final _payload = await _requestManager.makeApiCall();
                           print(_payload);
-                          _question = _payload['response']['question'];
-                          answers[0] = _payload['response']['correct_answer'];
-                          answers[1] = _payload['response']['wrong_answer'][0];
-                          answers[2] = _payload['response']['wrong_answer'][1];
+                          if(_payload['statusCode'] == 200)
+                          {
+                            _question = _payload['response']['question'];
+                            answers[0] = _payload['response']['correct_answer'];
+                            answers[1] = _payload['response']['wrong_answer'][0];
+                            answers[2] = _payload['response']['wrong_answer'][1];
+                          }
+                          else
+                          {
+                            _question = "${_payload['response']}. Status code: ${_payload['statusCode']}";
+                          }
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),

@@ -2,15 +2,15 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
-import 'package:pocketbase/pocketbase.dart';
+import 'pocketbase.dart';
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+var pb = PocketBaseSingleton().instance;
 
-Future<String> getHashToken() async
+Future<String?> getHashToken() async
 {
   try 
   {
-    final authData = await pb.admins.authWithPassword(dotenv.env["ADMIN_EMAIL"]!, dotenv.env["ADMIN_PASSWORD"]!);
+    await pb.admins.authWithPassword(dotenv.env["ADMIN_EMAIL"]!, dotenv.env["ADMIN_PASSWORD"]!);
     final result =  await pb.collection('api').getList(
       page: 1,
       perPage: 1,
@@ -18,11 +18,19 @@ Future<String> getHashToken() async
     );
     pb.authStore.clear();
 
-    return result.items.first.data['hash'] as String;
+    if(result.items.isNotEmpty)
+    {
+      final hash = result.items.first.data['hash'];
+      if(hash is String) 
+      {
+        return hash;
+      }
+    }
+    return null;
   } 
   catch (e) 
   {
-    return 'NULL';
+    return null;
   }
 }
 
@@ -31,19 +39,31 @@ Future <http.Response> sendRequest(
   String url,
 ) async
 {
-  await dotenv.load(fileName: '.env');
   String apiUrl = '${dotenv.env["API_URL"]!}/api/$url';
 
   try 
   {
-    String token = await getHashToken();
+    String? token;
+    if(dotenv.env["DEV_ENV"] == null)
+    {
+      String? token = await getHashToken() ?? '';
+      if(token.isEmpty)
+      {
+        // Returning a fake status code to trick the rest of the manager into outputting this response. It's ugly, but it works
+        return http.Response('{"response": "Failed to connect to PocketBase: Failed to get API token"}', 600);
+      }
+    }
+    else
+    {
+      token = dotenv.env["DEV_ENV"]!;
+    }
 
     return await http.post(
       Uri.parse(apiUrl),
       headers: <String, String>
       {
         'Content-Type': 'application/json',
-        'jwt': token,
+        'jwt': token!,
       },
       body: jsonEncode(<String, dynamic>
       {
@@ -61,10 +81,7 @@ class RequestManager
 {
   String url;
   late Map<String, dynamic> payload;
-  late Map<String, dynamic> output =
-  {
-    'response': 0
-  };
+  late Map<String, dynamic> output = {};
 
   RequestManager(
     Map<String, dynamic> payloadData, 
@@ -104,10 +121,17 @@ class RequestManager
       {
         output['response'] = "Failed to decode package: ${e.toString()}";
       }
-    } 
+      output['statusCode'] = response.statusCode;
+    }
+    else if(response.statusCode == 600)
+    {
+      output = jsonDecode(jsonString);
+      output['statusCode'] = 404;
+    }
     else 
     {
-      output['response'] = "Failed to connect to API. status code: ${response.statusCode}, response: $jsonString";
+      output['response'] = "Failed to connect to API, response: $jsonString";
+      output['statusCode'] = response.statusCode;
     }
   }
 }
