@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'pocketbase.dart';
+
+var pb = PocketBaseSingleton().instance;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -9,15 +11,34 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
+    Future<String> fetchPoints() async {
+    try{
+    final response = await pb.collection('users').getOne(pb.authStore.model['id']);
+    return response.data['points'].toString();
+    }
+    catch(error)
+    {
+    print('Error: $error');
+    }
+    
+      return 'Err';
+    }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    handleSwitchCase(context, index);
+  }
+
   void handleSwitchCase(BuildContext context, int index) {
     switch (index) {
       case 0:
-        break;
+        Navigator.pushNamed(context, '/homepage');
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
       case 2:
         Navigator.pushNamed(context, '/friendspage');
-        print('we gaan naar de FRIENDSPAGE');
       default:
         break;
     }
@@ -47,9 +68,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
-                  child: Text(
-                    '1000 Points',
-                    style: TextStyle(fontSize: 14),
+                  child: FutureBuilder<String>(
+                    future: fetchPoints(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'Error',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else if (snapshot.hasData) {
+                        return Text(
+                          '${snapshot.data} Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else {
+                        return Text(
+                          '0 Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),
@@ -65,64 +105,77 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
         ],
-      ),
-      body: Center(
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.81,
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Colors.black,
-                width: 1,
-              ),
-              bottom: BorderSide(
-                color: Colors.black,
-                width: 1,
-              ),
-            ),
-          ),
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/informationpage');
-                    },
-                    child: Text('Question'),
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
-            ),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
+      body: Stack(
+        children: [
+          Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.81,
+              decoration: BoxDecoration(),
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/informationpage');
+                        },
+                        child: Text('Question'),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(
+                  color: Color(0xFF096A2E),
+                  width: 2.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0),
+                child: BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.map),
+                      label: 'Map',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.leaderboard),
+                      label: 'Leaderboard',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label: 'Friends',
+                    ),
+                  ],
+                  selectedItemColor: Color(0xFF096A2E),
+                  currentIndex: _selectedIndex,
+                  onTap: _onItemTapped,
+                ),
+              ),
+            ),
           ),
         ],
-        selectedItemColor: Color(0xFF096A2E),
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-            handleSwitchCase(context, index);
-          });
-        },
       ),
     );
   }
