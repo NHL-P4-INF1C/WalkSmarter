@@ -6,7 +6,7 @@
         
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBAbxdZEauVJEWpccni3WcuLMcOSS7_kXU"/>
+            android:value="api key"/>
             <!-- <users-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
             <users-permission android:name="android.permission.ACCESS_FINE_LOCATION"/> -->
         
