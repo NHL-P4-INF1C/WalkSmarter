@@ -1,183 +1,86 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'package:flutter/services.dart';
+import 'pocketbase.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
+
+var pb = PocketBaseSingleton().instance;
+final places = GoogleMapsPlaces(apiKey: 'AIzaSyBAbxdZEauVJEWpccni3WcuLMcOSS7_kXU');
 
 class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class UserDialog extends StatelessWidget {
-  final PocketBase client = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Friends'),
-      content: FutureBuilder<List<RecordModel>>(
-        future: fetchAllUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Text('No users found');
-          } else {
-            final data = snapshot.data!
-                .where((user) => user.data['friends'] != null && user.data['friends'].isNotEmpty)
-                .toList();
-
-            if (data.isEmpty) {
-              return Text('No friends found');
-            }
-
-            return Container(
-              width: double.maxFinite,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  final user = data[index];
-                  final friends = user.data['friends'];
-
-                  if (friends is List) {
-                    return FutureBuilder<List<String>>(
-                      future: fetchFriendNames(friends.cast<String>()),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return ListTile(
-                            title: Text('Loading friends...'),
-                          );
-                        } else if (snapshot.hasError) {
-                          return ListTile(
-                            title: Text('Error loading friends'),
-                          );
-                        } else {
-                          final friendNames = snapshot.data!;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 5),
-                              ...friendNames.asMap().entries.map((entry) {
-                                final rank = entry.key + 1;
-                                final friendName = entry.value;
-                                return ListTile(
-                                  title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(Icons.person, size: 24, color: Colors.amber),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '$friendName',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          IconButton(
-                                            icon: Icon(Icons.chat, size: 24, color: Colors.blue),
-                                            onPressed: () {
-                                              // Add your chat function here
-                                              print('Chat with $friendName');
-                                            },
-                                          ),
-                                          SizedBox(width: 10),
-                                          IconButton(
-                                            icon: Icon(Icons.delete, size: 24, color: Colors.red),
-                                            onPressed: () async {
-                                              // Add your delete function here
-                                              //await deleteUser(user.id);
-                                              print('Deleted $friendName');
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                              SizedBox(height: 10),
-                            ],
-                          );
-                        }
-                      },
-                    );
-                  } else {
-                    return ListTile(
-                      title: Text('Invalid friends data'),
-                    );
-                  }
-                },
-              ),
-            );
-          }
-        },
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('Close'),
-        ),
-      ],
-    );
-  }
-
-  Future<List<RecordModel>> fetchAllUsers() async {
-    final record = await client.collection('users').getFullList();
-    return record;
-  }
-
-  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
-    List<String> friendNames = [];
-    for (String id in friendIds) {
-      final friend = await client.collection('users').getOne(id);
-      friendNames.add(friend.data['username']);
-    }
-    return friendNames;
-  }
-
-  // Future<void> deleteUser(String recordId) async {
-  //   try {
-  //     await client.collection('users').delete(recordId);
-  //     print('User with ID $recordId deleted successfully.');
-  //   } catch (e) {
-  //     print('Error deleting user: $e');
-  //   }
-  // }
-}
-
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  late GoogleMapController mapController;
+
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+
+  String mapStyle = '';
+
+  @override
+  void initState() {
+    super.initState();
+    rootBundle.loadString('assets/map_style.json').then((string) {
+      mapStyle = string;
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    if (mapStyle.isNotEmpty) {
+      mapController.setMapStyle(mapStyle);
+    }
+  }
+
+  Future<String> fetchPoints() async {
+    try {
+      final response =
+          await pb.collection('users').getOne(pb.authStore.model['id']);
+      return response.data['points'].toString();
+    } catch (error) {
+      print('Error: $error');
+    }
+
+    return 'Err';
+  }
+
+  Future<List<PlacesSearchResult>> searchPlaces(String query, LatLng location) async {
+    final result = await places.searchNearbyWithRadius(
+      Location(lat: location.latitude, lng: location.longitude),
+      500,
+      keyword: query,
+    );
+    if (result.status == "OK") {
+      return result.results;
+    } else {
+      throw Exception(result.errorMessage);
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    handleSwitchCase(context, index);
+  }
 
   void handleSwitchCase(BuildContext context, int index) {
     switch (index) {
       case 0:
+        Navigator.pushNamed(context, '/homepage');
         break;
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
         break;
       case 2:
-        showDialogFriendList(context);
+        Navigator.pushNamed(context, '/friendspage');
         break;
       default:
         break;
     }
-  }
-
-  void showDialogFriendList(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => UserDialog(),
-    );
   }
 
   @override
@@ -204,9 +107,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
-                  child: Text(
-                    '1000 Points',
-                    style: TextStyle(fontSize: 14),
+                  child: FutureBuilder<String>(
+                    future: fetchPoints(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'Error',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else if (snapshot.hasData) {
+                        return Text(
+                          '${snapshot.data} Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else {
+                        return Text(
+                          '0 Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),
@@ -222,67 +144,69 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
         ],
-      ),
-      body: Center(
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.81,
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Colors.black,
-                  width: 1,
-                ),
-                bottom: BorderSide(
-                  color: Colors.black,
-                  width: 1,
-                ),
-              ),
-            ),
-            child: Center(
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/informationpage');
-                      },
-                      child: Text('Question'),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Text("Google Maps widget here"),
-                ],
-              ),
-            ),
+        backgroundColor: Colors.white,
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
           ),
         ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
+      ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: GoogleMap(
+              zoomControlsEnabled: false,
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: _center,
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(
+                  color: Color(0xFF096A2E),
+                  width: 2.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0),
+                child: BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.map),
+                      label: 'Map',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.leaderboard),
+                      label: 'Leaderboard',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label: 'Friends',
+                    ),
+                  ],
+                  selectedItemColor: Color(0xFF096A2E),
+                  currentIndex: _selectedIndex,
+                  onTap: _onItemTapped,
+                ),
+              ),
+            ),
           ),
         ],
-        selectedItemColor: Color(0xFF096A2E),
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          handleSwitchCase(context, index);
-          handleSwitchCase(context, index);
-        },
       ),
     );
   }
 }
+
