@@ -23,6 +23,7 @@ class LoginDemo extends StatefulWidget {
 
 class _LoginDemoState extends State<LoginDemo> {
   String? username, password;
+
   Future<void> signIn() async {
     if(dotenv.env["DEV_ENV"] != null)
     {
@@ -34,9 +35,8 @@ class _LoginDemoState extends State<LoginDemo> {
     try {
       if (username != null && password != null) {
         await pb.collection('users').authWithPassword(username!, password!);
-        
 
-      if(!mounted) return;
+        if (!mounted) return;
 
         Navigator.pushNamed(
           context,
@@ -45,8 +45,29 @@ class _LoginDemoState extends State<LoginDemo> {
         print("Ingelogd!!");
       }
     } catch (e) {
+      _showErrorDialog(context, 'Invalid username or password. Try again.');
       print('Error occurred during authentication: $e');
     }
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login Failed'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -62,7 +83,7 @@ class _LoginDemoState extends State<LoginDemo> {
                 child: SizedBox(
                   width: 200,
                   height: 150,
-                  //Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
+                  // Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
                   child: Image(image: AssetImage('assets/walksmarterlogo.png')),
                 ),
               ),
