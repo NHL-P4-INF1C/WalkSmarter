@@ -11,18 +11,20 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-    Future<String> fetchPoints() async {
-    try{
-    final response = await pb.collection('users').getOne(pb.authStore.model['id']);
-    return response.data['points'].toString();
+  Future<String> fetchPoints() async {
+    try {
+      print(pb.authStore.model['id']);
+
+      final response = await pb
+          .collection('users')
+          .getOne(pb.authStore.model['id'].toString());
+      return response.data['points'].toString();
+    } catch (error) {
+      print('Error: $error');
     }
-    catch(error)
-    {
-    print('Error: $error');
-    }
-    
-      return 'Err';
-    }
+
+    return 'Err';
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -38,7 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
       case 2:
-        Navigator.pushNamed(context, '/friendspage');
+        Navigator.pushNamed(context, '/friendspage',
+            arguments: pb.authStore.model['id']);
+
       default:
         break;
     }

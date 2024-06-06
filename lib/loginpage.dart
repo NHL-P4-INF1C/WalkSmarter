@@ -41,6 +41,7 @@ class _LoginDemoState extends State<LoginDemo> {
         Navigator.pushNamed(
           context,
           '/homepage',
+          arguments: username,
         );
         print("Ingelogd!!");
       }

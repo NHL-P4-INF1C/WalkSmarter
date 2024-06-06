@@ -35,6 +35,7 @@ void main() async {
   [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await dotenv.load(fileName: '.env');
 
+
   runApp(MyApp());
 }
 
@@ -71,9 +72,9 @@ class MyApp extends StatelessWidget {
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/profileappsettings': (context) => ProfileAppSettings(),
         '/changeusername': (context) => ChangeUsernamePage(
-          userId: '5iwzvti4kqaf2zb', 
-          currentUsername: 'lars',
-        ),
+              userId: '5iwzvti4kqaf2zb',
+              currentUsername: 'lars',
+            ),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),
