@@ -1,21 +1,18 @@
-import "package:flutter/material.dart";
-import "package:walk_smarter/friendspage.dart";
-import "package:walk_smarter/leaderboard.dart";
-import "dart:convert";
-import "pocketbase.dart";
-
-import "package:walk_smarter/profilesettings.dart";
+import 'package:flutter/material.dart';
+import 'package:walk_smarter/friendspage.dart';
+import 'package:walk_smarter/leaderboard.dart';
+import 'dart:convert';
+import 'pocketbase.dart';
+import 'package:walk_smarter/profilesettings.dart';
 
 var pb = PocketBaseSingleton().instance;
 
-class ProfilePage extends StatefulWidget 
-{
+class ProfilePage extends StatefulWidget {
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> 
-{
+class _ProfilePageState extends State<ProfilePage> {
   String _username = "Loading...";
   String _profilePicture = "";
   String _userID = pb.authStore.model['id'];
@@ -27,30 +24,23 @@ class _ProfilePageState extends State<ProfilePage>
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async 
-  {
+  Future<void> _fetchUserData() async {
     try {
       final jsonString = await pb.collection("users").getFirstListItem(
-        "id=\"$_userID\"" 
+        "id=\"$_userID\""
       );
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _username = record["username"];
-        if(record["avatar"] != null)
-        {
-          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();          
-        }
-        else 
-        {
+        if (record["avatar"] != null) {
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
+        } else {
           _profilePicture = "";
         }
       });
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       print("Error fetching user data: $e");
-      setState(() 
-      {
+      setState(() {
         _username = "Error loading username";
         _profilePicture = "";
       });
@@ -58,15 +48,49 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   @override
-  void didChangeDependencies() 
-  {
+  void didChangeDependencies() {
     super.didChangeDependencies();
     _fetchUserData();
   }
- 
+
+  Future<void> deleteUser(String recordId) async {
+    try {
+      await pb.collection('users').delete(recordId);
+      print('User with ID $recordId deleted successfully.');
+    } catch (e) {
+      print('Error deleting user: $e');
+    }
+  }
+
+  Future<List<String>> fetchFriendNamesForUser() async {
+    print(pb.authStore.model['id']);
+    try {
+      final user = await pb.collection('users').getOne(pb.authStore.model['id']);
+      final friendIds = user.data['friends'] as List<dynamic>;
+      return fetchFriendNames(friendIds.cast<String>());
+    } catch (e) {
+      print('Error fetching friends: $e');
+      return [];
+    }
+  }
+
+  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
+    List<String> friendNames = [];
+    for (String id in friendIds) {
+      try {
+        final friend = await pb.collection('users').getOne(id);
+        friendNames.add(friend.data['username']);
+      } catch (e) {
+        print('Error fetching friend with ID $id: $e');
+      }
+    }
+    return friendNames;
+  }
+
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -107,8 +131,8 @@ class _ProfilePageState extends State<ProfilePage>
               child: CircleAvatar(
                 radius: 23,
                 backgroundImage: _profilePicture.startsWith("http")
-                  ? NetworkImage(_profilePicture) 
-                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider
+                  ? NetworkImage(_profilePicture)
+                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
               ),
             ),
           ],
@@ -140,9 +164,9 @@ class _ProfilePageState extends State<ProfilePage>
                     child: CircleAvatar(
                       radius: 0,
                       backgroundImage: _profilePicture.startsWith("http")
-                        ? NetworkImage(_profilePicture) 
-                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider
-                    ) 
+                        ? NetworkImage(_profilePicture)
+                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+                    )
                   ),
                 ),
                 Positioned(
@@ -162,44 +186,46 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                 ),
                 Positioned(
-                    left: 150,
-                    top: 80,
-                    child: SizedBox(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/award.png',
-                              width: 40,
-                              height: 40,
-                            ),
-                            Text(
-                              'April 2024',
-                              style: TextStyle(
-                                  fontSize: 9, fontWeight: FontWeight.bold),
-                            )
-                          ]),
-                    )),
+                  left: 150,
+                  top: 80,
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/award.png',
+                          width: 40,
+                          height: 40,
+                        ),
+                        Text(
+                          'April 2024',
+                          style: TextStyle(
+                            fontSize: 9, fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
                 Positioned(
                   left: 150,
                   top: 145,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: () 
-                      {
+                      onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ProfilePageSettings(),
                         ));
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 216, 219, 216), 
-                          borderRadius: BorderRadius.circular(8), 
+                          color: Color.fromARGB(255, 216, 219, 216),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14), 
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14),
                         child: Text(
                           "Edit profile",
-                          style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)), 
+                          style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ),
                     ),
@@ -216,7 +242,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 Positioned(
                   left: 30,
-                  top: 220, 
+                  top: 220,
                   child: Text(
                     "Trophies",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -227,8 +253,7 @@ class _ProfilePageState extends State<ProfilePage>
                   top: 220,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: ()
-                       {
+                      onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => LeaderboardPage(),
                         ));
@@ -238,11 +263,10 @@ class _ProfilePageState extends State<ProfilePage>
                           color: Color.fromARGB(255, 9, 106, 46),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
+                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                       ),
                     ),
@@ -440,7 +464,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: 600,
+                  top: 600, // Adjusted top position to add space
                   child: Container(
                     height: 1,
                     color: Colors.black,
@@ -448,7 +472,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 Positioned(
                   left: 30,
-                  top: 620, 
+                  top: 620,
                   child: Text(
                     "Friends",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -459,136 +483,62 @@ class _ProfilePageState extends State<ProfilePage>
                   top: 620,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: () 
-                      {
+                      onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => MyFriendsPage(),
                         ));
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 9, 106, 46), 
-                          borderRadius: BorderRadius.circular(8), 
+                          color: Color.fromARGB(255, 9, 106, 46),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30), 
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
+                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                       ),
                     ),
                   ),
                 ),
                 Positioned(
-                  left: 20,
-                  top: 680,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "1",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.account_circle,
-                          size: 40
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "{username}",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(width: 100),
-                        Icon(
-                          Icons.more_horiz,
-                          size: 40,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 780,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text
-                        (
-                          "2",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.account_circle,
-                          size: 40
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "{username}",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(width: 100),
-                        Icon(
-                          Icons.more_horiz,
-                          size: 40,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 880,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "3",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.account_circle,
-                          size: 40
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "{username}",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(width: 100),
-                        Icon(
-                          Icons.more_horiz,
-                          size: 40,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                        ),
-                      ],
-                    ),
+                  left: 10,
+                  right: 10,
+                  top: 680, // Adjusted top position to add space
+                  child: FutureBuilder<List<String>>(
+                    future: fetchFriendNamesForUser(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Error fetching friends"));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text("No friends found"));
+                      } else {
+                        final friends = snapshot.data!;
+                        return Column(
+                          children: friends.map((friendName) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0), // Adjust this value for more or less space
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 255, 255, 255), // Adjust the color as needed
+                                  borderRadius: BorderRadius.circular(30.0), // Adjust the radius as needed
+                                ),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    radius: 25,
+                                    backgroundImage: AssetImage("assets/standardProfilePicture.png"),
+                                  ),
+                                  title: Text(friendName),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }
+                    },
                   ),
                 ),
               ],
