@@ -98,7 +98,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: AppBar(
@@ -124,20 +125,25 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.only(right: 15),
                   child: FutureBuilder<String>(
                     future: fetchPoints(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                    builder: (context, snapshot) 
+                    {
+                      if (snapshot.connectionState == ConnectionState.waiting) 
+                      {
                         return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
+                      } else if (snapshot.hasError) 
+                      {
                         return Text(
                           'Error',
                           style: TextStyle(fontSize: 14),
                         );
-                      } else if (snapshot.hasData) {
+                      } else if (snapshot.hasData) 
+                      {
                         return Text(
                           '${snapshot.data} Points',
                           style: TextStyle(fontSize: 14),
                         );
-                      } else {
+                      } else 
+                      {
                         return Text(
                           '0 Points',
                           style: TextStyle(fontSize: 14),
@@ -534,7 +540,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Positioned(
                   left: 10,
                   right: 10,
-                  top: 680, // Adjusted top position to add space
+                  top: 680,
                   child: FutureBuilder<List<String>>(
                     future: fetchFriendNamesForUser(),
                     builder: (context, snapshot) {
@@ -546,21 +552,28 @@ class _ProfilePageState extends State<ProfilePage> {
                         return Center(child: Text("No friends found"));
                       } else {
                         final friends = snapshot.data!;
+                        List<String> limitedFriends = friends.take(3).toList();
                         return Column(
-                          children: friends.map((friendName) {
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: limitedFriends.map((friendName) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0), // Adjust this value for more or less space
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 255, 255, 255), // Adjust the color as needed
-                                  borderRadius: BorderRadius.circular(30.0), // Adjust the radius as needed
-                                ),
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: AssetImage("assets/standardProfilePicture.png"),
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/friendprofilepage', arguments: friendName);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    borderRadius: BorderRadius.circular(30.0),
                                   ),
-                                  title: Text(friendName),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage: AssetImage("assets/standardProfilePicture.png"),
+                                    ),
+                                    title: Text(friendName),
+                                  ),
                                 ),
                               ),
                             );
