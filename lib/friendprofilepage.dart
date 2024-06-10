@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:walk_smarter/friendspage.dart";
 import "package:walk_smarter/leaderboard.dart";
 import "dart:convert";
 import "pocketbase.dart";

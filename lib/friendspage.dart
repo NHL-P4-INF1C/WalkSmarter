@@ -26,10 +26,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, '/homepage');
-          break;
         case 1:
           Navigator.pushNamed(context, '/leaderboard');
-          break;
         case 2:
           break;
         default:
