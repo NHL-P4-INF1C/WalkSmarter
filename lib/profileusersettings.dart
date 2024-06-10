@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:image_picker/image_picker.dart";
 import "pocketbase.dart";
 import "dart:convert";
@@ -59,7 +60,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         var request = http.MultipartRequest(
           "PATCH",
           Uri.parse(
-              "https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/records/$_userID"),
+              "${dotenv.env['POCKETBASE_URL']}api/collections/users/records/$_userID"),
+
         );
 
         request.files.add(
@@ -128,12 +130,21 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     }
   }
 
-  Future<bool> _verifyPassword(String password) async {
-  try {
-    await pb.collection('users').authWithPassword(
-      _username,
-      password,
-    );
+  Future<bool> _verifyPassword(String password) async 
+  {
+    try 
+    {
+      final response = await http.post(
+        Uri.parse(
+            '${dotenv.env['POCKETBASE_URL']}api/collections/users/auth-with-password'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'identity': _username,
+          'password': password,
+        }),
+      );
 
     return pb.authStore.isValid;
   } catch (e) {
