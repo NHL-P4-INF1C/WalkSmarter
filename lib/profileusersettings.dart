@@ -58,8 +58,9 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       try {
         var request = http.MultipartRequest(
           "PATCH",
-          Uri.parse("https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/records/$_userID"),
+          Uri.parse("${pb.baseUrl}/api/collections/users/records/$_userID"),
         );
+
         request.files.add(
           await http.MultipartFile.fromPath(
             "avatar",
