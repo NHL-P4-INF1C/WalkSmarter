@@ -4,7 +4,8 @@ import "dart:math" as math;
 
 import "apimanager.dart";
 
-class TimerPainter extends CustomPainter {
+class TimerPainter extends CustomPainter 
+{
   final Animation<double> animation;
   final Color backgroundColor;
   final Color color;
@@ -67,7 +68,8 @@ class QuestionPage extends StatefulWidget
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin {
+class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin
+{
   late AnimationController _controller;
   int duration = 60;
   int? selectedOption;
@@ -77,12 +79,14 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
   int currentIndex = 0;
 
 @override
-void initState() {
+void initState() 
+{
   super.initState();
   _controller = AnimationController(
     vsync: this,
     duration: Duration(seconds: duration),
-  )..addListener(() {
+  )..addListener(() 
+  {
     setState(() {});
   });
 
@@ -94,30 +98,36 @@ void initState() {
   }
   });
 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
+  WidgetsBinding.instance.addPostFrameCallback((_) 
+  {
     _startTimer();
   });
 }
 
-void _startTimer() {
+void _startTimer() 
+{
   if (mounted) {
     _controller.reverse(from: 1.0);
   }
 }
 
-void _showDialog() {
-  if (mounted) {
+void _showDialog() 
+{
+  if (mounted) 
+  {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext context) 
+      {
         return AlertDialog(
           title: Text("Time's up!"),
           content: Text("You ran out of time."),
           actions: <Widget>[
             TextButton(
               child: Text("Go back"),
-              onPressed: () {
+              onPressed: () 
+              {
                 Navigator.pushNamed(context, "/homepage");
               },
             ),
@@ -129,13 +139,15 @@ void _showDialog() {
 }
 
   @override
-  void dispose() {
+  void dispose() 
+  {
     _controller.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -149,7 +161,8 @@ void _showDialog() {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: TextButton(
-                    onPressed: () {
+                    onPressed: () 
+                    {
                       Navigator.pushNamed(context, "/homepage");
                     },
                     child: Text(
@@ -224,7 +237,8 @@ void _showDialog() {
                     ),
                     SizedBox(height: 30),
                     Column(
-                      children: List.generate(answers.length, (index) {
+                      children: List.generate(answers.length, (index) 
+                      {
                         return Container(
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
@@ -253,8 +267,10 @@ void _showDialog() {
                                             Radio<int>(
                                               value: index,
                                               groupValue: selectedOption,
-                                              onChanged: (int? value) {
-                                                setState(() {
+                                              onChanged: (int? value) 
+                                              {
+                                                setState(() 
+                                                {
                                                   selectedOption = value;
                                                 });
                                               },
@@ -286,16 +302,20 @@ void _showDialog() {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () async 
+                        {
                           question = "Getting question...";
                           Map<String, dynamic> payload = await requestManager.makeApiCall();
                           print(payload);
-                          if (payload['statusCode'] == 200) {
+                          if (payload['statusCode'] == 200) 
+                          {
                             question = payload['response']['question'];
                             answers[0] = payload['response']['correct_answer'];
                             answers[1] = payload['response']['wrong_answer'][0];
                             answers[2] = payload['response']['wrong_answer'][1];
-                          } else {
+                          } 
+                          else 
+                          {
                             question = "${payload['response']}. Status code: ${payload['statusCode']}";
                           }
                         },
