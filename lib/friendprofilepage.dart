@@ -6,17 +6,15 @@ import "pocketbase.dart";
 
 var pb = PocketBaseSingleton().instance;
 
-class ProfilePage extends StatefulWidget 
-{
+class FriendsProfilePage extends StatefulWidget {
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<FriendsProfilePage> createState() => _FriendsProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> 
-{
+class _FriendsProfilePageState extends State<FriendsProfilePage> {
   String _username = "Loading...";
   String _profilePicture = "";
-  String _userID = pb.authStore.model['id'];
+  String _userID = 'kyw332amt7ct21r';
   int currentIndex = 0;
 
   @override
@@ -25,30 +23,23 @@ class _ProfilePageState extends State<ProfilePage>
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async 
-  {
+  Future<void> _fetchUserData() async {
     try {
-      final jsonString = await pb.collection("users").getFirstListItem(
-        "id=\"$_userID\"" 
-      );
+      final jsonString =
+          await pb.collection("users").getFirstListItem("id=\"$_userID\"");
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _username = record["username"];
-        if(record["avatar"] != null)
-        {
-          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();          
-        }
-        else 
-        {
+        if (record["avatar"] != null) {
+          _profilePicture =
+              pb.files.getUrl(jsonString, record["avatar"]).toString();
+        } else {
           _profilePicture = "";
         }
       });
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       print("Error fetching user data: $e");
-      setState(() 
-      {
+      setState(() {
         _username = "Error loading username";
         _profilePicture = "";
       });
@@ -56,15 +47,13 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   @override
-  void didChangeDependencies() 
-  {
+  void didChangeDependencies() {
     super.didChangeDependencies();
     _fetchUserData();
   }
- 
+
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -103,11 +92,11 @@ class _ProfilePageState extends State<ProfilePage>
             Padding(
               padding: EdgeInsets.only(right: 10.0),
               child: CircleAvatar(
-                radius: 23,
-                backgroundImage: _profilePicture.startsWith("http")
-                  ? NetworkImage(_profilePicture) 
-                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider
-              ),
+                  radius: 23,
+                  backgroundImage: _profilePicture.startsWith("http")
+                      ? NetworkImage(_profilePicture)
+                      : AssetImage("assets/standardProfilePicture.png")
+                          as ImageProvider),
             ),
           ],
           backgroundColor: Colors.white,
@@ -133,15 +122,14 @@ class _ProfilePageState extends State<ProfilePage>
                   left: 10,
                   top: 50,
                   child: SizedBox(
-                    width: 130,
-                    height: 130,
-                    child: CircleAvatar(
-                      radius: 0,
-                      backgroundImage: _profilePicture.startsWith("http")
-                        ? NetworkImage(_profilePicture) 
-                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider
-                    ) 
-                  ),
+                      width: 130,
+                      height: 130,
+                      child: CircleAvatar(
+                          radius: 0,
+                          backgroundImage: _profilePicture.startsWith("http")
+                              ? NetworkImage(_profilePicture)
+                              : AssetImage("assets/standardProfilePicture.png")
+                                  as ImageProvider)),
                 ),
                 Positioned(
                   left: 10,
@@ -189,7 +177,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 Positioned(
                   left: 30,
-                  top: 220, 
+                  top: 220,
                   child: Text(
                     "Trophies",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -200,8 +188,7 @@ class _ProfilePageState extends State<ProfilePage>
                   top: 220,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: ()
-                       {
+                      onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => LeaderboardPage(),
                         ));
@@ -215,7 +202,9 @@ class _ProfilePageState extends State<ProfilePage>
                             EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                       ),
                     ),
@@ -252,7 +241,8 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -315,7 +305,8 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -378,7 +369,8 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -445,13 +437,10 @@ class _ProfilePageState extends State<ProfilePage>
               ],
               selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
-              onTap: (index)
-               {
-                setState(() 
-                {
+              onTap: (index) {
+                setState(() {
                   currentIndex = index;
-                  switch (index) 
-                  {
+                  switch (index) {
                     case 0:
                       Navigator.pushNamed(context, '/homepage');
                     case 1:

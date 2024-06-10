@@ -11,7 +11,7 @@ class PocketBaseSingleton {
 
   PocketBaseSingleton._internal() {
     _pocketBase = PocketBase(
-      'https://inf1c-p4-pocketbase-backup.bramsuurd.nl',  // Replace with your PocketBase URL
+      'https://inf1c-p4-pocketbase.bramsuurd.nl', // Replace with your PocketBase URL
       authStore: storagemanager(),
     );
   }
