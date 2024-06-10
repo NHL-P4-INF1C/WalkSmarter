@@ -243,8 +243,7 @@ void _showDialog()
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
                             children: [
-                              Container(
-                                child: Row(
+                                Row(
                                   children: [
                                     Expanded(
                                       child: Container(
@@ -281,7 +280,6 @@ void _showDialog()
                                     ),
                                   ],
                                 ),
-                              ),
                               if (selectedOption == index)
                                 Positioned.fill(
                                   child: Container(
@@ -378,13 +376,10 @@ void _showDialog()
                 {
                   case 0:
                     Navigator.pushNamed(context, "/homepage");
-                    break;
                   case 1:
                     Navigator.pushNamed(context, "/leaderboard");
-                    break;
                   case 2:
                     Navigator.pushNamed(context, "/friendspage");
-                    break;
                   default:
                     break;
                 }
