@@ -14,6 +14,7 @@ import 'profilepage.dart';
 import 'questionpage.dart';
 import 'friendspage.dart';
 import 'informationpage.dart';
+import 'friendprofilepage.dart';
 import 'pocketbase.dart';
 import 'package:flutter/services.dart';
 
@@ -35,6 +36,7 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await dotenv.load(fileName: '.env');
+
   runApp(MyApp());
 }
 
@@ -70,10 +72,7 @@ class MyApp extends StatelessWidget {
         '/profilepagesettings': (context) => ProfilePageSettings(),
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/profileappsettings': (context) => ProfileAppSettings(),
-        '/changeusername': (context) => ChangeUsernamePage(
-              userId: '5iwzvti4kqaf2zb',
-              currentUsername: 'lars',
-            ),
+        '/changeusername': (context) => ChangeUsernamePage(),
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),

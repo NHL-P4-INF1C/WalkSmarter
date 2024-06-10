@@ -45,7 +45,10 @@ class TimerPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height / 2 - textPainter.height / 2));
+    textPainter.paint(
+        canvas,
+        Offset(size.width / 2 - textPainter.width / 2,
+            size.height / 2 - textPainter.height / 2));
   }
 
   @override
@@ -61,11 +64,15 @@ class QuestionPage extends StatefulWidget {
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin {
+class _QuestionPageState extends State<QuestionPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int duration = 60;
   int? _selectedOption;
-  final _requestManager = RequestManager({"pointOfInterest":"NHL Stenden Emmen","locationOfOrigin":"The Netherlands"}, "openai");
+  final _requestManager = RequestManager({
+    "pointOfInterest": "NHL Stenden Emmen",
+    "locationOfOrigin": "The Netherlands"
+  }, "openai");
   String _question = "loading...";
   List<String> answers = ["answer1", "answer2", "answer3"];
   int currentIndex = 0;
@@ -77,8 +84,8 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
       vsync: this,
       duration: Duration(seconds: duration),
     )..addListener(() {
-      setState(() {});
-    });
+        setState(() {});
+      });
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -201,7 +208,8 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                           color: _selectedOption == index
                                               ? Color.fromARGB(155, 9, 106, 46)
                                               : Colors.white,
-                                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
                                         ),
                                         child: Row(
                                           children: [
@@ -232,7 +240,8 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                   child: Container(
                                     margin: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(20)),
                                       color: Color.fromARGB(0, 171, 209, 198),
                                     ),
                                   ),
@@ -251,21 +260,23 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           _question = "Getting question...";
                           final _payload = await _requestManager.makeApiCall();
                           print(_payload);
-                          if(_payload['statusCode'] == 200)
-                          {
+                          if (_payload['statusCode'] == 200) {
                             _question = _payload['response']['question'];
                             answers[0] = _payload['response']['correct_answer'];
-                            answers[1] = _payload['response']['wrong_answer'][0];
-                            answers[2] = _payload['response']['wrong_answer'][1];
-                          }
-                          else
-                          {
-                            _question = "${_payload['response']}. Status code: ${_payload['statusCode']}";
+                            answers[1] =
+                                _payload['response']['wrong_answer'][0];
+                            answers[2] =
+                                _payload['response']['wrong_answer'][1];
+                          } else {
+                            _question =
+                                "${_payload['response']}. Status code: ${_payload['statusCode']}";
                           }
                         },
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),
-                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           'Submit answer',
