@@ -252,7 +252,7 @@ void _showDialog()
                                         decoration: BoxDecoration(
                                           color: selectedOption == index
                                               ? Color.fromARGB(155, 9, 106, 46)
-                                              : Colors.white,
+                                              : Color.fromARGB(255, 245, 245, 245),
                                           borderRadius: BorderRadius.all(Radius.circular(20)),
                                         ),
                                         child: Row(

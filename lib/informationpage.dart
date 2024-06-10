@@ -91,7 +91,7 @@ class _InformationPageState extends State<InformationPage>
                       height: 380,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 245, 245, 245),
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: Center(
