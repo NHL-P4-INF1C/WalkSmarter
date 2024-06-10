@@ -94,7 +94,6 @@ void initState() {
   }
   });
 
-
   WidgetsBinding.instance.addPostFrameCallback((_) {
     _startTimer();
   });
@@ -110,6 +109,7 @@ void _showDialog() {
   if (mounted) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Time's up!"),
@@ -127,8 +127,6 @@ void _showDialog() {
     );
   }
 }
-
-
 
   @override
   void dispose() {
