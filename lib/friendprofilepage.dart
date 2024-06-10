@@ -1,18 +1,17 @@
 import "package:flutter/material.dart";
-import "package:walk_smarter/friendspage.dart";
 import "package:walk_smarter/leaderboard.dart";
 import "dart:convert";
 import "pocketbase.dart";
 
 var pb = PocketBaseSingleton().instance;
 
-class ProfilePage extends StatefulWidget 
+class FriendProfilePage extends StatefulWidget 
 {
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<FriendProfilePage> createState() => _FriendProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> 
+class _FriendProfilePageState extends State<FriendProfilePage> 
 {
   String _username = "Loading...";
   String _profilePicture = "";
@@ -70,46 +69,47 @@ class _ProfilePageState extends State<ProfilePage>
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
-          automaticallyImplyLeading: false,
           toolbarHeight: 50,
+          automaticallyImplyLeading: false,
           title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image(
-                image: AssetImage("assets/walksmarterlogo.png"),
-                height: 40,
-                width: 40,
+              IconButton(
+                icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
+                onPressed: () 
+                {
+                  Navigator.pushNamed(context, "/profilepage");
+                },
               ),
               SizedBox(width: 8),
-              Text(
-                "Walk Smarter",
-                style: TextStyle(fontSize: 14),
+              Row( 
+                children: [
+                  Text(
+                    "Go Back",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E))
+                  ),
+                  SizedBox(width: 8),
+                ],
               ),
               Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 15),
-                    child: Text(
-                      "1001 Punten",
-                      style: TextStyle(fontSize: 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Walk Smarter",
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    Image(
+                      image: AssetImage("assets/walksmarterlogo.png"),
+                      height: 40,
+                      width: 40,
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: CircleAvatar(
-                radius: 23,
-                backgroundImage: _profilePicture.startsWith("http")
-                  ? NetworkImage(_profilePicture) 
-                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider
-              ),
-            ),
-          ],
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
