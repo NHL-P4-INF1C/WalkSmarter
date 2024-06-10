@@ -26,12 +26,9 @@ class _FriendsPageState extends State<MyFriendsPage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, '/homepage');
-          break;
         case 1:
           Navigator.pushNamed(context, '/leaderboard');
-          break;
         case 2:
-          // Stay on friends page
           break;
         default:
           break;
@@ -139,7 +136,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: FutureBuilder<List<String>>(
+                      child: FutureBuilder<List<Map<String, String>>>(
                         future: fetchFriendNamesForUser(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -152,12 +149,14 @@ class _FriendsPageState extends State<MyFriendsPage> {
                               snapshot.data!.isEmpty) {
                             return Center(child: Text('No friends found'));
                           } else {
-                            final friendNames = snapshot.data!;
+                            final friends = snapshot.data!;
                             return ListView.builder(
                               physics: AlwaysScrollableScrollPhysics(),
-                              itemCount: friendNames.length,
+                              itemCount: friends.length,
                               itemBuilder: (context, index) {
-                                final friendName = friendNames[index];
+                                final friend = friends[index];
+                                final friendName = friend['username'];
+                                final friendId = friend['id'];
                                 return Container(
                                   margin: EdgeInsets.symmetric(
                                     horizontal: 30,
@@ -170,7 +169,11 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                   child: ListTile(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/profilepage');
+                                        context,
+                                        '/friendprofilepage',
+                                        arguments: friendId,
+                                      );
+                                      print(friendId);
                                     },
                                     title: Row(
                                       mainAxisAlignment:
@@ -198,12 +201,10 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                               icon: Icon(Icons.delete,
                                                   size: 24, color: Colors.red),
                                               onPressed: () async {
-                                                // Assuming you have the user ID of the friend to delete
-                                                final userIdToDelete =
-                                                    "user-id-to-delete";
-                                                await deleteUser(
-                                                    userIdToDelete);
-                                                print('Deleted $friendName');
+                                                if (friendId != null) {
+                                                  await deleteUser(friendId);
+                                                  print('Deleted $friendName');
+                                                }
                                               },
                                             ),
                                           ],
@@ -265,8 +266,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
     );
   }
 
-  Future<List<String>> fetchFriendNamesForUser() async {
-    print(pb.authStore.model['id']);
+  Future<List<Map<String, String>>> fetchFriendNamesForUser() async {
     try {
       final user =
           await pb.collection('users').getOne(pb.authStore.model['id']);
@@ -278,16 +278,17 @@ class _FriendsPageState extends State<MyFriendsPage> {
     }
   }
 
-  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
-    List<String> friendNames = [];
+  Future<List<Map<String, String>>> fetchFriendNames(
+      List<String> friendIds) async {
+    List<Map<String, String>> friends = [];
     for (String id in friendIds) {
       try {
         final friend = await pb.collection('users').getOne(id);
-        friendNames.add(friend.data['username']);
+        friends.add({'id': id, 'username': friend.data['username']});
       } catch (e) {
         print('Error fetching friend with ID $id: $e');
       }
     }
-    return friendNames;
+    return friends;
   }
 }
