@@ -67,8 +67,7 @@ class QuestionPage extends StatefulWidget
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin 
-{
+class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int duration = 60;
   int? selectedOption;
@@ -77,39 +76,68 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
   List<String> answers = ["answer1", "answer2", "answer3"];
   int currentIndex = 0;
 
-  @override
-  void initState() 
+@override
+void initState() {
+  super.initState();
+  _controller = AnimationController(
+    vsync: this,
+    duration: Duration(seconds: duration),
+  )..addListener(() {
+    setState(() {});
+  });
+
+  _controller.addStatusListener((status) 
   {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: duration),
-    )..addListener(() 
-    {
-      setState(() {});
-    });
+  if (status == AnimationStatus.dismissed) 
+  {
+    _showDialog();
+  }
+  });
 
-    _controller.addStatusListener((status) 
-    {
-      if (status == AnimationStatus.completed) 
-      {
-        // logic for when the timer is complete
-      }
-    });
 
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _startTimer();
+  });
+}
+
+void _startTimer() {
+  if (mounted) {
     _controller.reverse(from: 1.0);
   }
+}
+
+void _showDialog() {
+  if (mounted) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Time's up!"),
+          content: Text("You ran out of time."),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Go back"),
+              onPressed: () {
+                Navigator.pushNamed(context, "/homepage");
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+
 
   @override
-  void dispose() 
-  {
+  void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -123,8 +151,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: TextButton(
-                    onPressed: () 
-                    {
+                    onPressed: () {
                       Navigator.pushNamed(context, "/homepage");
                     },
                     child: Text(
@@ -199,8 +226,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                     ),
                     SizedBox(height: 30),
                     Column(
-                      children: List.generate(answers.length, (index) 
-                      {
+                      children: List.generate(answers.length, (index) {
                         return Container(
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
@@ -214,8 +240,8 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                         padding: EdgeInsets.all(8),
                                         decoration: BoxDecoration(
                                           color: selectedOption == index
-                                            ? Color.fromARGB(155, 9, 106, 46)
-                                            : Colors.white,
+                                              ? Color.fromARGB(155, 9, 106, 46)
+                                              : Colors.white,
                                           borderRadius: BorderRadius.all(Radius.circular(20)),
                                         ),
                                         child: Row(
@@ -229,8 +255,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                             Radio<int>(
                                               value: index,
                                               groupValue: selectedOption,
-                                              onChanged: (int? value) 
-                                              {
+                                              onChanged: (int? value) {
                                                 setState(() {
                                                   selectedOption = value;
                                                 });
@@ -263,20 +288,16 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () async 
-                        {
+                        onPressed: () async {
                           question = "Getting question...";
                           Map<String, dynamic> payload = await requestManager.makeApiCall();
                           print(payload);
-                          if(payload['statusCode'] == 200)
-                          {
+                          if (payload['statusCode'] == 200) {
                             question = payload['response']['question'];
                             answers[0] = payload['response']['correct_answer'];
                             answers[1] = payload['response']['wrong_answer'][0];
                             answers[2] = payload['response']['wrong_answer'][1];
-                          }
-                          else
-                          {
+                          } else {
                             question = "${payload['response']}. Status code: ${payload['statusCode']}";
                           }
                         },
