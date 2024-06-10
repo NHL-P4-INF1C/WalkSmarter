@@ -18,7 +18,8 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   google_maps_flutter: ^2.0.6
   google_maps_webservice: ^0.0.19+1
-  # location: ^4.4.0
+  # geolocator: ^9.0.2
+  location: ^4.3.0
 
 dev_dependencies:
   flutter_test:

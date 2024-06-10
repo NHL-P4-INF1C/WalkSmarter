@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 import 'pocketbase.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:location/location.dart' as loc;
 
 var pb = PocketBaseSingleton().instance;
-final places = GoogleMapsPlaces(apiKey: 'API key');
+final places = GoogleMapsPlaces(apiKey: 'AIzaSyAOpBXEXbEuNuqD-1EujOj4TmF-4M9Evmg');
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late GoogleMapController mapController;
+  late loc.LocationData _currentPosition;
+  loc.Location location = loc.Location();
 
   final LatLng _center = const LatLng(45.521563, -122.677433);
 
@@ -26,6 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
     rootBundle.loadString('assets/map_style.json').then((string) {
       mapStyle = string;
     });
+    _getLocation();
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -35,15 +39,49 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getLocation() async {
+    bool _serviceEnabled;
+    loc.PermissionStatus _permissionGranted;
+    loc.LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == loc.PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != loc.PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    setState(() {
+      _currentPosition = _locationData;
+    });
+
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
+          zoom: 14.0,
+        ),
+      ),
+    );
+  }
+
   Future<String> fetchPoints() async {
     try {
-      final response =
-          await pb.collection('users').getOne(pb.authStore.model['id']);
+      final response = await pb.collection('users').getOne(pb.authStore.model['id']);
       return response.data['points'].toString();
     } catch (error) {
       print('Error: $error');
     }
-
     return 'Err';
   }
 
@@ -164,6 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
                 target: _center,
+                zoom: 11.0,
               ),
             ),
           ),
@@ -209,4 +248,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
