@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:walk_smarter/friendprofilepage.dart';
 import 'changeusername.dart';
 import 'profileappsettings.dart';
 import 'profilesettings.dart';
@@ -75,7 +76,7 @@ class MyApp extends StatelessWidget {
         '/questionpage': (context) => QuestionPage(),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),
-        '/friendprofilepage': (context) => FriendsProfilePage(),
+        '/friendprofilepage': (context) => FriendProfilePage(),
       },
     );
   }
