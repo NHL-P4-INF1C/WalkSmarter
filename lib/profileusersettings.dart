@@ -127,34 +127,20 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     }
   }
 
-  Future<bool> _verifyPassword(String password) async 
-  {
-    try 
-    {
-      final response = await http.post(
-        Uri.parse('https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/auth-with-password'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'identity': _username,
-          'password': password,
-        }),
-      );
+  Future<bool> _verifyPassword(String password) async {
+  try {
+    await pb.collection('users').authWithPassword(
+      _username,
+      password,
+    );
 
-      if (response.statusCode == 200) 
-      {
-        return true;
-      } else 
-      {
-        return false;
-      }
-    } catch (e) 
-    {
-      print("Error verifying password: $e");
-      return false;
-    }
+    return pb.authStore.isValid;
+  } catch (e) {
+    print("Error verifying password: $e");
+    return false;
   }
+}
+
 
   Future<void> _deleteAccount(String password) async 
   {
