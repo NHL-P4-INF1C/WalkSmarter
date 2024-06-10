@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'pocketbase.dart';
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+var pb = PocketBaseSingleton().instance;
 
 class SignUp extends StatefulWidget {
   const SignUp();
@@ -42,7 +42,7 @@ class _SignUpDemo extends State<SignUp> {
 
           Navigator.pushNamed(
             context,
-            '/mappage',
+            '/homepage',
           );
           print("New user created");
         }
@@ -60,6 +60,7 @@ class _SignUpDemo extends State<SignUp> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Opacity(
+          // ignore: dead_code
           opacity: _visible ? 1.0 : 0.0,
           child: Column(
             children: <Widget>[

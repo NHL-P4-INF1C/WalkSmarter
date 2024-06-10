@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'pocketbase.dart';
+import 'dart:convert';
+
+var pb = PocketBaseSingleton().instance;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -7,6 +11,69 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  String _profilePicture = "";
+  String _userID = pb.authStore.model['id'];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<String> fetchPoints() async {
+    try {
+      final response = await pb.collection('users').getOne(pb.authStore.model['id'].toString());
+      return response.data['points'].toString();
+    } catch (error) {
+      print('Error: $error');
+      return 'Err';
+    }
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      final jsonString = await pb.collection("users").getFirstListItem(
+        "id=\"$_userID\""
+      );
+      final record = jsonDecode(jsonString.toString());
+      setState(() {
+        if (record["avatar"] != null) {
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
+        } else {
+          _profilePicture = "";
+        }
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        _profilePicture = "";
+      });
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    handleSwitchCase(context, index);
+  }
+
+  void handleSwitchCase(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/homepage');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/leaderboard');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/friendspage', arguments: pb.authStore.model['id']);
+        break;
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,9 +98,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
-                  child: Text(
-                    '1000 Points',
-                    style: TextStyle(fontSize: 14),
+                  child: FutureBuilder<String>(
+                    future: fetchPoints(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'Error',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else if (snapshot.hasData) {
+                        return Text(
+                          '${snapshot.data} Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else {
+                        return Text(
+                          '0 Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),
@@ -41,73 +127,92 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         actions: [
-          IconButton(
-            iconSize: 40,
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profilepage');
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Center(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.86,
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black,
-                    width: 1,
-                  ),
-                  bottom: BorderSide(
-                    color: Colors.black,
-                    width: 1,
-                  ),
-                ),
-              ),
-              child: Center(
-                child: Text('Google Maps Widget Here'),
+          Padding(
+            padding: EdgeInsets.only(right: 10.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/profilepage');
+              },
+              child: CircleAvatar(
+                radius: 23,
+                backgroundImage: _profilePicture.startsWith("http")
+                  ? NetworkImage(_profilePicture)
+                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
               ),
             ),
           ),
         ],
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
+      body: Stack(
+        children: [
+          Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.81,
+              decoration: BoxDecoration(),
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/informationpage');
+                        },
+                        child: Text('Question'),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(
+                  color: Color(0xFF096A2E),
+                  width: 2.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0),
+                child: BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.map),
+                      label: 'Map',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.leaderboard),
+                      label: 'Leaderboard',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label: 'Friends',
+                    ),
+                  ],
+                  selectedItemColor: Color(0xFF096A2E),
+                  currentIndex: _selectedIndex,
+                  onTap: _onItemTapped,
+                ),
+              ),
+            ),
           ),
         ],
-        selectedItemColor: Color(0xFF096A2E),
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          switch (index) {
-            case 0:
-              break;
-            case 1:
-              Navigator.pushNamed(context, '/leaderboard');
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/friends');
-              break;
-            default:
-              break;
-          }
-        },
       ),
     );
   }

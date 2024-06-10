@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'pocketbase.dart';
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
-
-void main() {
-  runApp(MyApp());
-}
+var pb = PocketBaseSingleton().instance;
 
 class LoginDemo extends StatefulWidget {
   const LoginDemo();
@@ -27,20 +23,52 @@ class LoginDemo extends StatefulWidget {
 
 class _LoginDemoState extends State<LoginDemo> {
   String? username, password;
+
   Future<void> signIn() async {
+    if(dotenv.env["DEV_ENV"] != null)
+    {
+      Navigator.pushNamed(
+        context,
+        '/homepage',
+      );
+    }
     try {
       if (username != null && password != null) {
         await pb.collection('users').authWithPassword(username!, password!);
 
+        if (!mounted) return;
+
         Navigator.pushNamed(
           context,
           '/homepage',
+          arguments: username,
         );
         print("Ingelogd!!");
       }
     } catch (e) {
+      _showErrorDialog(context, 'Invalid username or password. Try again.');
       print('Error occurred during authentication: $e');
     }
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login Failed'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -56,7 +84,7 @@ class _LoginDemoState extends State<LoginDemo> {
                 child: SizedBox(
                   width: 200,
                   height: 150,
-                  //Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
+                  // Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
                   child: Image(image: AssetImage('assets/walksmarterlogo.png')),
                 ),
               ),
@@ -97,9 +125,16 @@ class _LoginDemoState extends State<LoginDemo> {
                   });
                 },
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Username',
-                    hintText: 'Enter your Username'),
+                  border: OutlineInputBorder(),
+                  labelText: 'Username',
+                  hintText: 'Enter your Username',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                  hintStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -113,9 +148,16 @@ class _LoginDemoState extends State<LoginDemo> {
                   });
                 },
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    hintText: 'Enter password'),
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                  hintText: 'Enter password',
+                  labelStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                  hintStyle: TextStyle(
+                    color: Color.fromARGB(255, 9, 106, 46),
+                  ),
+                ),
               ),
             ),
             Container(
