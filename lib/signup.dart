@@ -22,6 +22,27 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpDemo extends State<SignUp> {
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login Failed'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   String? username, email, password, passwordAgain;
   Future<void> signIn() async {
     try {
@@ -37,7 +58,10 @@ class _SignUpDemo extends State<SignUp> {
             "password": password,
             "passwordConfirm": passwordAgain,
           };
-          await pb.collection('users').create(body: body);
+          final create = await pb.collection('users').create(body: body);
+          print("===========");
+          print(create);
+          print("===========");
           await pb.collection('users').requestVerification(email!);
 
           Navigator.pushNamed(
@@ -46,9 +70,19 @@ class _SignUpDemo extends State<SignUp> {
           );
           print("New user created");
         }
+        else
+        {
+          _showErrorDialog(context, 'Passwords do not match');
+        }
+      }
+      else
+      {
+        _showErrorDialog(context, 'All fields are required to make an account');
       }
     } catch (e) {
-      print('Error occurred during authentication: $e');
+      // _showErrorDialog(context, e.response.data.email.message.toString());
+      print(e);
+      // print('Error occurred during authentication: $e');
     }
   }
 
