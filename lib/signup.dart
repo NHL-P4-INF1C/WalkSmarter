@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'pocketbase.dart';
 
@@ -28,7 +30,7 @@ class _SignUpDemo extends State<SignUp> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Login Failed'),
+          title: Text('Signup Failed'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
@@ -58,10 +60,15 @@ class _SignUpDemo extends State<SignUp> {
             "password": password,
             "passwordConfirm": passwordAgain,
           };
-          final create = await pb.collection('users').create(body: body);
-          print("===========");
-          print(create);
-          print("===========");
+          try
+          {
+            await pb.collection('users').create(body: body);
+          }
+          catch(e)
+          {
+            _showErrorDialog(context, 'Username or email address is already in use');
+            return;
+          }
           await pb.collection('users').requestVerification(email!);
 
           Navigator.pushNamed(
@@ -80,9 +87,7 @@ class _SignUpDemo extends State<SignUp> {
         _showErrorDialog(context, 'All fields are required to make an account');
       }
     } catch (e) {
-      // _showErrorDialog(context, e.response.data.email.message.toString());
-      print(e);
-      // print('Error occurred during authentication: $e');
+      _showErrorDialog(context, 'Unknown error has occured. Please try again');
     }
   }
 
