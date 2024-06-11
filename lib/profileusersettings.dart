@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:image_picker/image_picker.dart";
 import "pocketbase.dart";
 import "dart:convert";
@@ -59,7 +60,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         var request = http.MultipartRequest(
           "PATCH",
           Uri.parse(
-              "https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/records/$_userID"),
+              '${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
         );
 
         request.files.add(
