@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart' as dotenv;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'storagemanager.dart';
 
@@ -12,8 +12,8 @@ class PocketBaseSingleton {
 
   PocketBaseSingleton._internal() {
     _pocketBase = PocketBase(
-      dotenv.dotenv.env[
-          'POCKETBASE_URL']!,
+      dotenv.env["POCKETBASE_URL"]!,
+
       authStore: storagemanager(),
     );
   }

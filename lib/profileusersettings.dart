@@ -60,8 +60,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         var request = http.MultipartRequest(
           "PATCH",
           Uri.parse(
-              "${dotenv.env['POCKETBASE_URL']}api/collections/users/records/$_userID"),
-
+              '${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
         );
 
         request.files.add(
