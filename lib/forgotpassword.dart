@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-final pb = PocketBase('https://inf1c-p4-pocketbase.bramsuurd.nl');
+final pb = PocketBase(dotenv.env['POCKETBASE_URL']!);
 
 class ForgotPasswordDemo extends StatefulWidget {
   const ForgotPasswordDemo();
