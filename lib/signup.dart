@@ -79,12 +79,22 @@ class _SignUpDemo extends State<SignUp>
             return;
           }
           await pb.collection('users').requestVerification(email!);
+          try
+          {
+            await pb.collection('users').authWithPassword(username!, password!);
 
-          Navigator.pushNamed(
-            context,
-            '/homepage',
-          );
-          print("New user created");
+            if (!mounted) return;
+
+            Navigator.pushNamed(
+              context,
+              '/homepage',
+              arguments: username,
+            );
+          }
+          catch(e)
+          {
+            _showErrorDialog(context, 'Failed to auto-login. Please go to the login page to manually log in');
+          }
         }
         else
         {
