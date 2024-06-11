@@ -129,12 +129,21 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     }
   }
 
-  Future<bool> _verifyPassword(String password) async {
-  try {
-    await pb.collection('users').authWithPassword(
-      _username,
-      password,
-    );
+  Future<bool> _verifyPassword(String password) async 
+  {
+    try 
+    {
+      final response = await http.post(
+        Uri.parse(
+            '${dotenv.env['POCKETBASE_URL']}api/collections/users/auth-with-password'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'identity': _username,
+          'password': password,
+        }),
+      );
 
     return pb.authStore.isValid;
   } catch (e) {
