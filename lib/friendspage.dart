@@ -11,12 +11,30 @@ class _FriendsPageState extends State<MyFriendsPage> {
   int _selectedIndex = 2;
   String? username;
 
-  Future<void> deleteUser(String recordId) async {
+  Future<void> deleteFriend(String friendId) async {
     try {
-      await pb.collection('users').delete(recordId);
-      print('User with ID $recordId deleted successfully.');
+      // Retrieve the current user record
+      final record =
+          await pb.collection('users').getOne(pb.authStore.model['id']);
+      final user = record.data;
+
+      // Extract the current list of friends
+      List<String> friends = List<String>.from(user['friends']);
+
+      // Remove the specified friend
+      friends.remove(friendId);
+
+      // Update the user record with the new list of friends
+      final body = <String, dynamic>{
+        "friends": friends,
+      };
+      final updatedRecord = await pb
+          .collection('users')
+          .update(pb.authStore.model.id, body: body);
+
+      print('Friend removed successfully: $updatedRecord');
     } catch (e) {
-      print('Error deleting user: $e');
+      print('Error deleting friend: $e');
     }
   }
 
@@ -26,8 +44,10 @@ class _FriendsPageState extends State<MyFriendsPage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, '/homepage');
+          break;
         case 1:
           Navigator.pushNamed(context, '/leaderboard');
+          break;
         case 2:
           break;
         default:
@@ -40,7 +60,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    //var userId = pb.authStore.model['id'];
     return Scaffold(
       body: Stack(
         children: [
@@ -112,8 +131,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                       left: 0,
                       right: 0,
                       child: Container(
-                        height: screenHeight *
-                            0.15, // Adjust the height as a proportion of the screen height
+                        height: screenHeight * 0.15,
                         color: Color.fromRGBO(9, 106, 46, 1),
                         child: Center(
                           child: Text(
@@ -202,7 +220,9 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                                   size: 24, color: Colors.red),
                                               onPressed: () async {
                                                 if (friendId != null) {
-                                                  await deleteUser(friendId);
+                                                  await deleteFriend(friendId);
+                                                  setState(() {});
+                                                  print(friendId);
                                                   print('Deleted $friendName');
                                                 }
                                               },
