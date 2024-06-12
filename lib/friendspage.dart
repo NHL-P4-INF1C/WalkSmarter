@@ -11,17 +11,57 @@ class _FriendsPageState extends State<MyFriendsPage> {
   int _selectedIndex = 2;
   String? username;
 
-  Future<void> deleteFriend(String friendId) async {
+  Future<void> addFriend() async {
+    String? friendName = 'Jesse';
     try {
-      // Retrieve the current user record
+      final friendRecords = await pb.collection('users').getFullList(
+            filter: 'username="$friendName"',
+            batch: 1,
+          );
+
+      if (friendRecords.isEmpty) {
+        print('Friend not found');
+        return;
+      }
+
+      final friendRecord = friendRecords.first;
+      final friendId = friendRecord.id;
+
       final record =
           await pb.collection('users').getOne(pb.authStore.model['id']);
       final user = record.data;
 
-      // Extract the current list of friends
+      List<String> friends = List<String>.from(user['friends'] ?? []);
+
+      if (friends.contains(friendId)) {
+        print('Friend already added');
+        return;
+      }
+
+      friends.add(friendId);
+
+      // Update the user record with the new list of friends
+      final body = <String, dynamic>{
+        'friends': friends,
+      };
+      final updatedRecord = await pb
+          .collection('users')
+          .update(pb.authStore.model['id'], body: body);
+
+      print('Friend added successfully: $updatedRecord');
+    } catch (e) {
+      print('Error adding friend: $e');
+    }
+  }
+
+  Future<void> deleteFriend(String friendId) async {
+    try {
+      final record =
+          await pb.collection('users').getOne(pb.authStore.model['id']);
+      final user = record.data;
+
       List<String> friends = List<String>.from(user['friends']);
 
-      // Remove the specified friend
       friends.remove(friendId);
 
       // Update the user record with the new list of friends
@@ -44,10 +84,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, '/homepage');
-          break;
         case 1:
           Navigator.pushNamed(context, '/leaderboard');
-          break;
         case 2:
           break;
         default:
@@ -173,7 +211,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                     icon: Icon(Icons.add,
                                         size: 24, color: Colors.green),
                                     onPressed: () async {
-                                      //addFriend();
+                                      await addFriend();
+                                      setState(() {});
                                     },
                                   ),
                                   Text('No friends found')
