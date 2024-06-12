@@ -194,7 +194,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                     leading: CircleAvatar(
                                       radius: 24,
                                       backgroundImage: friendAvatar!.isNotEmpty
-                                          ? NetworkImage(friendAvatar!)
+                                          ? NetworkImage(friendAvatar)
                                           : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
                                     ),
                                     title: Row(
