@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:image_picker/image_picker.dart";
 import "pocketbase.dart";
 import "dart:convert";
@@ -58,8 +59,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       try {
         var request = http.MultipartRequest(
           "PATCH",
-          Uri.parse("https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/records/$_userID"),
+          Uri.parse(
+              '${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
         );
+
         request.files.add(
           await http.MultipartFile.fromPath(
             "avatar",
@@ -131,7 +134,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     try 
     {
       final response = await http.post(
-        Uri.parse('https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/auth-with-password'),
+        Uri.parse(
+            '${dotenv.env['POCKETBASE_URL']}api/collections/users/auth-with-password'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -141,30 +145,20 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         }),
       );
 
-      if (response.statusCode == 200) 
-      {
-        return true;
-      } else 
-      {
-        return false;
-      }
-    } catch (e) 
-    {
-      print("Error verifying password: $e");
-      return false;
-    }
+    return pb.authStore.isValid;
+  } catch (e) {
+    print("Error verifying password: $e");
+    return false;
   }
+}
 
-  Future<void> _deleteAccount(String password) async 
-  {
-    if (await _verifyPassword(password)) 
-    {
-      try 
-      {
+
+  Future<void> _deleteAccount(String password) async {
+    if (await _verifyPassword(password)) {
+      try {
         await pb.collection("users").delete(_userID);
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
-      } catch (e) 
-      {
+      } catch (e) {
         print("Error deleting account: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -172,8 +166,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
           ),
         );
       }
-    } else 
-    {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Incorrect password. Please try again."),
@@ -358,10 +351,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                     onTap: () async {
                       bool? result = await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ChangeUsernamePage(
-                            userId: _userID,
-                            currentUsername: _username,
-                          ),
+                          builder: (context) => ChangeUsernamePage(),
                         ),
                       );
                       if (result == true) {
@@ -400,16 +390,17 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                 Positioned(
                   top: 310,
                   child: GestureDetector(
-                    onTap: () async
-                    {
-                      await pb.collection('users').requestPasswordReset(pb.authStore.model['email']);
+                    onTap: () async {
+                      await pb
+                          .collection('users')
+                          .requestPasswordReset(pb.authStore.model['email']);
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) 
-                        {
+                        builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text("Email Sent"),
-                            content: Text("An email has been sent to reset your password."),
+                            content: Text(
+                                "An email has been sent to reset your password."),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -494,15 +485,16 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                 child: Text("Cancel"),
                               ),
                               TextButton(
-                                onPressed: () 
-                                {
-                                  String password = _passwordController.text.trim();
+                                onPressed: () {
+                                  String password =
+                                      _passwordController.text.trim();
                                   if (password.isNotEmpty) {
                                     _deleteAccount(password);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text("Please enter your password."),
+                                        content:
+                                            Text("Please enter your password."),
                                       ),
                                     );
                                   }
@@ -620,13 +612,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                   switch (index) {
                     case 0:
                       Navigator.pushNamed(context, "/homepage");
-                      break;
                     case 1:
                       Navigator.pushNamed(context, "/leaderboard");
-                      break;
                     case 2:
                       Navigator.pushNamed(context, "/friendspage");
-                      break;
                     default:
                       break;
                   }
