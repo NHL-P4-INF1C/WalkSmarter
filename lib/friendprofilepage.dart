@@ -26,7 +26,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     super.didChangeDependencies();
     // FriendId die ik mee stuur met de Navigator
     friendId = ModalRoute.of(context)?.settings.arguments as String?;
-    print(friendId);
+      print("Friend ID: $friendId");
     _fetchUserData();
   }
 
@@ -63,17 +63,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
           toolbarHeight: 50,
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: true,
           title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
-                onPressed: () {
-                  Navigator.pushNamed(context, "/profilepage");
-                },
-              ),
-              SizedBox(width: 8),
               Row(
                 children: [
                   Text("Go Back",
@@ -104,26 +97,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
               ),
             ],
           ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: CircleAvatar(
-                  radius: 23,
-                  backgroundImage: _profilePicture.startsWith("http")
-                      ? NetworkImage(_profilePicture)
-                      : AssetImage("assets/standardProfilePicture.png")
-                          as ImageProvider),
-            ),
-          ],
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
             ),
           ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Container(
           height: 600,

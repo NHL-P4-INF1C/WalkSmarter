@@ -62,30 +62,37 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<List<String>> fetchFriendNamesForUser() async {
-    print(pb.authStore.model['id']);
-    try {
-      final user = await pb.collection('users').getOne(pb.authStore.model['id']);
-      final friendIds = user.data['friends'] as List<dynamic>;
-      return fetchFriendNames(friendIds.cast<String>());
-    } catch (e) {
-      print('Error fetching friends: $e');
-      return [];
-    }
+  Future<List<Map<String, String>>> fetchFriendNamesForUser() async {
+  print(pb.authStore.model['id']);
+  try {
+    final user = await pb.collection('users').getOne(pb.authStore.model['id']);
+    final friendIds = user.data['friends'] as List<dynamic>;
+    return fetchFriendNames(friendIds.cast<String>());
+  } catch (e) {
+    print('Error fetching friends: $e');
+    return [];
   }
+}
 
-  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
-    List<String> friendNames = [];
-    for (String id in friendIds) {
-      try {
-        final friend = await pb.collection('users').getOne(id);
-        friendNames.add(friend.data['username']);
-      } catch (e) {
-        print('Error fetching friend with ID $id: $e');
-      }
+Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async {
+  List<Map<String, String>> friends = [];
+  for (String id in friendIds) {
+    try {
+      final friend = await pb.collection('users').getOne(id);
+      final profilePictureUrl = friend.data['avatar'] != null
+          ? pb.files.getUrl(friend, friend.data['avatar']).toString()
+          : '';
+      friends.add({
+        'id': friend.id,
+        'username': friend.data['username'],
+        'avatar': profilePictureUrl,
+      });
+    } catch (e) {
+      print('Error fetching friend with id $id: $e');
     }
-    return friendNames;
   }
+  return friends;
+}
 
   Future<String> fetchPoints() async {
     try {
@@ -541,7 +548,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 10,
                   right: 10,
                   top: 680,
-                  child: FutureBuilder<List<String>>(
+                  child: FutureBuilder<List<Map<String, String>>>(
                     future: fetchFriendNamesForUser(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -552,15 +559,23 @@ class _ProfilePageState extends State<ProfilePage> {
                         return Center(child: Text("No friends found"));
                       } else {
                         final friends = snapshot.data!;
-                        List<String> limitedFriends = friends.take(3).toList();
+                        List<Map<String, String>> limitedFriends = friends.take(3).toList();
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: limitedFriends.map((friendName) {
+                          children: limitedFriends.map((friend) {
+                            final friendName = friend['username']!;
+                            final friendId = friend['id']!;
+                            final friendAvatar = friend['avatar']!;
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/friendprofilepage', arguments: friendName);
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/friendprofilepage',
+                                    arguments: friendId,
+                                  );
+                                  print(friendId); // Ensure friendId is being printed
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -570,7 +585,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: ListTile(
                                     leading: CircleAvatar(
                                       radius: 25,
-                                      backgroundImage: AssetImage("assets/standardProfilePicture.png"),
+                                      backgroundImage: friendAvatar.isNotEmpty
+                                          ? NetworkImage(friendAvatar)
+                                          : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
                                     ),
                                     title: Text(friendName),
                                   ),
