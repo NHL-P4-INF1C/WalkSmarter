@@ -50,7 +50,10 @@ class TimerPainter extends CustomPainter
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height / 2 - textPainter.height / 2));
+    textPainter.paint(
+        canvas,
+        Offset(size.width / 2 - textPainter.width / 2,
+            size.height / 2 - textPainter.height / 2));
   }
 
   @override
@@ -285,7 +288,8 @@ void _showDialog()
                                   child: Container(
                                     margin: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(20)),
                                       color: Color.fromARGB(0, 171, 209, 198),
                                     ),
                                   ),
@@ -318,8 +322,10 @@ void _showDialog()
                           }
                         },
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),
-                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           "Submit answer",

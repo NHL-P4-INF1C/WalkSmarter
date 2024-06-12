@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
-import "package:pocketbase/pocketbase.dart";
 import "dart:convert";
+import "pocketbase.dart";
 
 import "profileappsettings.dart";
 import "profileusersettings.dart";
 
-final pb = PocketBase("https://inf1c-p4-pocketbase.bramsuurd.nl");
+var pb = PocketBaseSingleton().instance;
 
 class ProfilePageSettings extends StatefulWidget 
 {
@@ -17,7 +17,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
 {
   String _username = "Loading...";
   String _profilePicture = "";
-  String _userID = "5iwzvti4kqaf2zb";
+  String _userID = pb.authStore.model['id'];
   int currentIndex = 0;
 
   @override
@@ -245,6 +245,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                               TextButton(
                                 onPressed: () 
                                 {
+                                  pb.authStore.clear();
                                   Navigator.pushNamed (context, "/");
                                 },
                                 child: Text("Log out"),

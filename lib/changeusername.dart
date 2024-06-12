@@ -1,42 +1,32 @@
 import "package:flutter/material.dart";
 import "profileusersettings.dart";
 
-class ChangeUsernamePage extends StatefulWidget 
-{
-  final String userId;
-  final String currentUsername;
-
-  ChangeUsernamePage({required this.userId, required this.currentUsername});
+class ChangeUsernamePage extends StatefulWidget {
+  // ChangeUsernamePage({required this.userId, required this.currentUsername});
 
   @override
   _ChangeUsernamePageState createState() => _ChangeUsernamePageState();
 }
 
-class _ChangeUsernamePageState extends State<ChangeUsernamePage> 
-{
+class _ChangeUsernamePageState extends State<ChangeUsernamePage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final Color greenColor = Color.fromARGB(255, 9, 106, 46);
 
   @override
-  void initState() 
-  {
+  void initState() {
     super.initState();
-    _usernameController.text = widget.currentUsername;
+    _usernameController.text = pb.authStore.model['username'];
   }
 
-  Future<void> _changeUsername() async 
-  {
-    if (_formKey.currentState!.validate()) 
-    {
+  Future<void> _changeUsername() async {
+    if (_formKey.currentState!.validate()) {
       try {
-        await pb.collection("users").update(widget.userId, body: 
-        {
+        await pb.collection("users").update(pb.authStore.model['id'], body: {
           "username": _usernameController.text,
         });
         Navigator.of(context).pop(true);
-      } catch (e) 
-      {
+      } catch (e) {
         print("Error updating username: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error updating username")),
@@ -46,8 +36,7 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage>
   }
 
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Change Username")),
       body: Padding(
@@ -59,10 +48,8 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage>
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(labelText: "New Username"),
-                validator: (value) 
-                {
-                  if (value == null || value.isEmpty) 
-                  {
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
                     return "Please enter a username";
                   }
                   return null;
@@ -79,7 +66,9 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage>
                   padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                   child: Text(
                     "Change Username",
-                    style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Color.fromARGB(255, 255, 255, 255)),
                   ),
                 ),
               ),

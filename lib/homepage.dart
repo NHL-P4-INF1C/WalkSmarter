@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pocketbase.dart';
+import 'dart:convert';
 
 var pb = PocketBaseSingleton().instance;
 
@@ -10,19 +11,45 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  String _profilePicture = "";
+  String _userID = pb.authStore.model['id'];
 
-    Future<String> fetchPoints() async {
-    try{
-    final response = await pb.collection('users').getOne(pb.authStore.model['id']);
-    return response.data['points'].toString();
-    }
-    catch(error)
-    {
-    print('Error: $error');
-    }
-    
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<String> fetchPoints() async {
+    try {
+      final response = await pb.collection('users').getOne(pb.authStore.model['id'].toString());
+      return response.data['points'].toString();
+    } catch (error) {
+      print('Error: $error');
       return 'Err';
     }
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      final jsonString = await pb.collection("users").getFirstListItem(
+        "id=\"$_userID\""
+      );
+      final record = jsonDecode(jsonString.toString());
+      setState(() {
+        if (record["avatar"] != null) {
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
+        } else {
+          _profilePicture = "";
+        }
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        _profilePicture = "";
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -35,10 +62,13 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/homepage');
+        break;
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
+        break;
       case 2:
-        Navigator.pushNamed(context, '/friendspage');
+        Navigator.pushNamed(context, '/friendspage', arguments: pb.authStore.model['id']);
+        break;
       default:
         break;
     }
@@ -97,12 +127,19 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         actions: [
-          IconButton(
-            iconSize: 40,
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profilepage');
-            },
+          Padding(
+            padding: EdgeInsets.only(right: 10.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/profilepage');
+              },
+              child: CircleAvatar(
+                radius: 23,
+                backgroundImage: _profilePicture.startsWith("http")
+                  ? NetworkImage(_profilePicture)
+                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+              ),
+            ),
           ),
         ],
         backgroundColor: Colors.white,

@@ -16,7 +16,6 @@ Future<String?> getHashToken() async
       perPage: 1,
       sort: '-created',
     );
-    pb.authStore.clear();
 
     if(result.items.isNotEmpty)
     {
