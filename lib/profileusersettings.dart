@@ -19,7 +19,9 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   String _profilePicture = "";
   String _userID = pb.authStore.model['id'];
   int currentIndex = 0;
+  TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
 
   @override
   void initState() {
@@ -129,32 +131,21 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     }
   }
 
-  Future<bool> _verifyPassword(String password) async 
-  {
-    try 
-    {
-      final response = await http.post(
-        Uri.parse(
-            '${dotenv.env['POCKETBASE_URL']}api/collections/users/auth-with-password'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'identity': _username,
-          'password': password,
-        }),
+  Future<bool> _verifyPassword(String username, String password) async {
+    try {
+      final authData = await pb.collection('users').authWithPassword(
+        username,
+        password,
       );
-
-    return pb.authStore.isValid;
-  } catch (e) {
-    print("Error verifying password: $e");
-    return false;
+      return pb.authStore.isValid;
+    } catch (e) {
+      print("Error verifying password: $e");
+      return false;
+    }
   }
-}
 
-
-  Future<void> _deleteAccount(String password) async {
-    if (await _verifyPassword(password)) {
+  Future<void> _deleteAccount(String username, String password) async {
+    if (await _verifyPassword(username, password)) {
       try {
         await pb.collection("users").delete(_userID);
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
@@ -169,7 +160,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Incorrect password. Please try again."),
+          content: Text("Incorrect username or password. Please try again."),
         ),
       );
     }
@@ -464,8 +455,15 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                    "Enter your password to delete your account:"),
+                                Text("Enter your username and password to delete your account:"),
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: _usernameController,
+                                  onChanged: (value) {},
+                                  decoration: InputDecoration(
+                                    hintText: "Username",
+                                  ),
+                                ),
                                 SizedBox(height: 10),
                                 TextField(
                                   controller: _passwordController,
@@ -486,15 +484,14 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  String password =
-                                      _passwordController.text.trim();
-                                  if (password.isNotEmpty) {
-                                    _deleteAccount(password);
+                                  String username = _usernameController.text.trim();
+                                  String password = _passwordController.text.trim();
+                                  if (username.isNotEmpty && password.isNotEmpty) {
+                                    _deleteAccount(username, password);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content:
-                                            Text("Please enter your password."),
+                                        content: Text("Please enter both username and password."),
                                       ),
                                     );
                                   }
@@ -509,7 +506,9 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                     ),
                                   ),
                                   padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 15),
+                                    vertical: 10,
+                                    horizontal: 15,
+                                  ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -523,10 +522,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                       Text(
                                         "Delete account",
                                         style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                                Color.fromARGB(255, 255, 0, 0)),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color.fromARGB(255, 255, 0, 0),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -547,8 +546,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                           width: 2,
                         ),
                       ),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 15,
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -562,9 +563,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                           Text(
                             "Delete account",
                             style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 255, 0, 0)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 0, 0),
+                            ),
                           ),
                         ],
                       ),

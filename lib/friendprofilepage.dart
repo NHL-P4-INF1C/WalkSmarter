@@ -97,6 +97,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
               ),
             ],
           ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           height: 600,
