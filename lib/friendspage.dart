@@ -30,7 +30,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
       };
       final updatedRecord = await pb
           .collection('users')
-          .update(pb.authStore.model.id, body: body);
+          .update(pb.authStore.model['id'], body: body);
 
       print('Friend removed successfully: $updatedRecord');
     } catch (e) {
@@ -165,7 +165,21 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 child: Text('Error: ${snapshot.error}'));
                           } else if (!snapshot.hasData ||
                               snapshot.data!.isEmpty) {
-                            return Center(child: Text('No friends found'));
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.add,
+                                        size: 24, color: Colors.green),
+                                    onPressed: () async {
+                                      //addFriend();
+                                    },
+                                  ),
+                                  Text('No friends found')
+                                ],
+                              ),
+                            );
                           } else {
                             final friends = snapshot.data!;
                             return ListView.builder(
@@ -216,6 +230,14 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                           children: [
                                             SizedBox(width: 10),
                                             IconButton(
+                                              icon: Icon(Icons.add,
+                                                  size: 24,
+                                                  color: Colors.green),
+                                              onPressed: () async {
+                                                // Implement the onPressed functionality here
+                                              },
+                                            ),
+                                            IconButton(
                                               icon: Icon(Icons.delete,
                                                   size: 24, color: Colors.red),
                                               onPressed: () async {
@@ -238,7 +260,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                           }
                         },
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
