@@ -11,12 +11,30 @@ class _FriendsPageState extends State<MyFriendsPage> {
   int _selectedIndex = 2;
   String? username;
 
-  Future<void> deleteUser(String recordId) async {
+  Future<void> deleteFriend(String friendId) async {
     try {
-      await pb.collection('users').delete(recordId);
-      print('User with ID $recordId deleted successfully.');
+      // Retrieve the current user record
+      final record =
+          await pb.collection('users').getOne(pb.authStore.model['id']);
+      final user = record.data;
+
+      // Extract the current list of friends
+      List<String> friends = List<String>.from(user['friends']);
+
+      // Remove the specified friend
+      friends.remove(friendId);
+
+      // Update the user record with the new list of friends
+      final body = <String, dynamic>{
+        "friends": friends,
+      };
+      final updatedRecord = await pb
+          .collection('users')
+          .update(pb.authStore.model.id, body: body);
+
+      print('Friend removed successfully: $updatedRecord');
     } catch (e) {
-      print('Error deleting user: $e');
+      print('Error deleting friend: $e');
     }
   }
 
@@ -40,7 +58,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    //var userId = pb.authStore.model['id'];
     return Scaffold(
       body: Stack(
         children: [
@@ -112,8 +129,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                       left: 0,
                       right: 0,
                       child: Container(
-                        height: screenHeight *
-                            0.15, // Adjust the height as a proportion of the screen height
+                        height: screenHeight * 0.15,
                         color: Color.fromRGBO(9, 106, 46, 1),
                         child: Center(
                           child: Text(
@@ -157,11 +173,9 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 final friend = friends[index];
                                 final friendName = friend['username'];
                                 final friendId = friend['id'];
+                                final friendAvatar = friend['avatar'];
                                 return Container(
-                                  margin: EdgeInsets.symmetric(
-                                    horizontal: 30,
-                                    vertical: 10,
-                                  ),
+                                  margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(30),
@@ -175,39 +189,33 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                       );
                                       print(friendId);
                                     },
+                                    leading: CircleAvatar(
+                                      radius: 24,
+                                      backgroundImage: friendAvatar!.isNotEmpty
+                                          ? NetworkImage(friendAvatar)
+                                          : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+                                    ),
                                     title: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Icon(Icons.person,
-                                                size: 24, color: Colors.amber),
-                                            SizedBox(width: 10),
-                                            Text(
-                                              '$friendName',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
+                                        Text(
+                                          '$friendName',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
                                         ),
-                                        Row(
-                                          children: [
-                                            SizedBox(width: 10),
-                                            IconButton(
-                                              icon: Icon(Icons.delete,
-                                                  size: 24, color: Colors.red),
-                                              onPressed: () async {
-                                                if (friendId != null) {
-                                                  await deleteUser(friendId);
-                                                  print('Deleted $friendName');
-                                                }
-                                              },
-                                            ),
-                                          ],
+                                        IconButton(
+                                          icon: Icon(Icons.delete, size: 24, color: Colors.red),
+                                          onPressed: () async {
+                                            if (friendId != null) {
+                                              await deleteFriend(friendId);
+                                              setState(() {});
+                                              print(friendId);
+                                              print('Deleted $friendName');
+                                            }
+                                          },
                                         ),
                                       ],
                                     ),
@@ -278,13 +286,19 @@ class _FriendsPageState extends State<MyFriendsPage> {
     }
   }
 
-  Future<List<Map<String, String>>> fetchFriendNames(
-      List<String> friendIds) async {
+  Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async {
     List<Map<String, String>> friends = [];
     for (String id in friendIds) {
       try {
         final friend = await pb.collection('users').getOne(id);
-        friends.add({'id': id, 'username': friend.data['username']});
+        final profilePictureUrl = friend.data['avatar'] != null
+            ? pb.files.getUrl(friend, friend.data['avatar']).toString()
+            : '';
+        friends.add({
+          'id': id,
+          'username': friend.data['username'],
+          'avatar': profilePictureUrl,
+        });
       } catch (e) {
         print('Error fetching friend with ID $id: $e');
       }
