@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'pocketbase.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:location/location.dart' as loc;
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 var pb = PocketBaseSingleton().instance;
-final places = GoogleMapsPlaces(apiKey: 'AIzaSyAOpBXEXbEuNuqD-1EujOj4TmF-4M9Evmg');
+// final places = GoogleMapsPlaces(apiKey: 'AIzaSyAOpBXEXbEuNuqD-1EujOj4TmF-4M9Evmg');
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -16,10 +18,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late GoogleMapController mapController;
-  late loc.LocationData _currentPosition;
-  loc.Location location = loc.Location();
+  late Position _currentPosition;
+  late Timer _timer;
+  Marker? _currentLocationMarker;
 
-  final LatLng _center = const LatLng(45.521563, -122.677433);
+  final LatLng _center = const LatLng(52.2691, 4.63729);
 
   String mapStyle = '';
 
@@ -27,9 +30,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     rootBundle.loadString('assets/map_style.json').then((string) {
-      mapStyle = string;
+      setState(() {
+        mapStyle = string;
+      });
     });
-    _getLocation();
+    requestLocationPermission();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -37,42 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (mapStyle.isNotEmpty) {
       mapController.setMapStyle(mapStyle);
     }
-  }
-
-  Future<void> _getLocation() async {
-    bool _serviceEnabled;
-    loc.PermissionStatus _permissionGranted;
-    loc.LocationData _locationData;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == loc.PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != loc.PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _locationData = await location.getLocation();
-    setState(() {
-      _currentPosition = _locationData;
-    });
-
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(_currentPosition.latitude!, _currentPosition.longitude!),
-          zoom: 14.0,
-        ),
-      ),
-    );
+    startLocationUpdates();
   }
 
   Future<String> fetchPoints() async {
@@ -85,18 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return 'Err';
   }
 
-  Future<List<PlacesSearchResult>> searchPlaces(String query, LatLng location) async {
-    final result = await places.searchNearbyWithRadius(
-      Location(lat: location.latitude, lng: location.longitude),
-      500,
-      keyword: query,
-    );
-    if (result.status == "OK") {
-      return result.results;
-    } else {
-      throw Exception(result.errorMessage);
-    }
-  }
+  // Future<List<PlacesSearchResult>> searchPlaces(String query, LatLng location) async {
+  //   final result = await places.searchNearbyWithRadius(
+  //     Location(lat: location.latitude, lng: location.longitude),
+  //     500,
+  //     keyword: query,
+  //   );
+  //   if (result.status == "OK") {
+  //     return result.results;
+  //   } else {
+  //     throw Exception(result.errorMessage);
+  //   }
+  // }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -204,6 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 target: _center,
                 zoom: 11.0,
               ),
+              markers: _currentLocationMarker != null ? {_currentLocationMarker!} : {},
             ),
           ),
           Positioned(
@@ -246,5 +223,39 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+  Future<void> requestLocationPermission() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (status.isDenied) {
+      if (await Permission.locationWhenInUse.request().isGranted) {
+        fetchLocation();
+      } else {
+        print('Location permission denied');
+      }
+    } else {
+      fetchLocation();
+    }
+  }
+
+  void startLocationUpdates() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      fetchLocation();
+    });
+  }
+
+  Future<void> fetchLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentPosition = position;
+      LatLng currentLatLng = LatLng(position.latitude, position.longitude);
+      mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
+      _currentLocationMarker = Marker(
+        markerId: MarkerId('currentLocation'),
+        position: currentLatLng,
+      );
+    });
+    print('Location: ${position.latitude}, ${position.longitude}');
   }
 }
