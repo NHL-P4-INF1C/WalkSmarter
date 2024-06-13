@@ -218,43 +218,41 @@ class _QuestionPageState extends State<QuestionPage>
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
                             children: [
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        margin: EdgeInsets.all(4),
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: _selectedOption == index
-                                              ? Color.fromARGB(155, 9, 106, 46)
-                                              : Colors.white,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(20)),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                answers[index],
-                                                style: TextStyle(fontSize: 16),
-                                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.all(4),
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: _selectedOption == index
+                                            ? Color.fromARGB(155, 9, 106, 46)
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              answers[index],
+                                              style: TextStyle(fontSize: 16),
                                             ),
-                                            Radio<int>(
-                                              value: index,
-                                              groupValue: _selectedOption,
-                                              onChanged: (int? value) {
-                                                setState(() {
-                                                  _selectedOption = value;
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                          Radio<int>(
+                                            value: index,
+                                            groupValue: _selectedOption,
+                                            onChanged: (int? value) {
+                                              setState(() {
+                                                _selectedOption = value;
+                                              });
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                               if (_selectedOption == index)
                                 Positioned.fill(
@@ -273,24 +271,22 @@ class _QuestionPageState extends State<QuestionPage>
                       }),
                     ),
                     SizedBox(height: 20),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
                           _question = "Getting question...";
-                          final _payload = await _requestManager.makeApiCall();
-                          print(_payload);
-                          if (_payload['statusCode'] == 200) {
-                            _question = _payload['response']['question'];
-                            answers[0] = _payload['response']['correct_answer'];
-                            answers[1] =
-                                _payload['response']['wrong_answer'][0];
-                            answers[2] =
-                                _payload['response']['wrong_answer'][1];
+                          final payload = await _requestManager.makeApiCall();
+                          print(payload);
+                          if (payload['statusCode'] == 200) {
+                            _question = payload['response']['question'];
+                            answers[0] = payload['response']['correct_answer'];
+                            answers[1] = payload['response']['wrong_answer'][0];
+                            answers[2] = payload['response']['wrong_answer'][1];
                           } else {
                             _question =
-                                "${_payload['response']}. Status code: ${_payload['statusCode']}";
+                                "${payload['response']}. Status code: ${payload['statusCode']}";
                           }
                         },
                         style: ButtonStyle(
