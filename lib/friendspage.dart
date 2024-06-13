@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'utils/pocketbase.dart';
 import 'components/bottombar.dart';
+import 'components/navbar.dart';
 
 class MyFriendsPage extends StatefulWidget {
   @override
@@ -13,25 +14,17 @@ class _FriendsPageState extends State<MyFriendsPage> {
 
   Future<void> deleteFriend(String friendId) async {
     try {
-      // Retrieve the current user record
       final record =
           await pb.collection('users').getOne(pb.authStore.model['id']);
       final user = record.data;
-
-      // Extract the current list of friends
       List<String> friends = List<String>.from(user['friends']);
-
-      // Remove the specified friend
       friends.remove(friendId);
-
-      // Update the user record with the new list of friends
       final body = <String, dynamic>{
         "friends": friends,
       };
       final updatedRecord = await pb
           .collection('users')
           .update(pb.authStore.model.id, body: body);
-
       print('Friend removed successfully: $updatedRecord');
     } catch (e) {
       print('Error deleting friend: $e');
@@ -61,6 +54,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      appBar: Navbar(profilePicture: ""), // Replace with actual profile picture
       body: Stack(
         children: [
           Container(
