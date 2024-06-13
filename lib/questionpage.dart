@@ -209,6 +209,30 @@ void _showTimerDialog()
   );
   }
 
+  void _showWrongAnswerDialog() 
+  {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) 
+    {
+      return AlertDialog(
+        title: Text("Wrong Answer!"),
+        content: Text("Better luck next time!"),
+        actions: <Widget>[
+          TextButton(
+            child: Text("OK"),
+            onPressed: () 
+            {
+              Navigator.pushNamed(context, "/homepage");
+            },
+          ),
+        ],
+      );
+    },
+  );
+  }
+
   @override
   Widget build(BuildContext context) 
   {
@@ -391,6 +415,10 @@ void _showTimerDialog()
                               print("Failed to update points in Pocketbase: $e");
                             }
                             _showCorrectAnswerDialog();
+                          }
+                          else
+                          {
+                            _showWrongAnswerDialog();
                           }
                         },
                         style: ButtonStyle(
