@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:walk_smarter/friendprofilepage.dart';
+import 'package:walk_smarter/loginpage.dart';
 import 'changeusername.dart';
 import 'profileappsettings.dart';
 import 'profilesettings.dart';
 import 'profileusersettings.dart';
-import 'loginpage.dart';
 import 'signup.dart';
 import 'forgotpassword.dart';
 import 'homepage.dart';
@@ -35,7 +35,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  await dotenv.load(fileName: '.env');
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    print('Failed to load .env file: $e');
+  }
 
   runApp(
     ChangeNotifierProvider(
@@ -85,6 +89,7 @@ class MyApp extends StatelessWidget {
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),
         '/friendprofilepage': (context) => FriendProfilePage(),
+        '/loginpage': (context) => LoginDemo(),
       },
     );
   }
