@@ -3,6 +3,10 @@ import "package:walk_smarter/informationpage.dart";
 
 import "dart:math" as math;
 
+import "pocketbase.dart";
+
+var pb = PocketBaseSingleton().instance;
+
 class TimerPainter extends CustomPainter 
 {
   final Animation<double> animation;
@@ -337,9 +341,32 @@ void _showDialog()
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: ()
+                        onPressed: () async
                         {
-                          
+                          if (selectedOption == null) return;
+
+                          bool isCorrect = answers[selectedOption!] == payload['response']['correct_answer'];
+                          if (isCorrect) 
+                          {
+                            try 
+                            {
+                              final userId = pb.authStore.model['id'];
+                              final userRecord = await pb.collection('users').getOne(userId);
+                              
+                              final currentPoints = userRecord.data['points'] ?? 0;
+                              await pb.collection('users').update(userId, body: 
+                              {
+                                "points": currentPoints + 1,
+                              }
+                              );
+
+                              print("Points updated successfully");
+                            }
+                            catch (e) 
+                            {
+                              print("Failed to update points in Pocketbase: $e");
+                            }
+                          }
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
