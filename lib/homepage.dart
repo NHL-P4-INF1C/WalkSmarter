@@ -62,15 +62,15 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/homepage');
-        break;
+        return;
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
-        break;
+        return;
       case 2:
         Navigator.pushNamed(context, '/friendspage', arguments: pb.authStore.model['id']);
-        break;
+        return;
       default:
-        break;
+        return;
     }
   }
 

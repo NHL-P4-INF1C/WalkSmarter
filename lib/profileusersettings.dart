@@ -22,7 +22,6 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
@@ -54,15 +53,16 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   }
 
   Future<void> _changeProfilePicture() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       try {
+        BuildContext context = this.context;
+
         var request = http.MultipartRequest(
           "PATCH",
-          Uri.parse(
-              '${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
+          Uri.parse('${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
         );
 
         request.files.add(
@@ -83,6 +83,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
           setState(() {
             _profilePicture = responseData["avatar"];
           });
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Profile picture changed successfully!"),
@@ -91,6 +93,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
 
           await _fetchUserData();
         } else {
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Failed to change profile picture"),
@@ -99,6 +103,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         }
       } catch (e) {
         print("Error uploading image: $e");
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error changing profile picture"),
@@ -116,6 +121,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       setState(() {
         _profilePicture = "";
       });
+      if (!mounted) return; 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Profile picture deleted successfully!"),
@@ -123,6 +129,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       );
     } catch (e) {
       print("Error deleting profile picture: $e");
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Failed to delete profile picture"),
@@ -133,10 +140,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
 
   Future<bool> _verifyPassword(String username, String password) async {
     try {
-      final authData = await pb.collection('users').authWithPassword(
-        username,
-        password,
-      );
+      await pb.collection('users').authWithPassword(username, password);
       return pb.authStore.isValid;
     } catch (e) {
       print("Error verifying password: $e");
@@ -148,9 +152,12 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     if (await _verifyPassword(username, password)) {
       try {
         await pb.collection("users").delete(_userID);
+        BuildContext context = this.context;
+        // ignore: use_build_context_synchronously
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
       } catch (e) {
         print("Error deleting account: $e");
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to delete account. Please try again."),
@@ -158,6 +165,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         );
       }
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Incorrect username or password. Please try again."),
@@ -386,6 +394,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                           .collection('users')
                           .requestPasswordReset(pb.authStore.model['email']);
                       showDialog(
+                        // ignore: use_build_context_synchronously
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
