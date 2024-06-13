@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import "apimanager.dart";
+
 class InformationPage extends StatefulWidget 
 {
   @override
@@ -9,9 +11,44 @@ class InformationPage extends StatefulWidget
 class _InformationPageState extends State<InformationPage> 
 {
   int currentIndex = 0;
+  final requestManager = RequestManager(
+    {
+      "pointOfInterest":"NHL Stenden Emmen",
+      "locationOfOrigin":"The Netherlands"
+    }, "openai"
+  );
+  Map<String, dynamic> payload = {};
+  String monumentInformation = "loading...";
 
   @override
-  Widget build(BuildContext context) 
+  void initState() 
+  {
+    super.initState();
+    _fetchData();
+  }
+
+  void _fetchData() async 
+  {
+    try 
+    {
+      payload = await requestManager.makeApiCall();
+      if (payload['statusCode'] == 200) 
+      {
+        monumentInformation = payload['response']['description'];
+      } 
+      else 
+      {
+        monumentInformation = "${payload['response']}. Status code: ${payload['statusCode']}";
+      }
+    } 
+    catch (e) 
+    {
+      print("API call failed: $e");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context)
   {
     return Scaffold(
       appBar: AppBar(
@@ -96,7 +133,7 @@ class _InformationPageState extends State<InformationPage>
                       ),
                       child: Center(
                         child: Text(
-                          "{information about monument}",
+                          monumentInformation,
                           style: TextStyle(
                             fontSize: 16,
                           ),

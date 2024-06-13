@@ -76,7 +76,6 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
   late AnimationController _controller;
   int duration = 60;
   int? selectedOption;
-  final requestManager = RequestManager({"pointOfInterest":"NHL Stenden Emmen","locationOfOrigin":"The Netherlands"}, "openai");
   String question = "loading...";
   List<String> answers = ["answer1", "answer2", "answer3"];
   int currentIndex = 0;
@@ -307,7 +306,6 @@ void _showDialog()
                         onPressed: () async 
                         {
                           question = "Getting question...";
-                          Map<String, dynamic> payload = await requestManager.makeApiCall();
                           print(payload);
                           if (payload['statusCode'] == 200) 
                           {
