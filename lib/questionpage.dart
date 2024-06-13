@@ -99,7 +99,7 @@ void initState()
   {
   if (status == AnimationStatus.dismissed) 
   {
-    _showDialog();
+    _showTimerDialog();
   }
   });
 
@@ -151,7 +151,7 @@ void _startTimer()
   }
 }
 
-void _showDialog() 
+void _showTimerDialog() 
 {
   if (mounted) 
   {
@@ -183,6 +183,30 @@ void _showDialog()
   {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _showCorrectAnswerDialog() 
+  {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) 
+    {
+      return AlertDialog(
+        title: Text("Correct Answer!"),
+        content: Text("You've earned a point!"),
+        actions: <Widget>[
+          TextButton(
+            child: Text("OK"),
+            onPressed: () 
+            {
+              Navigator.pushNamed(context, "/homepage");
+            },
+          ),
+        ],
+      );
+    },
+  );
   }
 
   @override
@@ -366,6 +390,7 @@ void _showDialog()
                             {
                               print("Failed to update points in Pocketbase: $e");
                             }
+                            _showCorrectAnswerDialog();
                           }
                         },
                         style: ButtonStyle(
