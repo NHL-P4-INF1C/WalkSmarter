@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:walk_smarter/informationpage.dart";
 
 import "dart:math" as math;
 
