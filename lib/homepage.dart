@@ -66,16 +66,21 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/homepage');
-        break;
+        return;
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
-        break;
+        return;
       case 2:
+<<<<<<< HEAD
         Navigator.pushNamed(context, '/friendspage',
             arguments: pb.authStore.model['id']);
         break;
+=======
+        Navigator.pushNamed(context, '/friendspage', arguments: pb.authStore.model['id']);
+        return;
+>>>>>>> 292b6d1 (fix: solved 3 issues in homepage.dart)
       default:
-        break;
+        return;
     }
   }
 
