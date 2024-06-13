@@ -256,8 +256,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                       final friendName = friend['username'];
                                       final friendId = friend['id'];
                                       return Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 30, vertical: 8),
+                                        margin: EdgeInsets.only(
+                                            left: 30, right: 30, bottom: 10),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
