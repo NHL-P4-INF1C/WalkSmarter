@@ -8,7 +8,7 @@ class InformationPage extends StatefulWidget
   State<InformationPage> createState() => _InformationPageState();
 }
 
-class _InformationPageState extends State<InformationPage> 
+class _InformationPageState extends State<InformationPage>
 {
   int currentIndex = 0;
   final requestManager = RequestManager(
@@ -21,7 +21,7 @@ class _InformationPageState extends State<InformationPage>
   String monumentInformation = "loading...";
 
   @override
-  void initState() 
+  void initState()
   {
     super.initState();
     _fetchData();
@@ -31,15 +31,18 @@ class _InformationPageState extends State<InformationPage>
   {
     try 
     {
-      payload = await requestManager.makeApiCall();
-      if (payload['statusCode'] == 200) 
+      this.payload = await requestManager.makeApiCall();
+      if (this.payload['statusCode'] == 200) 
       {
-        monumentInformation = payload['response']['description'];
+        monumentInformation = this.payload['response']['description'];
       } 
       else 
       {
-        monumentInformation = "${payload['response']}. Status code: ${payload['statusCode']}";
+        monumentInformation = "${this.payload['response']}. Status code: ${this.payload['statusCode']}";
       }
+      setState(() {
+        this.payload = this.payload;
+      });
     } 
     catch (e) 
     {
@@ -148,10 +151,15 @@ class _InformationPageState extends State<InformationPage>
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: ElevatedButton(
-                        onPressed: () 
-                        {
-                          Navigator.pushNamed(context, "/questionpage");
-                        },
+                          onPressed: () 
+                          {
+                            print(payload);
+                            Navigator.pushNamed(
+                              context,
+                               "/questionpage",
+                               arguments: payload,
+                              );
+                          },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 9, 106, 46)),
                           foregroundColor: MaterialStateProperty.all<Color>(Colors.white),

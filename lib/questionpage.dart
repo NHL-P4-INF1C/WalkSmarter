@@ -1,8 +1,7 @@
 import "package:flutter/material.dart";
+import "package:walk_smarter/informationpage.dart";
 
 import "dart:math" as math;
-
-import "apimanager.dart";
 
 class TimerPainter extends CustomPainter 
 {
@@ -67,6 +66,9 @@ class TimerPainter extends CustomPainter
 
 class QuestionPage extends StatefulWidget 
 {
+  final Map<String, dynamic> payload;
+  QuestionPage({required this.payload});
+
   @override
   State<QuestionPage> createState() => _QuestionPageState();
 }
@@ -79,6 +81,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
   String question = "loading...";
   List<String> answers = ["answer1", "answer2", "answer3"];
   int currentIndex = 0;
+  late Map<String, dynamic> payload;
 
 @override
 void initState() 
@@ -87,11 +90,7 @@ void initState()
   _controller = AnimationController(
     vsync: this,
     duration: Duration(seconds: duration),
-  )..addListener(() 
-  {
-    setState(() {});
-  });
-
+  );
   _controller.addStatusListener((status) 
   {
   if (status == AnimationStatus.dismissed) 
@@ -104,6 +103,40 @@ void initState()
   {
     _startTimer();
   });
+}
+
+@override
+void didChangeDependencies() 
+{
+  super.didChangeDependencies();
+  
+  final args = ModalRoute.of(context)!.settings.arguments;
+
+  if (args != null && args is Map<String, dynamic>) 
+  {
+    payload = args;
+    if (payload['statusCode'] == 200) 
+    {
+      setState(() 
+      {
+        question = payload['response']['question'];
+        answers[0] = payload['response']['correct_answer'];
+        answers[1] = payload['response']['wrong_answer'][0];
+        answers[2] = payload['response']['wrong_answer'][1];
+      });
+    } 
+    else 
+    {
+      setState(() 
+      {
+        question = "Error: ${payload['response']}. Status code: ${payload['statusCode']}";
+      });
+    }
+  }
+  else
+  {
+    print('Mate this thing is empty mate you gotta check widget.payload mate it contains nothing mate mate, mate');
+  }
 }
 
 void _startTimer() 
@@ -305,19 +338,7 @@ void _showDialog()
                       child: ElevatedButton(
                         onPressed: () async 
                         {
-                          question = "Getting question...";
-                          print(payload);
-                          if (payload['statusCode'] == 200) 
-                          {
-                            question = payload['response']['question'];
-                            answers[0] = payload['response']['correct_answer'];
-                            answers[1] = payload['response']['wrong_answer'][0];
-                            answers[2] = payload['response']['wrong_answer'][1];
-                          } 
-                          else 
-                          {
-                            question = "${payload['response']}. Status code: ${payload['statusCode']}";
-                          }
+                          
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
