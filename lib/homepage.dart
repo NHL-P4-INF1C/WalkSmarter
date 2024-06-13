@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'pocketbase.dart';
@@ -25,6 +26,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final LatLng _center = const LatLng(52.2691, 4.63729);
 
   String mapStyle = '';
+  String _profilePicture = "";
+  String _userID = pb.authStore.model['id'];
 
   @override
   void initState() {
@@ -53,26 +56,34 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<String> fetchPoints() async {
     try {
-      final response = await pb.collection('users').getOne(pb.authStore.model['id']);
+      final response = await pb.collection('users').getOne(pb.authStore.model['id'].toString());
       return response.data['points'].toString();
     } catch (error) {
       print('Error: $error');
+      return 'Err';
     }
-    return 'Err';
   }
 
-  // Future<List<PlacesSearchResult>> searchPlaces(String query, LatLng location) async {
-  //   final result = await places.searchNearbyWithRadius(
-  //     Location(lat: location.latitude, lng: location.longitude),
-  //     500,
-  //     keyword: query,
-  //   );
-  //   if (result.status == "OK") {
-  //     return result.results;
-  //   } else {
-  //     throw Exception(result.errorMessage);
-  //   }
-  // }
+  Future<void> _fetchUserData() async {
+    try {
+      final jsonString = await pb.collection("users").getFirstListItem(
+        "id=\"$_userID\""
+      );
+      final record = jsonDecode(jsonString.toString());
+      setState(() {
+        if (record["avatar"] != null) {
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
+        } else {
+          _profilePicture = "";
+        }
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        _profilePicture = "";
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -90,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pushNamed(context, '/leaderboard');
         break;
       case 2:
-        Navigator.pushNamed(context, '/friendspage');
+        Navigator.pushNamed(context, '/friendspage', arguments: pb.authStore.model['id']);
         break;
       default:
         break;
@@ -150,16 +161,23 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         actions: [
-          IconButton(
-            iconSize: 40,
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profilepage');
-            },
+          Padding(
+            padding: EdgeInsets.only(right: 10.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/profilepage');
+              },
+              child: CircleAvatar(
+                radius: 23,
+                backgroundImage: _profilePicture.startsWith("http")
+                  ? NetworkImage(_profilePicture)
+                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+              ),
+            ),
           ),
         ],
         backgroundColor: Colors.white,
-        shape: ContinuousRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(30),
             bottomRight: Radius.circular(30),
@@ -168,19 +186,27 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: GoogleMap(
-              zoomControlsEnabled: false,
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 11.0,
+          Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.81,
+              decoration: BoxDecoration(),
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/informationpage');
+                        },
+                        child: Text('Question'),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
               ),
-              markers: _currentLocationMarker != null ? {_currentLocationMarker!} : {},
             ),
           ),
           Positioned(

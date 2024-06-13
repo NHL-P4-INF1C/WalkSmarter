@@ -1,3 +1,4 @@
+import 'apimanager.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -6,13 +7,11 @@ class TimerPainter extends CustomPainter {
   final Color backgroundColor;
   final Color color;
 
-  TimerPainter(
-    {
+  TimerPainter({
     required this.animation,
     required this.backgroundColor,
     required this.color,
-    }
-  ) : super(repaint: animation);
+  }) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -46,7 +45,10 @@ class TimerPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height / 2 - textPainter.height / 2));
+    textPainter.paint(
+        canvas,
+        Offset(size.width / 2 - textPainter.width / 2,
+            size.height / 2 - textPainter.height / 2));
   }
 
   @override
@@ -62,10 +64,18 @@ class QuestionPage extends StatefulWidget {
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin {
+class _QuestionPageState extends State<QuestionPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int duration = 60;
-  int? _selectedOption; 
+  int? _selectedOption;
+  final _requestManager = RequestManager({
+    "pointOfInterest": "NHL Stenden Emmen",
+    "locationOfOrigin": "The Netherlands"
+  }, "openai");
+  String _question = "loading...";
+  List<String> answers = ["answer1", "answer2", "answer3"];
+  int currentIndex = 0;
 
   @override
   void initState() {
@@ -74,12 +84,12 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
       vsync: this,
       duration: Duration(seconds: duration),
     )..addListener(() {
-      setState(() {});
-    });
+        setState(() {});
+      });
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // logica mist nog wanneer timer voorbij is
+        // logic for when the timer is complete
       }
     });
 
@@ -134,7 +144,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
           ],
         ),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 80),
@@ -158,7 +168,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           ),
                           child: Center(
                             child: Text(
-                              "{question}",
+                              _question,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -167,7 +177,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           ),
                         ),
                         Positioned(
-                          top: -70, 
+                          top: -70,
                           left: (MediaQuery.of(context).size.width / 2) - 70,
                           child: CustomPaint(
                             size: Size(100, 100),
@@ -182,7 +192,7 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                     ),
                     SizedBox(height: 30),
                     Column(
-                      children: List.generate(3, (index) {
+                      children: List.generate(answers.length, (index) {
                         return Container(
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
@@ -198,13 +208,14 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                           color: _selectedOption == index
                                               ? Color.fromARGB(155, 9, 106, 46)
                                               : Colors.white,
-                                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
                                         ),
                                         child: Row(
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                'Answer ${index + 1}',
+                                                answers[index],
                                                 style: TextStyle(fontSize: 16),
                                               ),
                                             ),
@@ -229,7 +240,8 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                                   child: Container(
                                     margin: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(20)),
                                       color: Color.fromARGB(0, 171, 209, 198),
                                     ),
                                   ),
@@ -244,12 +256,27 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // logica om vraag te controleren mist nog
+                        onPressed: () async {
+                          _question = "Getting question...";
+                          final _payload = await _requestManager.makeApiCall();
+                          print(_payload);
+                          if (_payload['statusCode'] == 200) {
+                            _question = _payload['response']['question'];
+                            answers[0] = _payload['response']['correct_answer'];
+                            answers[1] =
+                                _payload['response']['wrong_answer'][0];
+                            answers[2] =
+                                _payload['response']['wrong_answer'][1];
+                          } else {
+                            _question =
+                                "${_payload['response']}. Status code: ${_payload['statusCode']}";
+                          }
                         },
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),
-                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           'Submit answer',
@@ -266,31 +293,56 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Friends',
-          ),
-        ],
-
-        selectedItemColor: Color(int.parse('0xFF096A2E')),
-        onTap: (index) {
-        },
-      ),
-      bottomSheet: PreferredSize(
-        preferredSize: Size.fromHeight(1.0),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
         child: Container(
-          color: Colors.black,
-          height: 1.0,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
+            border: Border.all(
+              color: Color(0xFF096A2E),
+              width: 2.0,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30.0),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: 'Map',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.leaderboard),
+                  label: 'Leaderboard',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.group),
+                  label: 'Friends',
+                ),
+              ],
+              currentIndex: currentIndex,
+              selectedItemColor: Color.fromARGB(255, 9, 106, 46),
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                });
+                switch (index) {
+                  case 0:
+                    Navigator.pushNamed(context, '/homepage');
+                    break;
+                  case 1:
+                    Navigator.pushNamed(context, '/leaderboard');
+                    break;
+                  case 2:
+                    Navigator.pushNamed(context, '/friendspage');
+                    break;
+                  default:
+                    break;
+                }
+              },
+            ),
+          ),
         ),
       ),
     );
