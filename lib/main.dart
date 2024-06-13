@@ -35,12 +35,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  
+  // Load environment variables
   try {
     await dotenv.load(fileName: '.env');
   } catch (e) {
     print('Failed to load .env file: $e');
   }
-
+  
+  PocketBaseSingleton().instance;
+  
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),

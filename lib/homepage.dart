@@ -27,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String mapStyle = '';
   String _profilePicture = "";
-  String _userID = pb.authStore.model['id'];
+  String _userID = pb.authStore.model != null ? pb.authStore.model['id'] : 'Failure To Retrieve Token';
 
   @override
   void initState() {
