@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'components/bottombar.dart';
 
 class InformationPage extends StatefulWidget {
   @override
@@ -72,7 +73,8 @@ class _InformationPageState extends State<InformationPage> {
                       height: 100,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300], // placeholder banner afbeelding monument
+                        color: Colors.grey[
+                            300], // placeholder banner afbeelding monument
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: Center(
@@ -111,8 +113,10 @@ class _InformationPageState extends State<InformationPage> {
                           Navigator.pushNamed(context, '/questionpage');
                         },
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 9, 106, 46)),
-                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           "Go to question",
@@ -129,57 +133,26 @@ class _InformationPageState extends State<InformationPage> {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-            border: Border.all(
-              color: Color(0xFF096A2E),
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: 'Map',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard),
-                  label: 'Leaderboard',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.group),
-                  label: 'Friends',
-                ),
-              ],
-              currentIndex: currentIndex,
-              selectedItemColor: Color.fromARGB(255, 9, 106, 46),
-              onTap: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-                switch (index) {
-                  case 0:
-                    Navigator.pushNamed(context, '/homepage');
-                    break;
-                  case 1:
-                    Navigator.pushNamed(context, '/leaderboard');
-                    break;
-                  case 2:
-                    Navigator.pushNamed(context, '/friendspage');
-                    break;
-                  default:
-                    break;
-                }
-              },
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: currentIndex,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/homepage');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/leaderboard');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/friendspage');
+              break;
+            default:
+              break;
+          }
+        },
       ),
     );
   }

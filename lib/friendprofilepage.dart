@@ -1,7 +1,8 @@
 import "package:flutter/material.dart";
 import "package:walk_smarter/leaderboard.dart";
 import "dart:convert";
-import "pocketbase.dart";
+import "utils/pocketbase.dart";
+import "./components/bottombar.dart";
 
 var pb = PocketBaseSingleton().instance;
 
@@ -26,7 +27,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     super.didChangeDependencies();
     // FriendId die ik mee stuur met de Navigator
     friendId = ModalRoute.of(context)?.settings.arguments as String?;
-      print("Friend ID: $friendId");
+    print("Friend ID: $friendId");
     _fetchUserData();
   }
 
@@ -57,6 +58,26 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    void _onItemTapped(int index) {
+      setState(() {
+        currentIndex = index;
+      });
+
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, "/homepage");
+          break;
+        case 1:
+          Navigator.pushNamed(context, "/leaderboard");
+          break;
+        case 2:
+          Navigator.pushNamed(context, "/friendspage");
+          break;
+        default:
+          break;
+      }
+    }
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -398,57 +419,9 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-            border: Border.all(
-              color: Color(0xFF096A2E),
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: "Map",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard),
-                  label: "Leaderboard",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.group),
-                  label: "Friends",
-                ),
-              ],
-              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
-              currentIndex: 1,
-              onTap: (index) {
-                setState(() {
-                  currentIndex = index;
-                  switch (index) {
-                    case 0:
-                      Navigator.pushNamed(context, '/homepage');
-                      break;
-                    case 1:
-                      Navigator.pushNamed(context, '/leaderboard');
-                      break;
-                    case 2:
-                      Navigator.pushNamed(context, '/friendspage');
-                      break;
-                    default:
-                      break;
-                  }
-                });
-              },
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: currentIndex,
+        onTap: _onItemTapped,
       ),
     );
   }

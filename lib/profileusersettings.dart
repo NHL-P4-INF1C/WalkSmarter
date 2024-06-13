@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:image_picker/image_picker.dart";
-import "pocketbase.dart";
+import "utils/pocketbase.dart";
 import "dart:convert";
 import "package:http/http.dart" as http;
 
@@ -133,7 +133,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
 
   Future<bool> _verifyPassword(String username, String password) async {
     try {
-      final authData = await pb.collection('users').authWithPassword(
+      await pb.collection('users').authWithPassword(
         username,
         password,
       );
