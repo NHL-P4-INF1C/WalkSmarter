@@ -151,6 +151,10 @@ void _startTimer()
   }
 }
 
+void _stopTimer() {
+  _controller.stop();
+}
+
 void _showTimerDialog() 
 {
   if (mounted) 
@@ -415,10 +419,12 @@ void _showTimerDialog()
                               print("Failed to update points in Pocketbase: $e");
                             }
                             _showCorrectAnswerDialog();
+                            _stopTimer();
                           }
                           else
                           {
                             _showWrongAnswerDialog();
+                            _stopTimer();
                           }
                         },
                         style: ButtonStyle(
