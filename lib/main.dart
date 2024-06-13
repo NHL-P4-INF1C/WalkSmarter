@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       initialRoute: '/',
       routes: {
-        '/': (context) => ProfilePage(),
+        '/': (context) => LoginDemo(),
         '/signup': (context) => SignUp(),
         '/fpassword': (context) => ForgotPasswordDemo(),
         '/homepage': (context) => MyHomePage(),
