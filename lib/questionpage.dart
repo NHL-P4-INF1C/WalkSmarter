@@ -123,6 +123,7 @@ void didChangeDependencies()
         answers[0] = payload['response']['correct_answer'];
         answers[1] = payload['response']['wrong_answer'][0];
         answers[2] = payload['response']['wrong_answer'][1];
+        answers.shuffle();
       });
     } 
     else 
@@ -336,7 +337,7 @@ void _showDialog()
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () async 
+                        onPressed: ()
                         {
                           
                         },
