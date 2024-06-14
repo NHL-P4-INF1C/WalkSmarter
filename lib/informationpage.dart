@@ -19,6 +19,7 @@ class _InformationPageState extends State<InformationPage>
   );
   Map<String, dynamic> payload = {};
   String monumentInformation = "loading...";
+  bool isLoading = true;
 
   @override
   void initState()
@@ -41,13 +42,39 @@ class _InformationPageState extends State<InformationPage>
         monumentInformation = "${payload['response']}. Status code: ${payload['statusCode']}";
       }
       setState(() {
-        payload = payload;
+        isLoading = false;
       });
     } 
     catch (e) 
     {
       print("API call failed: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
+  }
+
+  void _showLoadingDialog() 
+  {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) 
+      {
+        return AlertDialog(
+          title: Text("Still loading"),
+          content: Text("Pleas wait until everything has loaded."),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () 
+              {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -161,11 +188,19 @@ class _InformationPageState extends State<InformationPage>
                           onPressed: () 
                           {
                             print(payload);
-                            Navigator.pushNamed(
-                              context,
-                               "/questionpage",
-                               arguments: payload,
+                            if (isLoading)
+                            {
+                              _showLoadingDialog();
+                            }
+                            else
+                            {
+                              Navigator.pushNamed(
+                                context,
+                                "/questionpage",
+                                arguments: payload,
                               );
+                            }
+                            
                           },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 9, 106, 46)),
