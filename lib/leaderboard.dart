@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import './components/bottombar.dart';
 
 class LeaderboardPage extends StatefulWidget {
   @override
@@ -253,26 +252,56 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               ),
             ],
           ),
-          BottomNavBar(
-            selectedIndex: _selectedIndex,
-            onTap: (index) {
-              setState(() {
-                _selectedIndex = index;
-                switch (index) {
-                  case 0:
-                    Navigator.pushNamed(context, '/homepage');
-                    break;
-                  case 1:
-                    Navigator.pushNamed(context, '/leaderboard');
-                    break;
-                  case 2:
-                    Navigator.pushNamed(context, '/friendspage');
-                    break;
-                  default:
-                    break;
-                }
-              });
-            },
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(
+                  color: Color(0xFF096A2E),
+                  width: 2.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0),
+                child: BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.map),
+                      label: 'Map',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.leaderboard),
+                      label: 'Leaderboard',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label: 'Friends',
+                    ),
+                  ],
+                  selectedItemColor: Color(0xFF096A2E),
+                  currentIndex: _selectedIndex,
+                  onTap: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                      switch (index) {
+                        case 0:
+                          Navigator.pushNamed(context, '/homepage');
+                        case 1:
+                          Navigator.pushNamed(context, '/leaderboard');
+                        case 2:
+                          Navigator.pushNamed(context, '/friendspage');
+                        default:
+                          break;
+                      }
+                    });
+                  },
+                ),
+              ),
+            ),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
-import './components/bottombar.dart';
-import './components/darkmodebutton.dart';
+import 'package:provider/provider.dart';
+import '../main.dart';
+
 
 class ProfileAppSettings extends StatefulWidget {
   @override
@@ -10,26 +11,6 @@ class ProfileAppSettings extends StatefulWidget {
 class _ProfileAppSettingsState extends State<ProfileAppSettings> {
   int currentIndex = 0;
   String selectedLanguage = "English"; // State variable for language selection
-
-  void _onItemTapped(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, "/homepage");
-        break;
-      case 1:
-        Navigator.pushNamed(context, "/leaderboard");
-        break;
-      case 2:
-        Navigator.pushNamed(context, "/friendspage");
-        break;
-      default:
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,10 +153,73 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: currentIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
+            border: Border.all(
+              color: Color(0xFF096A2E),
+              width: 2.0,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30.0),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: "Map",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.leaderboard),
+                  label: "Leaderboard",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.group),
+                  label: "Friends",
+                ),
+              ],
+              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
+              currentIndex: currentIndex,
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                  switch (index) {
+                    case 0:
+                      Navigator.pushNamed(context, "/homepage");
+                      return;
+                    case 1:
+                      Navigator.pushNamed(context, "/leaderboard");
+                      return;
+                    case 2:
+                      Navigator.pushNamed(context, "/friendspage");
+                      return;
+                    default:
+                      return;
+                  }
+                });
+              },
+            ),
+          ),
+        ),
       ),
+    );
+  }
+}
+
+class DarkModeToggleSwitch extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return Switch(
+      value: themeProvider.themeMode == ThemeMode.dark,
+      onChanged: (value) {
+        themeProvider.toggleTheme();
+        print('Dark mode toggled');
+      },
     );
   }
 }

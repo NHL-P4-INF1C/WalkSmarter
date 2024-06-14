@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'utils/pocketbase.dart';
+import 'pocketbase.dart';
 
 var pb = PocketBaseSingleton().instance;
 

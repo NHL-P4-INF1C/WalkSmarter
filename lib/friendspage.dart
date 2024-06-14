@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'utils/pocketbase.dart';
-import 'components/bottombar.dart';
-import 'components/navbar.dart';
+import 'pocketbase.dart';
 
 class MyFriendsPage extends StatefulWidget {
   @override
@@ -11,20 +9,29 @@ class MyFriendsPage extends StatefulWidget {
 class _FriendsPageState extends State<MyFriendsPage> {
   final pb = PocketBaseSingleton().instance;
   int _selectedIndex = 2;
+  String? username;
 
   Future<void> deleteFriend(String friendId) async {
     try {
+      // Retrieve the current user record
       final record =
           await pb.collection('users').getOne(pb.authStore.model['id']);
       final user = record.data;
+
+      // Extract the current list of friends
       List<String> friends = List<String>.from(user['friends']);
+
+      // Remove the specified friend
       friends.remove(friendId);
+
+      // Update the user record with the new list of friends
       final body = <String, dynamic>{
         "friends": friends,
       };
       final updatedRecord = await pb
           .collection('users')
           .update(pb.authStore.model.id, body: body);
+
       print('Friend removed successfully: $updatedRecord');
     } catch (e) {
       print('Error deleting friend: $e');
@@ -34,19 +41,17 @@ class _FriendsPageState extends State<MyFriendsPage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, '/homepage');
+        case 1:
+          Navigator.pushNamed(context, '/leaderboard');
+        case 2:
+          break;
+        default:
+          break;
+      }
     });
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/homepage');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/leaderboard');
-        break;
-      case 2:
-        break;
-      default:
-        break;
-    }
   }
 
   @override
@@ -54,7 +59,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: Navbar(profilePicture: ""), // Replace with actual profile picture
       body: Stack(
         children: [
           Container(
@@ -171,8 +175,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 final friendId = friend['id'];
                                 final friendAvatar = friend['avatar'];
                                 return Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 30, vertical: 10),
+                                  margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(30),
@@ -190,13 +193,10 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                       radius: 24,
                                       backgroundImage: friendAvatar!.isNotEmpty
                                           ? NetworkImage(friendAvatar)
-                                          : AssetImage(
-                                                  "assets/standardProfilePicture.png")
-                                              as ImageProvider,
+                                          : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
                                     ),
                                     title: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           '$friendName',
@@ -207,8 +207,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                           ),
                                         ),
                                         IconButton(
-                                          icon: Icon(Icons.delete,
-                                              size: 24, color: Colors.red),
+                                          icon: Icon(Icons.delete, size: 24, color: Colors.red),
                                           onPressed: () async {
                                             if (friendId != null) {
                                               await deleteFriend(friendId);
@@ -233,9 +232,42 @@ class _FriendsPageState extends State<MyFriendsPage> {
               ),
             ],
           ),
-          BottomNavBar(
-            selectedIndex: _selectedIndex,
-            onTap: _onItemTapped,
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(
+                  color: Color(0xFF096A2E),
+                  width: 2.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0),
+                child: BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.map),
+                      label: 'Map',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.leaderboard),
+                      label: 'Leaderboard',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label: 'Friends',
+                    ),
+                  ],
+                  selectedItemColor: Color(0xFF096A2E),
+                  currentIndex: _selectedIndex,
+                  onTap: _onItemTapped,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -254,8 +286,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
     }
   }
 
-  Future<List<Map<String, String>>> fetchFriendNames(
-      List<String> friendIds) async {
+  Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async {
     List<Map<String, String>> friends = [];
     for (String id in friendIds) {
       try {

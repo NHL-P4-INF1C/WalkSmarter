@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'utils/pocketbase.dart';
+import 'pocketbase.dart';
 
 var pb = PocketBaseSingleton().instance;
 
