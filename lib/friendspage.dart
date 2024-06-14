@@ -216,15 +216,134 @@ class _FriendsPageState extends State<MyFriendsPage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: Column(
+                      child: Stack(
                         children: [
-                          Container(
-                            alignment: Alignment.topRight,
-                            padding: EdgeInsets.only(bottom: 10, right: 10),
-                            child: IconButton(
-                              icon: Icon(Icons.add,
-                                  size: 30, color: Colors.green),
-                              onPressed: () async {
+                          Column(
+                            children: [
+                              Expanded(
+                                child: FutureBuilder<List<Map<String, String>>>(
+                                  future: fetchFriendNamesForUser(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Center(
+                                          child: CircularProgressIndicator());
+                                    } else if (snapshot.hasError) {
+                                      return Center(
+                                          child:
+                                              Text('Error: ${snapshot.error}'));
+                                    } else if (!snapshot.hasData ||
+                                        snapshot.data!.isEmpty) {
+                                      return Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text('No friends found'),
+                                          ],
+                                        ),
+                                      );
+                                    } else {
+                                      final friends = snapshot.data!;
+                                      return ListView.builder(
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        itemCount: friends.length,
+                                        itemBuilder: (context, index) {
+                                          final friend = friends[index];
+                                          final friendName = friend['username'];
+                                          final friendId = friend['id'];
+                                          final friendAvatar = friend['avatar'];
+                                          return Container(
+                                            margin: EdgeInsets.only(
+                                                left: 20, right: 20, top: 10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 5,
+                                                  offset: Offset(0, 5),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ListTile(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  '/friendprofilepage',
+                                                  arguments: friendId,
+                                                );
+                                                print(friendId);
+                                              },
+                                              leading: CircleAvatar(
+                                                radius: 24,
+                                                backgroundImage: friendAvatar!
+                                                        .isNotEmpty
+                                                    ? NetworkImage(friendAvatar)
+                                                    : AssetImage(
+                                                            "assets/standardProfilePicture.png")
+                                                        as ImageProvider,
+                                              ),
+                                              title: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      SizedBox(width: 30),
+                                                      Text(
+                                                        '$friendName',
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      SizedBox(width: 10),
+                                                      IconButton(
+                                                        icon: Icon(Icons.delete,
+                                                            size: 24,
+                                                            color: Colors.red),
+                                                        onPressed: () async {
+                                                          if (friendId !=
+                                                              null) {
+                                                            await deleteFriend(
+                                                                friendId);
+                                                            setState(() {});
+                                                            print(friendId);
+                                                            print(
+                                                                'Deleted $friendName');
+                                                          }
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                            top: 15,
+                            right: 15,
+                            child: GestureDetector(
+                              onTap: () async {
                                 String? friendName = await showInputDialog(
                                     context,
                                     'Enter Name',
@@ -232,119 +351,21 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 await addFriend(friendName);
                                 setState(() {});
                               },
-                            ),
-                          ),
-                          Expanded(
-                            child: FutureBuilder<List<Map<String, String>>>(
-                              future: fetchFriendNamesForUser(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Center(
-                                      child: CircularProgressIndicator());
-                                } else if (snapshot.hasError) {
-                                  return Center(
-                                      child: Text('Error: ${snapshot.error}'));
-                                } else if (!snapshot.hasData ||
-                                    snapshot.data!.isEmpty) {
-                                  return Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('No friends found'),
-                                      ],
-                                    ),
-                                  );
-                                } else {
-                                  final friends = snapshot.data!;
-                                  return ListView.builder(
-                                    physics: AlwaysScrollableScrollPhysics(),
-                                    itemCount: friends.length,
-                                    itemBuilder: (context, index) {
-                                      final friend = friends[index];
-                                      final friendName = friend['username'];
-                                      final friendId = friend['id'];
-                                      final friendAvatar = friend['avatar'];
-                                      return Container(
-                                        margin: EdgeInsets.only(
-                                            left: 20, right: 20, bottom: 10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 5,
-                                              offset: Offset(0, 5),
-                                            ),
-                                          ],
-                                        ),
-                                        child: ListTile(
-                                          onTap: () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              '/friendprofilepage',
-                                              arguments: friendId,
-                                            );
-                                            print(friendId);
-                                          },
-                                          leading: CircleAvatar(
-                                            radius: 24,
-                                            backgroundImage: friendAvatar!
-                                                    .isNotEmpty
-                                                ? NetworkImage(friendAvatar)
-                                                : AssetImage(
-                                                        "assets/standardProfilePicture.png")
-                                                    as ImageProvider,
-                                          ),
-                                          title: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  SizedBox(width: 30),
-                                                  Text(
-                                                    '$friendName',
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  SizedBox(width: 10),
-                                                  IconButton(
-                                                    icon: Icon(Icons.delete,
-                                                        size: 24,
-                                                        color: Colors.red),
-                                                    onPressed: () async {
-                                                      if (friendId != null) {
-                                                        await deleteFriend(
-                                                            friendId);
-                                                        setState(() {});
-                                                        print(friendId);
-                                                        print(
-                                                            'Deleted $friendName');
-                                                      }
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 9, 106, 46),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 7, horizontal: 30),
+                                child: Text(
+                                  "Add Friend",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color:
+                                          Color.fromARGB(255, 255, 255, 255)),
+                                ),
+                              ),
                             ),
                           ),
                         ],
