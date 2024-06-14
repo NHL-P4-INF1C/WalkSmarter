@@ -77,7 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
             arguments: pb.authStore.model['id']);
       default:
         return;
-        return;
     }
   }
 
