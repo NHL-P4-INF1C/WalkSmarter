@@ -13,11 +13,12 @@ class TimerPainter extends CustomPainter
   final Color color;
 
   TimerPainter(
-  {
-    required this.animation,
-    required this.backgroundColor,
-    required this.color,
-  }) : super(repaint: animation);
+    {
+      required this.animation,
+      required this.backgroundColor,
+      required this.color,
+    }
+  ) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) 
@@ -53,9 +54,9 @@ class TimerPainter extends CustomPainter
     );
     textPainter.layout();
     textPainter.paint(
-        canvas,
-        Offset(size.width / 2 - textPainter.width / 2,
-            size.height / 2 - textPainter.height / 2));
+      canvas,
+      Offset(size.width / 2 - textPainter.width / 2,
+        size.height / 2 - textPainter.height / 2));
   }
 
   @override
@@ -145,7 +146,8 @@ void didChangeDependencies()
 
 void _startTimer() 
 {
-  if (mounted) {
+  if (mounted) 
+  {
     _controller.reverse(from: 1.0);
   }
 }
@@ -349,54 +351,54 @@ void _darnNoToast(BuildContext context)
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
                             children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        margin: EdgeInsets.all(4),
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: selectedOption == index
-                                              ? Color.fromARGB(155, 9, 106, 46)
-                                              : Color.fromARGB(255, 245, 245, 245),
-                                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                answers[index],
-                                                style: TextStyle(fontSize: 16),
-                                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.all(4),
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: selectedOption == index
+                                          ? Color.fromARGB(155, 9, 106, 46)
+                                          : Color.fromARGB(255, 245, 245, 245),
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              answers[index],
+                                              style: TextStyle(fontSize: 16),
                                             ),
-                                            Radio<int>(
-                                              value: index,
-                                              groupValue: selectedOption,
-                                              onChanged: (int? value) 
+                                          ),
+                                          Radio<int>(
+                                            value: index,
+                                            groupValue: selectedOption,
+                                            onChanged: (int? value) 
+                                            {
+                                              setState(() 
                                               {
-                                                setState(() 
-                                                {
-                                                  selectedOption = value;
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        ),
+                                                selectedOption = value;
+                                              });
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              if (selectedOption == index)
-                                Positioned.fill(
-                                  child: Container(
-                                    margin: EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
-                                      color: Color.fromARGB(0, 171, 209, 198),
-                                    ),
+                                  ),
+                                ],
+                              ),
+                              if(selectedOption == index)
+                              Positioned.fill(
+                                child: Container(
+                                  margin: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                    color: Color.fromARGB(0, 171, 209, 198),
                                   ),
                                 ),
+                              ),
                             ],
                           ),
                         );
@@ -443,9 +445,9 @@ void _darnNoToast(BuildContext context)
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
-                              const Color.fromARGB(255, 9, 106, 46)),
+                            const Color.fromARGB(255, 9, 106, 46)),
                           foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
+                            MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           "Submit answer",
