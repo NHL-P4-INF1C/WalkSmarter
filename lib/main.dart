@@ -16,6 +16,7 @@ import 'friendspage.dart';
 import 'informationpage.dart';
 import 'pocketbase.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class MyNavigatorObserver extends NavigatorObserver {
   @override
@@ -36,7 +37,12 @@ void main() async {
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await dotenv.load(fileName: '.env');
 
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -44,8 +50,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       navigatorObservers: [MyNavigatorObserver()],
+      themeMode: themeProvider.themeMode,
       theme: ThemeData(
         fontFamily: 'Inter',
         primaryColor: Color.fromARGB(255, 9, 106, 46),
@@ -59,8 +68,8 @@ class MyApp extends StatelessWidget {
           selectionHandleColor: Color.fromARGB(255, 9, 106, 46),
         ),
       ),
+      darkTheme: ThemeData.dark(),
       initialRoute: '/',
-      // Route map
       routes: {
         '/': (context) => LoginDemo(),
         '/signup': (context) => SignUp(),
@@ -78,5 +87,17 @@ class MyApp extends StatelessWidget {
         '/friendprofilepage': (context) => FriendProfilePage(),
       },
     );
+  }
+}
+
+class ThemeProvider extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  ThemeMode get themeMode => _themeMode;
+
+  void toggleTheme() {
+    _themeMode =
+        (_themeMode == ThemeMode.light) ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
   }
 }

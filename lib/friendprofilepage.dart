@@ -5,29 +5,37 @@ import "pocketbase.dart";
 
 var pb = PocketBaseSingleton().instance;
 
-class FriendProfilePage extends StatefulWidget 
-{
+class FriendProfilePage extends StatefulWidget {
   @override
   State<FriendProfilePage> createState() => _FriendProfilePageState();
 }
 
-class _FriendProfilePageState extends State<FriendProfilePage> 
-{
+class _FriendProfilePageState extends State<FriendProfilePage> {
   String _username = "Loading...";
   String _profilePicture = "";
-  String _userID = 'kyw332amt7ct21r';
   int currentIndex = 0;
+  String? friendId;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FriendId die ik mee stuur met de Navigator
+    friendId = ModalRoute.of(context)?.settings.arguments as String?;
+      print("Friend ID: $friendId");
     _fetchUserData();
   }
 
   Future<void> _fetchUserData() async {
+    if (friendId == null) return;
+
     try {
       final jsonString =
-          await pb.collection("users").getFirstListItem("id=\"$_userID\"");
+          await pb.collection("users").getFirstListItem("id=\"$friendId\"");
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _username = record["username"];
@@ -48,12 +56,6 @@ class _FriendProfilePageState extends State<FriendProfilePage>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _fetchUserData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
@@ -61,24 +63,17 @@ class _FriendProfilePageState extends State<FriendProfilePage>
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
           toolbarHeight: 50,
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: true,
           title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
-                onPressed: () 
-                {
-                  Navigator.pushNamed(context, "/profilepage");
-                },
-              ),
-              SizedBox(width: 8),
-              Row( 
+              Row(
                 children: [
-                  Text(
-                    "Go Back",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E))
-                  ),
+                  Text("Go Back",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF096A2E))),
                   SizedBox(width: 8),
                 ],
               ),
@@ -88,7 +83,8 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                   children: [
                     Text(
                       "Walk Smarter",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 8),
                     Image(
@@ -100,24 +96,6 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                 ),
               ),
             ],
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: CircleAvatar(
-                  radius: 23,
-                  backgroundImage: _profilePicture.startsWith("http")
-                      ? NetworkImage(_profilePicture)
-                      : AssetImage("assets/standardProfilePicture.png")
-                          as ImageProvider),
-            ),
-          ],
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
           ),
         ),
       ),
@@ -456,12 +434,15 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                   switch (index) {
                     case 0:
                       Navigator.pushNamed(context, '/homepage');
+                      return;
                     case 1:
                       Navigator.pushNamed(context, '/leaderboard');
+                      return;
                     case 2:
                       Navigator.pushNamed(context, '/friendspage');
+                      return;
                     default:
-                      break;
+                      return;
                   }
                 });
               },
