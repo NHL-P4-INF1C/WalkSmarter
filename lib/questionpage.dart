@@ -236,6 +236,21 @@ void _showTimerDialog()
     );
   }
 
+void _darnNoToast(BuildContext context) 
+{
+  final snackBar = SnackBar(
+    content: Text('Answered correctly, but failed to update points'),
+      action: SnackBarAction(
+      label: 'Go back',
+      onPressed: () 
+      {
+        Navigator.pushNamed(context, "/homepage");
+      },
+    ),
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
   @override
   Widget build(BuildContext context) 
   {
@@ -412,19 +427,19 @@ void _showTimerDialog()
                               );
 
                               print("Points updated successfully");
+                              _showCorrectAnswerDialog();
                             }
                             catch (e) 
                             {
                               print("Failed to update points in Pocketbase: $e");
+                              _darnNoToast(context);
                             }
-                            _showCorrectAnswerDialog();
-                            _stopTimer();
                           }
                           else
                           {
                             _showWrongAnswerDialog();
-                            _stopTimer();
                           }
+                          _stopTimer();
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
