@@ -31,17 +31,17 @@ class _InformationPageState extends State<InformationPage>
   {
     try 
     {
-      this.payload = await requestManager.makeApiCall();
-      if (this.payload['statusCode'] == 200) 
+      payload = await requestManager.makeApiCall();
+      if (payload['statusCode'] == 200) 
       {
-        monumentInformation = this.payload['response']['description'];
+        monumentInformation = payload['response']['description'];
       } 
       else 
       {
-        monumentInformation = "${this.payload['response']}. Status code: ${this.payload['statusCode']}";
+        monumentInformation = "${payload['response']}. Status code: ${payload['statusCode']}";
       }
       setState(() {
-        this.payload = this.payload;
+        payload = payload;
       });
     } 
     catch (e) 
@@ -130,15 +130,22 @@ class _InformationPageState extends State<InformationPage>
                     Container(
                       height: 380,
                       width: double.infinity,
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 245, 245, 245),
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
-                      child: Center(
-                        child: Text(
-                          monumentInformation,
-                          style: TextStyle(
-                            fontSize: 16,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Text(
+                              monumentInformation,
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                           ),
                         ),
                       ),
