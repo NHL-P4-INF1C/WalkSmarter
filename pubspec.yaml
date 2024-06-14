@@ -21,6 +21,7 @@ dependencies:
   geolocator: ^9.0.2
   geocoding: ^3.0.0
   permission_handler: ^10.2.0
+  google_places_flutter: ^2.0.8
 
 dev_dependencies:
   flutter_test:

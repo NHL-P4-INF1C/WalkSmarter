@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'pocketbase.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 var pb = PocketBaseSingleton().instance;
@@ -17,11 +19,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late GoogleMapController mapController;
+  final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: dotenv.env['GOOGLE_API_KEY']);
+
+  static const List<String> majorPlaceTypes = [
+  'art_gallery', 'museum', 'library', 'cemetery', 'church', 'synagogue', 
+  'mosque', 'hindu_temple', 'city_hall', 'aquarium', 'zoo', 'park', 
+  'amusement_park', 'movie_theater', 'tourist_attraction', 'school', 
+  'university', 'courthouse', 'embassy'
+  ];
+
+  // ignore: unused_fields
   late Position _currentPosition;
   late Timer _timer;
   Marker? _currentLocationMarker;
 
-  final LatLng _center = const LatLng(52.2691, 4.63729);
+  final LatLng _center = const LatLng(52.778382, 6.913517);
 
   String mapStyle = '';
   String _profilePicture = "";
@@ -249,12 +261,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void startLocationUpdates() {
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-    });
-  }
+void startLocationUpdates() {
+  _timer = Timer.periodic(Duration(seconds: 60), (timer) {
+    fetchLocationAndCheckProximity();
+  });
+}
 
-  Future<void> fetchLocation() async {
+  Future<void> fetchLocationAndCheckProximity() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
@@ -270,6 +283,45 @@ class _MyHomePageState extends State<MyHomePage> {
         print('MapController is not initialized');
       }
     });
+    print('Location: ${position.latitude}, ${position.longitude}');
+    checkProximityToMajorPOI(position);
+  }
+
+Future<void> checkProximityToMajorPOI(Position position) async {
+  for (String type in majorPlaceTypes) {
+    final response = await _places.searchNearbyWithRadius(
+      Location(lat: position.latitude,lng:  position.longitude),
+      100,
+      type: type,
+    );
+
+    if (response.isOkay) {
+      for (var result in response.results) {
+        double distance = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          result.geometry!.location.lat,
+          result.geometry!.location.lng,
+        );
+        print('Distance to ${result.name} ($type): $distance meters');
+      }
+    }
+  }
+}
+
+
+  Future<void> fetchLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentPosition = position;
+      LatLng currentLatLng = LatLng(position.latitude, position.longitude);
+      mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
+      _currentLocationMarker = Marker(
+        markerId: MarkerId('currentLocation'),
+        position: currentLatLng,
+      );
+        });
     print('Location: ${position.latitude}, ${position.longitude}');
   }
 }

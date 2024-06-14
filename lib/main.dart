@@ -19,47 +19,39 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class MyNavigatorObserver extends NavigatorObserver {
-  @override
-  Future<void> didPush(Route route, Route? previousRoute) async {
-    var pb = PocketBaseSingleton().instance;
+  // @override
+  // Future<void> didPush(Route route, Route? previousRoute) async {
+  //   var pb = PocketBaseSingleton().instance;
+  //     try {
+  //       var requestData = await pb.collection('users').authRefresh();
+  //       print(requestData);
 
-    if (pb.authStore.model != null) {
-      try {
-        var requestData = await pb.collection('users').authRefresh();
-        print(requestData);
-
-        if (requestData.meta['token'] != null && requestData.meta['token'].isNotEmpty) {
-          super.didPush(route, previousRoute);
-          return;
-        }
-      } catch (error) {
-        print('Error during authentication refresh: $error');
-        pb.authStore.clear();
-        Navigator.of(route.navigator!.context).pushReplacementNamed('/loginpage');
-      }
-    }
-    else
-    {
-      print('User not authenticated, redirecting to login page.');
-      Navigator.of(route.navigator!.context).pushReplacementNamed('/loginpage');
-    }
-  }
+  //       if (requestData.meta['token'] != null && requestData.meta['token'].isNotEmpty) {
+  //         super.didPush(route, previousRoute);
+  //         return;
+  //       }
+  //     } catch (error) {
+  //       print('Error during authentication refresh: $error');
+  //       pb.authStore.clear();
+  //       Navigator.of(route.navigator!.context).pushReplacementNamed('/loginpage');
+  //     }
+  // }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  
+
   // Load environment variables
   try {
     await dotenv.load(fileName: '.env');
   } catch (e) {
     print('Failed to load .env file: $e');
   }
-  
+
   PocketBaseSingleton().instance;
-  
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
