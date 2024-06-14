@@ -55,18 +55,13 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   Future<void> _changeProfilePicture() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       try {
         BuildContext context = this.context;
 
-        BuildContext context = this.context;
-
         var request = http.MultipartRequest(
           "PATCH",
-          Uri.parse('${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
           Uri.parse('${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
         );
 
@@ -167,8 +162,6 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     if (await _verifyPassword(username, password)) {
       try {
         await pb.collection("users").delete(_userID);
-        BuildContext context = this.context;
-        // ignore: use_build_context_synchronously
         BuildContext context = this.context;
         // ignore: use_build_context_synchronously
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
