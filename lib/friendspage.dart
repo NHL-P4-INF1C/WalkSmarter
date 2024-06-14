@@ -140,7 +140,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                         SizedBox(width: 8),
                         Text(
                           'Walk Smarter',
-                          style: TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 14, color: Colors.black),
                         ),
                         Expanded(
                           child: Align(
@@ -149,7 +149,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                               padding: const EdgeInsets.only(right: 15),
                               child: Text(
                                 '1001 Points',
-                                style: TextStyle(fontSize: 14),
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.black),
                               ),
                             ),
                           ),
@@ -159,7 +160,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                     actions: [
                       IconButton(
                         iconSize: 40,
-                        icon: Icon(Icons.account_circle),
+                        icon: Icon(Icons.account_circle,
+                            color: Color.fromRGBO(9, 106, 46, 1)),
                         onPressed: () {
                           Navigator.pushNamed(context, '/profilepage');
                         },
@@ -210,6 +212,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                         children: [
                           Container(
                             alignment: Alignment.topRight,
+                            padding: EdgeInsets.only(top: 10, right: 10),
                             child: IconButton(
                               icon: Icon(Icons.add,
                                   size: 30, color: Colors.green),
@@ -218,7 +221,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                     context,
                                     'Enter Name',
                                     'Type your name here');
-
                                 await addFriend(friendName);
                                 setState(() {});
                               },
@@ -257,11 +259,18 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                       final friendId = friend['id'];
                                       return Container(
                                         margin: EdgeInsets.only(
-                                            left: 30, right: 30, bottom: 10),
+                                            left: 20, right: 20, bottom: 10),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                              BorderRadius.circular(30),
+                                              BorderRadius.circular(15),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 5),
+                                            ),
+                                          ],
                                         ),
                                         child: ListTile(
                                           onTap: () {
@@ -364,6 +373,10 @@ class _FriendsPageState extends State<MyFriendsPage> {
                   selectedItemColor: Color(0xFF096A2E),
                   currentIndex: _selectedIndex,
                   onTap: _onItemTapped,
+                  backgroundColor: Colors.white,
+                  type: BottomNavigationBarType.fixed,
+                  selectedFontSize: 12,
+                  unselectedFontSize: 12,
                 ),
               ),
             ),
