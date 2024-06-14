@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import './utils/pocketbase.dart';
 import 'friendDialog.dart';
+import './components/navbar.dart';
+import './components/bottombar.dart';
 
 class MyFriendsPage extends StatefulWidget {
   @override
@@ -37,15 +39,12 @@ class _FriendsPageState extends State<MyFriendsPage> {
           await pb.collection('users').getOne(pb.authStore.model['id']);
       List<String> friends = List<String>.from(user.data['friends']);
 
-      // Fetch the friend by username
       final friendRecords = await pb.collection('users').getFullList(
             filter: 'username="$friendName"',
           );
 
       if (friendRecords.isNotEmpty) {
         final friend = friendRecords.first;
-
-        // Add the friend's ID to the friends list
         friends.add(friend.id);
 
         final body = <String, dynamic>{
@@ -82,8 +81,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
     for (String id in friendIds) {
       try {
         final friend = await pb.collection('users').getOne(id);
-
-        //Fetch avatar from user
         final profilePictureUrl = friend.data['avatar'] != null
             ? pb.files.getUrl(friend, friend.data['avatar']).toString()
             : '';
@@ -106,11 +103,11 @@ class _FriendsPageState extends State<MyFriendsPage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, '/homepage');
+          break;
         case 1:
           Navigator.pushNamed(context, '/leaderboard');
-        case 2:
           break;
-        default:
+        case 2:
           break;
       }
     });
@@ -121,6 +118,9 @@ class _FriendsPageState extends State<MyFriendsPage> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      appBar: Navbar(
+          profilePicture:
+              'path/to/profile/picture'), // Replace with actual profile picture path
       body: Stack(
         children: [
           Container(
@@ -134,52 +134,17 @@ class _FriendsPageState extends State<MyFriendsPage> {
                   Container(
                     color: Color.fromRGBO(9, 106, 46, 1),
                   ),
-                  AppBar(
-                    automaticallyImplyLeading: false,
-                    toolbarHeight: 50,
-                    title: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image(
-                          image: AssetImage('assets/walksmarterlogo.png'),
-                          height: 40,
-                          width: 40,
+                  Container(
+                    height: 50,
+                    color: Color.fromRGBO(9, 106, 46, 1),
+                    child: Center(
+                      child: Text(
+                        'Friends',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Walk Smarter',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 15),
-                              child: Text(
-                                '1001 Points',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      IconButton(
-                        iconSize: 40,
-                        icon: Icon(Icons.account_circle,
-                            color: Color.fromRGBO(9, 106, 46, 1)),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/profilepage');
-                        },
-                      ),
-                    ],
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30),
                       ),
                     ),
                   ),
@@ -376,46 +341,9 @@ class _FriendsPageState extends State<MyFriendsPage> {
               ),
             ],
           ),
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30.0),
-                border: Border.all(
-                  color: Color(0xFF096A2E),
-                  width: 2.0,
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30.0),
-                child: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.map),
-                      label: 'Map',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.leaderboard),
-                      label: 'Leaderboard',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.group),
-                      label: 'Friends',
-                    ),
-                  ],
-                  selectedItemColor: Color(0xFF096A2E),
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                  backgroundColor: Colors.white,
-                  type: BottomNavigationBarType.fixed,
-                  selectedFontSize: 12,
-                  unselectedFontSize: 12,
-                ),
-              ),
-            ),
+          BottomNavBar(
+            selectedIndex: _selectedIndex,
+            onTap: _onItemTapped,
           ),
         ],
       ),
