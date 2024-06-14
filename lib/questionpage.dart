@@ -190,50 +190,50 @@ void _showTimerDialog()
 
   void _showCorrectAnswerDialog() 
   {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) 
-    {
-      return AlertDialog(
-        title: Text("Correct Answer!"),
-        content: Text("You've earned a point!"),
-        actions: <Widget>[
-          TextButton(
-            child: Text("OK"),
-            onPressed: () 
-            {
-              Navigator.pushNamed(context, "/homepage");
-            },
-          ),
-        ],
-      );
-    },
-  );
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) 
+      {
+        return AlertDialog(
+          title: Text("Correct Answer!"),
+          content: Text("You've earned a point!"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () 
+              {
+                Navigator.pushNamed(context, "/homepage");
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showWrongAnswerDialog() 
   {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) 
-    {
-      return AlertDialog(
-        title: Text("Wrong Answer!"),
-        content: Text("Better luck next time!"),
-        actions: <Widget>[
-          TextButton(
-            child: Text("OK"),
-            onPressed: () 
-            {
-              Navigator.pushNamed(context, "/homepage");
-            },
-          ),
-        ],
-      );
-    },
-  );
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) 
+      {
+        return AlertDialog(
+          title: Text("Wrong Answer!"),
+          content: Text("Better luck next time!"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () 
+              {
+                Navigator.pushNamed(context, "/homepage");
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
