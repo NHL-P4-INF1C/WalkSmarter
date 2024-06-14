@@ -1,40 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'pocketbase.dart';
 
 class LeaderboardPage extends StatefulWidget {
   @override
-  State<LeaderboardPage> createState() => _LeaderboardPageState();
+  _LeaderboardPageState createState() => _LeaderboardPageState();
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
-  int _selectedIndex = 1;
-  late String _selectedMonth;
+  List<Map<String, dynamic>> _users = [];
+  final pocketBase = PocketBaseSingleton().instance;
 
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('en', null);
-    _selectedMonth = DateFormat.MMMM('en').format(DateTime.now());
+
+    pocketBase.collection('users').getList().then((response) {
+      setState(() {
+        _users = response.items.map((item) => item.toJson()).toList();
+        _users.sort((a, b) => b['points'].compareTo(a['points']));
+      });
+    }).catchError((error) {
+      print('Error fetching user data: $error');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-
     return Scaffold(
       body: Stack(
         children: [
@@ -83,9 +74,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       IconButton(
                         iconSize: 40,
                         icon: Icon(Icons.account_circle),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/profilepage');
-                        },
+                        onPressed: () {},
                       ),
                     ],
                     backgroundColor: Colors.white,
@@ -107,41 +96,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       'Leaderboard',
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                    SizedBox(width: 8),
-                    PopupMenuButton<String>(
-                      offset: Offset(0, 35),
-                      itemBuilder: (BuildContext context) {
-                        return months.map((String value) {
-                          return PopupMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList();
-                      },
-                      onSelected: (String newValue) {
-                        setState(() {
-                          _selectedMonth = newValue;
-                        });
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                        decoration: BoxDecoration(
-                          border:
-                              Border(bottom: BorderSide(color: Colors.white)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _selectedMonth,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Icon(Icons.arrow_drop_down, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -160,26 +114,17 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           children: [
                             Positioned(
                               bottom: 120,
-                              left:
-                                  MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(
-                                  2, Colors.grey[300]!, 30,
-                                  borderColor: Color(0xFFC0C0C0)),
+                              left: MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)),
                             ),
                             Positioned(
                               bottom: 150,
-                              child: _buildTopThreeCircle(
-                                  1, Colors.grey[300]!, 35,
-                                  borderColor: Color(0xFFFFD700),
-                                  isCrowned: true),
+                              child: _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true),
                             ),
                             Positioned(
                               bottom: 120,
-                              right:
-                                  MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(
-                                  3, Colors.grey[300]!, 30,
-                                  borderColor: Color(0xFFCD7F32)),
+                              right: MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)),
                             ),
                           ],
                         ),
@@ -196,12 +141,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       ),
                       child: ListView.builder(
                         physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: 17,
+                        itemCount: _users.length <= 3 ? 0 : _users.length - 3,
                         itemBuilder: (context, index) {
+                          var user = _users[index + 3];
                           String position = (index + 4).toString();
                           return Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 10),
+                            margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30),
@@ -224,20 +169,19 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                   SizedBox(width: 8),
                                   CircleAvatar(
                                     radius: 20,
-                                    child: Icon(Icons.account_circle, size: 40),
+                                    backgroundImage: _getAvatarUrl(user['id'], user['avatar']).isNotEmpty
+                                        ? NetworkImage(_getAvatarUrl(user['id'], user['avatar']))
+                                        : AssetImage('assets/default_avatar.png') as ImageProvider,
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Username',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                    user['username'],
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                   ),
                                   Spacer(),
                                   Text(
-                                    '1001',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                    user['points'].toString(),
+                                    style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   SizedBox(width: 4),
                                 ],
@@ -283,17 +227,18 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     ),
                   ],
                   selectedItemColor: Color(0xFF096A2E),
-                  currentIndex: _selectedIndex,
                   onTap: (index) {
                     setState(() {
-                      _selectedIndex = index;
                       switch (index) {
                         case 0:
                           Navigator.pushNamed(context, '/homepage');
+                          break;
                         case 1:
                           Navigator.pushNamed(context, '/leaderboard');
+                          break;
                         case 2:
-                          Navigator.pushNamed(context, '/friendspage');
+                          Navigator.pushNamed(context, '/friends');
+                          break;
                         default:
                           break;
                       }
@@ -308,8 +253,13 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 
-  Widget _buildTopThreeCircle(int position, Color circleColor, double size,
-      {bool isCrowned = false, required Color borderColor}) {
+  String _getAvatarUrl(String userId, String avatarFilename) {
+    final baseUrl = 'https://inf1c-p4-pocketbase.bramsuurd.nl/api/files/_pb_users_auth_';
+    return avatarFilename.isNotEmpty ? '$baseUrl/$userId/$avatarFilename' : '';
+  }
+
+  Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
+    var user = _users.length >= position ? _users[position - 1] : null;
     return Column(
       children: [
         SizedBox(height: 10),
@@ -322,7 +272,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               child: CircleAvatar(
                 radius: size,
                 backgroundColor: circleColor,
-                child: Icon(Icons.account_circle, size: size * 2),
+                backgroundImage: user != null && _getAvatarUrl(user['id'], user['avatar']).isNotEmpty
+                    ? NetworkImage(_getAvatarUrl(user['id'], user['avatar']))
+                    : AssetImage('assets/default_avatar.png') as ImageProvider,
               ),
             ),
             if (isCrowned)
@@ -343,29 +295,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 ),
                 child: Text(
                   '$position',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ],
         ),
         SizedBox(height: 5),
-        Column(
-          children: [
-            Text(
-              '{username}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 14),
-            ),
-            Text(
-              '1001',
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
+        if (user != null)
+          Column(
+            children: [
+              Text(
+                user['username'],
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
+              ),
+              Text(
+                user['points'].toString(),
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
       ],
     );
   }
