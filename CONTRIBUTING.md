@@ -9,7 +9,8 @@
 2. **Class Naming**: Use UpperCamelCase for class names. For example, `MyWidget`.
 
    ```dart
-   class MyWidget {
+   class MyWidget 
+   {
      // class definition
    }
    ```
@@ -29,7 +30,8 @@
 5. **Indentation**: Use 2 spaces for indentation.
 
    ```dart
-   void main() {
+   void main() 
+   {
      print('Indented with 2 spaces');
    }
    ```
@@ -37,7 +39,8 @@
 6. **Brackets**: Use the K&R style for brackets placement.
 
    ```dart
-   void main() {
+   void main()
+   {
        print('Brackets on their own lines');
    }
    ```
@@ -60,10 +63,22 @@
    */
    ```
 
+9. **Imports Ordering**: Sort import statements in the following order: Flutter imports, third-party imports, and local imports. Separate each group with a newline.
+
+   ```dart
+   import 'package:flutter/material.dart';
+
+   import 'package:http/http.dart' as http;
+   import 'package:some_other_package/some_other_package.dart';
+
+   import 'local_file.dart';
+   ```
+
 10. **Widget Declaration**: Organize widgets in a hierarchical manner. Use indentation to denote the widget tree structure.
 
     ```dart
-    Widget build(BuildContext context) {
+    Widget build(BuildContext context) 
+    {
       return Scaffold(
         appBar: AppBar(
           title: Text('Widget Declaration Example'),
@@ -81,7 +96,8 @@
 11. **Widget Properties**: Group related properties together and order them alphabetically.
 
     ```dart
-    Widget build(BuildContext context) {
+    Widget build(BuildContext context) 
+    {
       return Container(
         alignment: Alignment.center,
         color: Colors.blue,
@@ -94,7 +110,8 @@
 12. **Widget Building**: Prefer composition over inheritance. Break down complex widgets into smaller, reusable components.
 
     ```dart
-    class MyWidget extends StatelessWidget {
+    class MyWidget extends StatelessWidget 
+    {
       @override
       Widget build(BuildContext context) 
       {
@@ -109,7 +126,8 @@
       }
     }
 
-    class SubWidget1 extends StatelessWidget {
+    class SubWidget1 extends StatelessWidget 
+    {
       @override
       Widget build(BuildContext context) 
       {
@@ -117,7 +135,8 @@
       }
     }
 
-    class SubWidget2 extends StatelessWidget {
+    class SubWidget2 extends StatelessWidget 
+    {
       @override
       Widget build(BuildContext context) 
       {
@@ -129,10 +148,12 @@
 13. **Error Handling**: Implement error handling using try-catch blocks where appropriate.
 
     ```dart
-    try {
+    try 
+    {
       // Code that might throw an error
     } 
-    catch (e) {
+    catch (e) 
+    {
       // Handle the error
     }
     ```
@@ -140,12 +161,15 @@
 14. **Async/Await**: Prefer async/await syntax over using then() for handling asynchronous operations.
 
     ```dart
-    Future<void> fetchData() async {
-      try {
+    Future<void> fetchData() async 
+    {
+      try 
+      {
         var data = await fetchDataFromServer();
         // Handle data
       } 
-      catch (e) {
+      catch (e) 
+      {
         // Handle error
       }
     }
