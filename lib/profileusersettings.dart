@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:image_picker/image_picker.dart";
-import "pocketbase.dart";
+import "utils/pocketbase.dart";
 import "dart:convert";
 import "package:http/http.dart" as http;
 
@@ -85,6 +85,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
           });
           if (!mounted) return;
           // ignore: use_build_context_synchronously
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Profile picture changed successfully!"),
@@ -95,6 +97,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         } else {
           if (!mounted) return;
           // ignore: use_build_context_synchronously
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Failed to change profile picture"),
@@ -103,6 +107,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         }
       } catch (e) {
         print("Error uploading image: $e");
+        if (!mounted) return;
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -122,6 +127,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         _profilePicture = "";
       });
       if (!mounted) return; 
+      if (!mounted) return; 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Profile picture deleted successfully!"),
@@ -129,6 +135,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       );
     } catch (e) {
       print("Error deleting profile picture: $e");
+      if (!mounted) return;
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -140,7 +147,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
 
   Future<bool> _verifyPassword(String username, String password) async {
     try {
-      await pb.collection('users').authWithPassword(username, password);
+      await pb.collection('users').authWithPassword(
+        username,
+        password,
+      );
       return pb.authStore.isValid;
     } catch (e) {
       print("Error verifying password: $e");
@@ -153,10 +163,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       try {
         await pb.collection("users").delete(_userID);
         BuildContext context = this.context;
-        // ignore: use_build_context_synchronously
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
       } catch (e) {
         print("Error deleting account: $e");
+        if (!mounted) return;
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -165,6 +175,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         );
       }
     } else {
+      if (!mounted) return;
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -394,6 +405,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                           .collection('users')
                           .requestPasswordReset(pb.authStore.model['email']);
                       showDialog(
+                        // ignore: use_build_context_synchronously
                         // ignore: use_build_context_synchronously
                         context: context,
                         builder: (BuildContext context) {

@@ -14,7 +14,7 @@ import 'profilepage.dart';
 import 'questionpage.dart';
 import 'friendspage.dart';
 import 'informationpage.dart';
-import 'pocketbase.dart';
+import 'utils/pocketbase.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
