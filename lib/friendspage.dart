@@ -82,7 +82,17 @@ class _FriendsPageState extends State<MyFriendsPage> {
     for (String id in friendIds) {
       try {
         final friend = await pb.collection('users').getOne(id);
-        friends.add({'id': id, 'username': friend.data['username']});
+
+        //Fetch avatar from user
+        final profilePictureUrl = friend.data['avatar'] != null
+            ? pb.files.getUrl(friend, friend.data['avatar']).toString()
+            : '';
+
+        friends.add({
+          'id': id,
+          'username': friend.data['username'],
+          'avatar': profilePictureUrl,
+        });
       } catch (e) {
         print('Error fetching friend with ID $id: $e');
       }
@@ -96,10 +106,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, '/homepage');
-          break;
         case 1:
           Navigator.pushNamed(context, '/leaderboard');
-          break;
         case 2:
           break;
         default:
@@ -212,7 +220,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                         children: [
                           Container(
                             alignment: Alignment.topRight,
-                            padding: EdgeInsets.only(top: 10, right: 10),
+                            padding: EdgeInsets.only(bottom: 10, right: 10),
                             child: IconButton(
                               icon: Icon(Icons.add,
                                   size: 30, color: Colors.green),
@@ -257,6 +265,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                       final friend = friends[index];
                                       final friendName = friend['username'];
                                       final friendId = friend['id'];
+                                      final friendAvatar = friend['avatar'];
                                       return Container(
                                         margin: EdgeInsets.only(
                                             left: 20, right: 20, bottom: 10),
@@ -281,16 +290,22 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                             );
                                             print(friendId);
                                           },
+                                          leading: CircleAvatar(
+                                            radius: 24,
+                                            backgroundImage: friendAvatar!
+                                                    .isNotEmpty
+                                                ? NetworkImage(friendAvatar)
+                                                : AssetImage(
+                                                        "assets/standardProfilePicture.png")
+                                                    as ImageProvider,
+                                          ),
                                           title: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Row(
                                                 children: [
-                                                  Icon(Icons.person,
-                                                      size: 24,
-                                                      color: Colors.amber),
-                                                  SizedBox(width: 10),
+                                                  SizedBox(width: 30),
                                                   Text(
                                                     '$friendName',
                                                     style: TextStyle(
