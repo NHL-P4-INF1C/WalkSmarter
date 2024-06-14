@@ -129,27 +129,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
           ),
           Column(
             children: [
-              Stack(
-                children: [
-                  Container(
-                    color: Color.fromRGBO(9, 106, 46, 1),
-                  ),
-                  Container(
-                    height: 50,
-                    color: Color.fromRGBO(9, 106, 46, 1),
-                    child: Center(
-                      child: Text(
-                        'Friends',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               Expanded(
                 child: Stack(
                   children: [
@@ -181,132 +160,11 @@ class _FriendsPageState extends State<MyFriendsPage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: Stack(
+                      child: Column(
                         children: [
-                          Column(
-                            children: [
-                              Expanded(
-                                child: FutureBuilder<List<Map<String, String>>>(
-                                  future: fetchFriendNamesForUser(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Center(
-                                          child: CircularProgressIndicator());
-                                    } else if (snapshot.hasError) {
-                                      return Center(
-                                          child:
-                                              Text('Error: ${snapshot.error}'));
-                                    } else if (!snapshot.hasData ||
-                                        snapshot.data!.isEmpty) {
-                                      return Center(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text('No friends found'),
-                                          ],
-                                        ),
-                                      );
-                                    } else {
-                                      final friends = snapshot.data!;
-                                      return ListView.builder(
-                                        physics:
-                                            AlwaysScrollableScrollPhysics(),
-                                        itemCount: friends.length,
-                                        itemBuilder: (context, index) {
-                                          final friend = friends[index];
-                                          final friendName = friend['username'];
-                                          final friendId = friend['id'];
-                                          final friendAvatar = friend['avatar'];
-                                          return Container(
-                                            margin: EdgeInsets.only(
-                                                left: 20, right: 20, top: 10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black12,
-                                                  blurRadius: 5,
-                                                  offset: Offset(0, 5),
-                                                ),
-                                              ],
-                                            ),
-                                            child: ListTile(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                  context,
-                                                  '/friendprofilepage',
-                                                  arguments: friendId,
-                                                );
-                                                print(friendId);
-                                              },
-                                              leading: CircleAvatar(
-                                                radius: 24,
-                                                backgroundImage: friendAvatar!
-                                                        .isNotEmpty
-                                                    ? NetworkImage(friendAvatar)
-                                                    : AssetImage(
-                                                            "assets/standardProfilePicture.png")
-                                                        as ImageProvider,
-                                              ),
-                                              title: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      SizedBox(width: 30),
-                                                      Text(
-                                                        '$friendName',
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      SizedBox(width: 10),
-                                                      IconButton(
-                                                        icon: Icon(Icons.delete,
-                                                            size: 24,
-                                                            color: Colors.red),
-                                                        onPressed: () async {
-                                                          if (friendId !=
-                                                              null) {
-                                                            await deleteFriend(
-                                                                friendId);
-                                                            setState(() {});
-                                                            print(friendId);
-                                                            print(
-                                                                'Deleted $friendName');
-                                                          }
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          Positioned(
-                            top: 15,
-                            right: 15,
+                          Container(
+                            padding: EdgeInsets.only(top: 10, bottom: 10),
+                            alignment: Alignment(0.9, 0),
                             child: GestureDetector(
                               onTap: () async {
                                 String? friendName = await showInputDialog(
@@ -331,6 +189,119 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                           Color.fromARGB(255, 255, 255, 255)),
                                 ),
                               ),
+                            ),
+                          ),
+                          Expanded(
+                            child: FutureBuilder<List<Map<String, String>>>(
+                              future: fetchFriendNamesForUser(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                } else if (!snapshot.hasData ||
+                                    snapshot.data!.isEmpty) {
+                                  return Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('No friends found'),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  final friends = snapshot.data!;
+                                  return ListView.builder(
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    itemCount: friends.length,
+                                    itemBuilder: (context, index) {
+                                      final friend = friends[index];
+                                      final friendName = friend['username'];
+                                      final friendId = friend['id'];
+                                      final friendAvatar = friend['avatar'];
+                                      return Container(
+                                        margin: EdgeInsets.only(
+                                            left: 20, right: 20, top: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 5),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ListTile(
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/friendprofilepage',
+                                              arguments: friendId,
+                                            );
+                                            print(friendId);
+                                          },
+                                          leading: CircleAvatar(
+                                            radius: 24,
+                                            backgroundImage: friendAvatar!
+                                                    .isNotEmpty
+                                                ? NetworkImage(friendAvatar)
+                                                : AssetImage(
+                                                        "assets/standardProfilePicture.png")
+                                                    as ImageProvider,
+                                          ),
+                                          title: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  SizedBox(width: 30),
+                                                  Text(
+                                                    '$friendName',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  SizedBox(width: 10),
+                                                  IconButton(
+                                                    icon: Icon(Icons.delete,
+                                                        size: 24,
+                                                        color: Colors.red),
+                                                    onPressed: () async {
+                                                      if (friendId != null) {
+                                                        await deleteFriend(
+                                                            friendId);
+                                                        setState(() {});
+                                                        print(friendId);
+                                                        print(
+                                                            'Deleted $friendName');
+                                                      }
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }
+                              },
                             ),
                           ),
                         ],
