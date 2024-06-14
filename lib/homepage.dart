@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'pocketbase.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 var pb = PocketBaseSingleton().instance;
-// final places = GoogleMapsPlaces(apiKey: 'AIzaSyAOpBXEXbEuNuqD-1EujOj4TmF-4M9Evmg');
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -38,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
     requestLocationPermission();
+    _fetchUserData();
   }
 
   @override
@@ -48,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    print('Map created and controller initialized');
     if (mapStyle.isNotEmpty) {
       mapController.setMapStyle(mapStyle);
     }
@@ -186,28 +186,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          Center(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.81,
-              decoration: BoxDecoration(),
-              child: Center(
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/informationpage');
-                        },
-                        child: Text('Question'),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: _center,
+              zoom: 11.0,
             ),
+            markers: _currentLocationMarker != null ? {_currentLocationMarker!} : {},
           ),
           Positioned(
             left: 20,
@@ -266,7 +251,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void startLocationUpdates() {
     _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-      fetchLocation();
     });
   }
 
@@ -276,11 +260,15 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _currentPosition = position;
       LatLng currentLatLng = LatLng(position.latitude, position.longitude);
-      mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
-      _currentLocationMarker = Marker(
-        markerId: MarkerId('currentLocation'),
-        position: currentLatLng,
-      );
+      if (mapController != null) {
+        mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
+        _currentLocationMarker = Marker(
+          markerId: MarkerId('currentLocation'),
+          position: currentLatLng,
+        );
+      } else {
+        print('MapController is not initialized');
+      }
     });
     print('Location: ${position.latitude}, ${position.longitude}');
   }

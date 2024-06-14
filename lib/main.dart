@@ -21,12 +21,27 @@ import 'package:provider/provider.dart';
 class MyNavigatorObserver extends NavigatorObserver {
   @override
   Future<void> didPush(Route route, Route? previousRoute) async {
-    try {
-      var pb = PocketBaseSingleton().instance;
-      await pb.collection('users').authRefresh();
-      super.didPush(route, previousRoute);
-    } catch (error) {
-      print('Error during navigation: $error');
+    var pb = PocketBaseSingleton().instance;
+
+    if (pb.authStore.model != null) {
+      try {
+        var requestData = await pb.collection('users').authRefresh();
+        print(requestData);
+
+        if (requestData.meta['token'] != null && requestData.meta['token'].isNotEmpty) {
+          super.didPush(route, previousRoute);
+          return;
+        }
+      } catch (error) {
+        print('Error during authentication refresh: $error');
+        pb.authStore.clear();
+        Navigator.of(route.navigator!.context).pushReplacementNamed('/loginpage');
+      }
+    }
+    else
+    {
+      print('User not authenticated, redirecting to login page.');
+      Navigator.of(route.navigator!.context).pushReplacementNamed('/loginpage');
     }
   }
 }
