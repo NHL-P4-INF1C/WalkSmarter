@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'pocketbase.dart';
+import 'dart:convert';
+
+var pb = PocketBaseSingleton().instance;
 
 class LeaderboardPage extends StatefulWidget {
   @override
@@ -8,20 +11,70 @@ class LeaderboardPage extends StatefulWidget {
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
   List<Map<String, dynamic>> _users = [];
-  final pocketBase = PocketBaseSingleton().instance;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _fetchUserData();
+  }
 
-    pocketBase.collection('users').getList().then((response) {
-      setState(() {
-        _users = response.items.map((item) => item.toJson()).toList();
-        _users.sort((a, b) => b['points'].compareTo(a['points']));
-      });
-    }).catchError((error) {
-      print('Error fetching user data: $error');
+  Future<void> _fetchUserData() async {
+    setState(() {
+      _isLoading = true;
     });
+
+    try {
+      final response = await pb.collection('users').getList();
+      final userList = response.items.map((item) => item.toJson()).toList();
+      userList.sort((a, b) => b['points'].compareTo(a['points']));
+      setState(() {
+        _users = userList;
+        _isLoading = false;
+      });
+    } catch (error) {
+      print('Error fetching user data: $error');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<String> fetchPoints() async {
+    try {
+      final response = await pb.collection('users').getOne(pb.authStore.model['id']);
+      return response.data['points'].toString();
+    } catch (error) {
+      print('Error: $error');
+      return 'Err';
+    }
+  }
+
+  Future<void> _fetchAvatar(String userId) async {
+    try {
+      final jsonString = await pb.collection("users").getFirstListItem('id="$userId"');
+      final record = jsonDecode(jsonString.toString());
+      setState(() {
+        _users = _users.map((user) {
+          if (user['id'] == userId) {
+            user['avatarUrl'] = record["avatar"] != null
+                ? pb.files.getUrl(jsonString, record["avatar"]).toString()
+                : "";
+          }
+          return user;
+        }).toList();
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        _users = _users.map((user) {
+          if (user['id'] == userId) {
+            user['avatarUrl'] = "";
+          }
+          return user;
+        }).toList();
+      });
+    }
   }
 
   @override
@@ -61,9 +114,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                             alignment: Alignment.centerRight,
                             child: Padding(
                               padding: const EdgeInsets.only(right: 15),
-                              child: Text(
-                                '1001 Points',
-                                style: TextStyle(fontSize: 14),
+                              child: FutureBuilder<String>(
+                                future: fetchPoints(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return Text(
+                                      'Loading...',
+                                      style: TextStyle(fontSize: 14),
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return Text(
+                                      'Error',
+                                      style: TextStyle(fontSize: 14),
+                                    );
+                                  } else {
+                                    return Text(
+                                      '${snapshot.data} Points',
+                                      style: TextStyle(fontSize: 14),
+                                    );
+                                  }
+                                },
                               ),
                             ),
                           ),
@@ -139,57 +209,62 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: ListView.builder(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: _users.length <= 3 ? 0 : _users.length - 3,
-                        itemBuilder: (context, index) {
-                          var user = _users[index + 3];
-                          String position = (index + 4).toString();
-                          return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: ListTile(
-                              title: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 25,
-                                    child: Text(
-                                      position,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
+                      child: _isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView.builder(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemCount: _users.length <= 3 ? 0 : _users.length - 3,
+                              itemBuilder: (context, index) {
+                                var user = _users[index + 3];
+                                String position = (index + 4).toString();
+                                _fetchAvatar(user['id']);
+                                return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: ListTile(
+                                    title: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 25,
+                                          child: Text(
+                                            position,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
+                                              ? NetworkImage(user['avatarUrl'])
+                                              : AssetImage('assets/default_avatar.png') as ImageProvider,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          user['username'],
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        ),
+                                        Spacer(),
+                                        Text(
+                                          user['points'].toString(),
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(width: 4),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: _getAvatarUrl(user['id'], user['avatar']).isNotEmpty
-                                        ? NetworkImage(_getAvatarUrl(user['id'], user['avatar']))
-                                        : AssetImage('assets/default_avatar.png') as ImageProvider,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    user['username'],
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                  ),
-                                  Spacer(),
-                                  Text(
-                                    user['points'].toString(),
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(width: 4),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ],
                 ),
@@ -253,13 +328,11 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 
-  String _getAvatarUrl(String userId, String avatarFilename) {
-    final baseUrl = 'https://inf1c-p4-pocketbase.bramsuurd.nl/api/files/_pb_users_auth_';
-    return avatarFilename.isNotEmpty ? '$baseUrl/$userId/$avatarFilename' : '';
-  }
-
   Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
     var user = _users.length >= position ? _users[position - 1] : null;
+    if (user != null && user['avatarUrl'] == null) {
+      _fetchAvatar(user['id']);
+    }
     return Column(
       children: [
         SizedBox(height: 10),
@@ -267,13 +340,14 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           alignment: Alignment.topCenter,
           children: [
             CircleAvatar(
-              radius: size + 3,
+              radius: size + 
+3,
               backgroundColor: borderColor,
               child: CircleAvatar(
                 radius: size,
                 backgroundColor: circleColor,
-                backgroundImage: user != null && _getAvatarUrl(user['id'], user['avatar']).isNotEmpty
-                    ? NetworkImage(_getAvatarUrl(user['id'], user['avatar']))
+                backgroundImage: user != null && user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
+                    ? NetworkImage(user['avatarUrl'])
                     : AssetImage('assets/default_avatar.png') as ImageProvider,
               ),
             ),
@@ -307,11 +381,11 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             children: [
               Text(
                 user['username'],
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
                 user['points'].toString(),
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
