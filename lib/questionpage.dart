@@ -158,23 +158,34 @@ void _stopTimer() {
 
 void _showTimerDialog() 
 {
-  if (mounted) 
+  if(mounted)
   {
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (BuildContext context) 
       {
         return AlertDialog(
           title: Text("Time's up!"),
           content: Text("You ran out of time."),
           actions: <Widget>[
-            TextButton(
-              child: Text("Go back"),
-              onPressed: () 
-              {
-                Navigator.pushNamed(context, "/homepage");
-              },
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 9, 106, 46),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+                child: Text("Go back"),
+                onPressed: () 
+                {
+                  Navigator.pushNamed(context, "/homepage");
+                },
+              ),
             ),
           ],
         );
@@ -190,53 +201,77 @@ void _showTimerDialog()
     super.dispose();
   }
 
-  void _showCorrectAnswerDialog() 
-  {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) 
-      {
-        return AlertDialog(
-          title: Text("Correct Answer!"),
-          content: Text("You've earned a point!"),
-          actions: <Widget>[
-            TextButton(
+void _showCorrectAnswerDialog() 
+{
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) 
+    {
+      return AlertDialog(
+        title: Text("Correct Answer!"),
+        content: Text("You've earned a point!"),
+        actions: <Widget>[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 9, 106, 46),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              ),
               child: Text("OK"),
               onPressed: () 
               {
                 Navigator.pushNamed(context, "/homepage");
               },
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+        ],
+      );
+    },
+  );
+}
 
-  void _showWrongAnswerDialog() 
-  {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) 
-      {
-        return AlertDialog(
-          title: Text("Wrong Answer!"),
-          content: Text("Better luck next time!"),
-          actions: <Widget>[
-            TextButton(
+void _showWrongAnswerDialog() 
+{
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) 
+    {
+      return AlertDialog(
+        title: Text("Wrong answer!"),
+        content: Text("Better luck next time!"),
+        actions: <Widget>[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 9, 106, 46),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              ),
               child: Text("OK"),
               onPressed: () 
               {
                 Navigator.pushNamed(context, "/homepage");
               },
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+        ],
+      );
+    },
+  );
+}
 
 void _darnNoToast(BuildContext context) 
 {
