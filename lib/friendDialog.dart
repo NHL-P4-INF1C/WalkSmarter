@@ -4,14 +4,13 @@ class InputDialog extends StatefulWidget {
   final String title;
   final String hintText;
 
-  const InputDialog({required this.title, required this.hintText, Key? key})
-      : super(key: key);
+  const InputDialog({required this.title, required this.hintText, super.key});
 
   @override
-  _InputDialogState createState() => _InputDialogState();
+  InputDialogState createState() => InputDialogState();
 }
 
-class _InputDialogState extends State<InputDialog> {
+class InputDialogState extends State<InputDialog> {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -46,8 +45,7 @@ class _InputDialogState extends State<InputDialog> {
   }
 }
 
-Future<String?> showInputDialog(
-    BuildContext context, String title, String hintText) {
+Future<String?> showInputDialog(BuildContext context, String title, String hintText) {
   return showDialog<String>(
     context: context,
     builder: (BuildContext context) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import './utils/pocketbase.dart';
-import 'friendDialog.dart';
+import 'frienddialog.dart';
 import './components/navbar.dart';
 import './components/bottombar.dart';
 
@@ -103,12 +103,12 @@ class _FriendsPageState extends State<MyFriendsPage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, '/homepage');
-          break;
+          return;
         case 1:
           Navigator.pushNamed(context, '/leaderboard');
-          break;
+          return;
         case 2:
-          break;
+          return;
       }
     });
   }
