@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/profileappsettings': (context) => ProfileAppSettings(),
         '/changeusername': (context) => ChangeUsernamePage(),
-        '/questionpage': (context) => QuestionPage(),
+        '/questionpage': (context) => QuestionPage(payload: {}),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),
         '/friendprofilepage': (context) => FriendProfilePage(),
