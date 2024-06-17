@@ -307,13 +307,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       switch (index) {
                         case 0:
                           Navigator.pushNamed(context, '/homepage');
-                          break;
                         case 1:
                           Navigator.pushNamed(context, '/leaderboard');
-                          break;
                         case 2:
                           Navigator.pushNamed(context, '/friends');
-                          break;
                         default:
                           break;
                       }
