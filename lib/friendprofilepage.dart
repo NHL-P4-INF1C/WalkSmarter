@@ -1,53 +1,55 @@
 import "package:flutter/material.dart";
 import "package:walk_smarter/leaderboard.dart";
 import "dart:convert";
-import "pocketbase.dart";
+import "utils/pocketbase.dart";
+import "./components/bottombar.dart";
 
 var pb = PocketBaseSingleton().instance;
 
-class FriendProfilePage extends StatefulWidget 
-{
+class FriendProfilePage extends StatefulWidget {
   @override
   State<FriendProfilePage> createState() => _FriendProfilePageState();
 }
 
-class _FriendProfilePageState extends State<FriendProfilePage> 
-{
+class _FriendProfilePageState extends State<FriendProfilePage> {
   String _username = "Loading...";
   String _profilePicture = "";
-  String _userID = pb.authStore.model['id'];
   int currentIndex = 0;
+  String? friendId;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FriendId die ik mee stuur met de Navigator
+    friendId = ModalRoute.of(context)?.settings.arguments as String?;
+    print("Friend ID: $friendId");
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async 
-  {
+  Future<void> _fetchUserData() async {
+    if (friendId == null) return;
+
     try {
-      final jsonString = await pb.collection("users").getFirstListItem(
-        "id=\"$_userID\"" 
-      );
+      final jsonString =
+          await pb.collection("users").getFirstListItem("id=\"$friendId\"");
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _username = record["username"];
-        if(record["avatar"] != null)
-        {
-          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();          
-        }
-        else 
-        {
+        if (record["avatar"] != null) {
+          _profilePicture =
+              pb.files.getUrl(jsonString, record["avatar"]).toString();
+        } else {
           _profilePicture = "";
         }
       });
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       print("Error fetching user data: $e");
-      setState(() 
-      {
+      setState(() {
         _username = "Error loading username";
         _profilePicture = "";
       });
@@ -55,39 +57,44 @@ class _FriendProfilePageState extends State<FriendProfilePage>
   }
 
   @override
-  void didChangeDependencies() 
-  {
-    super.didChangeDependencies();
-    _fetchUserData();
-  }
- 
-  @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
+    void onItemTapped(int index) {
+      setState(() {
+        currentIndex = index;
+      });
+
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, "/homepage");
+          return;
+        case 1:
+          Navigator.pushNamed(context, "/leaderboard");
+          return;
+        case 2:
+          Navigator.pushNamed(context, "/friendspage");
+          return;
+        default:
+          return;
+      }
+    }
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
           toolbarHeight: 50,
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: true,
           title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
-                onPressed: () 
-                {
-                  Navigator.pushNamed(context, "/profilepage");
-                },
-              ),
-              SizedBox(width: 8),
-              Row( 
+              Row(
                 children: [
-                  Text(
-                    "Go Back",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E))
-                  ),
+                  Text("Go Back",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF096A2E))),
                   SizedBox(width: 8),
                 ],
               ),
@@ -97,7 +104,8 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                   children: [
                     Text(
                       "Walk Smarter",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 8),
                     Image(
@@ -109,13 +117,6 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                 ),
               ),
             ],
-          ),
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
           ),
         ),
       ),
@@ -133,15 +134,14 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                   left: 10,
                   top: 50,
                   child: SizedBox(
-                    width: 130,
-                    height: 130,
-                    child: CircleAvatar(
-                      radius: 0,
-                      backgroundImage: _profilePicture.startsWith("http")
-                        ? NetworkImage(_profilePicture) 
-                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider
-                    ) 
-                  ),
+                      width: 130,
+                      height: 130,
+                      child: CircleAvatar(
+                          radius: 0,
+                          backgroundImage: _profilePicture.startsWith("http")
+                              ? NetworkImage(_profilePicture)
+                              : AssetImage("assets/standardProfilePicture.png")
+                                  as ImageProvider)),
                 ),
                 Positioned(
                   left: 10,
@@ -189,7 +189,7 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                 ),
                 Positioned(
                   left: 30,
-                  top: 220, 
+                  top: 220,
                   child: Text(
                     "Trophies",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -200,8 +200,7 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                   top: 220,
                   child: SizedBox(
                     child: GestureDetector(
-                      onTap: ()
-                       {
+                      onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => LeaderboardPage(),
                         ));
@@ -215,7 +214,9 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                             EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)), 
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                       ),
                     ),
@@ -252,7 +253,8 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -315,7 +317,8 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -378,7 +381,8 @@ class _FriendProfilePageState extends State<FriendProfilePage>
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -415,57 +419,9 @@ class _FriendProfilePageState extends State<FriendProfilePage>
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-            border: Border.all(
-              color: Color(0xFF096A2E),
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: "Map",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard),
-                  label: "Leaderboard",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.group),
-                  label: "Friends",
-                ),
-              ],
-              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
-              currentIndex: 1,
-              onTap: (index)
-               {
-                setState(() 
-                {
-                  currentIndex = index;
-                  switch (index) 
-                  {
-                    case 0:
-                      Navigator.pushNamed(context, '/homepage');
-                    case 1:
-                      Navigator.pushNamed(context, '/leaderboard');
-                    case 2:
-                      Navigator.pushNamed(context, '/friendspage');
-                    default:
-                      break;
-                  }
-                });
-              },
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: currentIndex,
+        onTap: onItemTapped,
       ),
     );
   }

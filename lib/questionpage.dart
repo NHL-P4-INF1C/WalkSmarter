@@ -1,6 +1,7 @@
-import 'apimanager.dart';
+import 'utils/apimanager.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'components/bottombar.dart';
 
 class TimerPainter extends CustomPainter {
   final Animation<double> animation;
@@ -45,7 +46,10 @@ class TimerPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height / 2 - textPainter.height / 2));
+    textPainter.paint(
+        canvas,
+        Offset(size.width / 2 - textPainter.width / 2,
+            size.height / 2 - textPainter.height / 2));
   }
 
   @override
@@ -61,11 +65,15 @@ class QuestionPage extends StatefulWidget {
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderStateMixin {
+class _QuestionPageState extends State<QuestionPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int duration = 60;
   int? _selectedOption;
-  final _requestManager = RequestManager({"pointOfInterest":"NHL Stenden Emmen","locationOfOrigin":"The Netherlands"}, "openai");
+  final _requestManager = RequestManager({
+    "pointOfInterest": "NHL Stenden Emmen",
+    "locationOfOrigin": "The Netherlands"
+  }, "openai");
   String _question = "loading...";
   List<String> answers = ["answer1", "answer2", "answer3"];
   int currentIndex = 0;
@@ -77,8 +85,8 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
       vsync: this,
       duration: Duration(seconds: duration),
     )..addListener(() {
-      setState(() {});
-    });
+        setState(() {});
+      });
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -97,6 +105,26 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    void onItemTapped(int index) {
+      setState(() {
+        currentIndex = index;
+      });
+
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, "/homepage");
+          return;
+        case 1:
+          Navigator.pushNamed(context, "/leaderboard");
+          return;
+        case 2:
+          Navigator.pushNamed(context, "/friendspage");
+          return;
+        default:
+          return;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -190,49 +218,49 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
                             children: [
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        margin: EdgeInsets.all(4),
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: _selectedOption == index
-                                              ? Color.fromARGB(155, 9, 106, 46)
-                                              : Colors.white,
-                                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                answers[index],
-                                                style: TextStyle(fontSize: 16),
-                                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.all(4),
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: _selectedOption == index
+                                            ? Color.fromARGB(155, 9, 106, 46)
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              answers[index],
+                                              style: TextStyle(fontSize: 16),
                                             ),
-                                            Radio<int>(
-                                              value: index,
-                                              groupValue: _selectedOption,
-                                              onChanged: (int? value) {
-                                                setState(() {
-                                                  _selectedOption = value;
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                          Radio<int>(
+                                            value: index,
+                                            groupValue: _selectedOption,
+                                            onChanged: (int? value) {
+                                              setState(() {
+                                                _selectedOption = value;
+                                              });
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                               if (_selectedOption == index)
                                 Positioned.fill(
                                   child: Container(
                                     margin: EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(20)),
                                       color: Color.fromARGB(0, 171, 209, 198),
                                     ),
                                   ),
@@ -243,29 +271,29 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
                       }),
                     ),
                     SizedBox(height: 20),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
                           _question = "Getting question...";
-                          final _payload = await _requestManager.makeApiCall();
-                          print(_payload);
-                          if(_payload['statusCode'] == 200)
-                          {
-                            _question = _payload['response']['question'];
-                            answers[0] = _payload['response']['correct_answer'];
-                            answers[1] = _payload['response']['wrong_answer'][0];
-                            answers[2] = _payload['response']['wrong_answer'][1];
-                          }
-                          else
-                          {
-                            _question = "${_payload['response']}. Status code: ${_payload['statusCode']}";
+                          final payload = await _requestManager.makeApiCall();
+                          print(payload);
+                          if (payload['statusCode'] == 200) {
+                            _question = payload['response']['question'];
+                            answers[0] = payload['response']['correct_answer'];
+                            answers[1] = payload['response']['wrong_answer'][0];
+                            answers[2] = payload['response']['wrong_answer'][1];
+                          } else {
+                            _question =
+                                "${payload['response']}. Status code: ${payload['statusCode']}";
                           }
                         },
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 9, 106, 46)),
-                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromARGB(255, 9, 106, 46)),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         child: Text(
                           'Submit answer',
@@ -282,57 +310,9 @@ class _QuestionPageState extends State<QuestionPage> with SingleTickerProviderSt
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-            border: Border.all(
-              color: Color(0xFF096A2E),
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: 'Map',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard),
-                  label: 'Leaderboard',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.group),
-                  label: 'Friends',
-                ),
-              ],
-              currentIndex: currentIndex,
-              selectedItemColor: Color.fromARGB(255, 9, 106, 46),
-              onTap: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-                switch (index) {
-                  case 0:
-                    Navigator.pushNamed(context, '/homepage');
-                    break;
-                  case 1:
-                    Navigator.pushNamed(context, '/leaderboard');
-                    break;
-                  case 2:
-                    Navigator.pushNamed(context, '/friendspage');
-                    break;
-                  default:
-                    break;
-                }
-              },
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: currentIndex,
+        onTap: onItemTapped,
       ),
     );
   }

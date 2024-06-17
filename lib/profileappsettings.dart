@@ -1,20 +1,38 @@
 import "package:flutter/material.dart";
+import './components/bottombar.dart';
+import './components/darkmodebutton.dart';
 
-class ProfileAppSettings extends StatefulWidget 
-{
+class ProfileAppSettings extends StatefulWidget {
   @override
   State<ProfileAppSettings> createState() => _ProfileAppSettingsState();
 }
 
-class _ProfileAppSettingsState extends State<ProfileAppSettings> 
-{
+class _ProfileAppSettingsState extends State<ProfileAppSettings> {
   int currentIndex = 0;
-  bool isDarkMode = false;
   String selectedLanguage = "English"; // State variable for language selection
 
+  void _onItemTapped(int index) {
+    setState(() {
+      currentIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, "/homepage");
+        return;
+      case 1:
+        Navigator.pushNamed(context, "/leaderboard");
+        return;
+      case 2:
+        Navigator.pushNamed(context, "/friendspage");
+        return;
+      default:
+        return;
+    }
+  }
+
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -27,8 +45,7 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings>
             children: [
               IconButton(
                 icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
-                onPressed: () 
-                {
+                onPressed: () {
                   Navigator.pushNamed(context, "/profilepagesettings");
                 },
               ),
@@ -37,7 +54,10 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings>
                 children: [
                   Text(
                     "Go Back",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E)),
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF096A2E)),
                   ),
                   SizedBox(width: 8),
                 ],
@@ -48,7 +68,8 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings>
                   children: [
                     Text(
                       "Walk Smarter",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 8),
                     Image(
@@ -95,22 +116,13 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings>
                         SizedBox(width: 10),
                         Text(
                           "Dark Mode",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                         Spacer(),
-                        Transform.scale(
-                          scale: 1.0,
-                          child: Switch(
-                            value: isDarkMode,
-                            onChanged: (value) 
-                            {
-                              setState(() 
-                              {
-                                isDarkMode = value;
-                              });
-                            },
-                          ),
-                        ),
+                        DarkModeToggleSwitch(),
                       ],
                     ),
                   ),
@@ -130,21 +142,23 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings>
                         SizedBox(width: 10),
                         Text(
                           "Language",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                         Spacer(),
                         DropdownButton<String>(
                           value: selectedLanguage,
-                          items: <String>["English", "Nederlands"].map<DropdownMenuItem<String>>((String value) {
+                          items: <String>["English", "Nederlands"]
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
                             );
                           }).toList(),
-                          onChanged: (String? newValue) 
-                          {
-                            setState(() 
-                            {
+                          onChanged: (String? newValue) {
+                            setState(() {
                               selectedLanguage = newValue!;
                             });
                           },
@@ -158,60 +172,9 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings>
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-            border: Border.all(
-              color: Color(0xFF096A2E),
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: "Map",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard),
-                  label: "Leaderboard",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.group),
-                  label: "Friends",
-                ),
-              ],
-              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
-              currentIndex: currentIndex,
-              onTap: (index)
-              {
-                setState(() 
-                {
-                  currentIndex = index;
-                  switch (index) 
-                  {
-                    case 0:
-                      Navigator.pushNamed(context, "/homepage");
-                      break;
-                    case 1:
-                      Navigator.pushNamed(context, "/leaderboard");
-                      break;
-                    case 2:
-                      Navigator.pushNamed(context, "/friendspage");
-                      break;
-                    default:
-                      break;
-                  }
-                });
-              },
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: currentIndex,
+        onTap: _onItemTapped,
       ),
     );
   }

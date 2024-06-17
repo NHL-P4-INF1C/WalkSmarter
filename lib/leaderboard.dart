@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'pocketbase.dart';
+import './components/bottombar.dart';
+import './utils/pocketbase.dart';
 import 'dart:convert';
 
 var pb = PocketBaseSingleton().instance;
@@ -12,6 +13,7 @@ class LeaderboardPage extends StatefulWidget {
 class _LeaderboardPageState extends State<LeaderboardPage> {
   List<Map<String, dynamic>> _users = [];
   bool _isLoading = true;
+  int _selectedIndex = 1;
 
   @override
   void initState() {
@@ -271,54 +273,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               ),
             ],
           ),
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30.0),
-                border: Border.all(
-                  color: Color(0xFF096A2E),
-                  width: 2.0,
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30.0),
-                child: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.map),
-                      label: 'Map',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.leaderboard),
-                      label: 'Leaderboard',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.group),
-                      label: 'Friends',
-                    ),
-                  ],
-                  selectedItemColor: Color(0xFF096A2E),
-                  onTap: (index) {
-                    setState(() {
-                      switch (index) {
-                        case 0:
-                          Navigator.pushNamed(context, '/homepage');
-                        case 1:
-                          Navigator.pushNamed(context, '/leaderboard');
-                        case 2:
-                          Navigator.pushNamed(context, '/friends');
-                        default:
-                          break;
-                      }
-                    });
-                  },
-                ),
-              ),
-            ),
+          BottomNavBar(
+            selectedIndex: _selectedIndex,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+                switch (index) {
+                  case 0:
+                    Navigator.pushNamed(context, '/homepage');
+                    break;
+                  case 1:
+                    Navigator.pushNamed(context, '/leaderboard');
+                    break;
+                  case 2:
+                    Navigator.pushNamed(context, '/friendspage');
+                    break;
+                  default:
+                    break;
+                }
+              });
+            },
           ),
         ],
       ),
@@ -337,8 +311,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           alignment: Alignment.topCenter,
           children: [
             CircleAvatar(
-              radius: size + 
-3,
+              radius: size + 3,
               backgroundColor: borderColor,
               child: CircleAvatar(
                 radius: size,
