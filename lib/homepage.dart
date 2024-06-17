@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 var pb = PocketBaseSingleton().instance;
 
@@ -22,6 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late GoogleMapController mapController;
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: dotenv.env['GOOGLE_API_KEY']);
+
 
   static const List<String> majorPlaceTypes = [
   'art_gallery', 'museum', 'library', 'cemetery', 'church', 'synagogue', 
@@ -39,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String mapStyle = '';
   String _profilePicture = "";
-  String _userID = pb.authStore.model['id'];
+  String _userID = pb.authStore.isValid ? pb.authStore.model['id'] : 'ErrToken';
 
   @override
   void initState() {
@@ -108,6 +110,26 @@ class _MyHomePageState extends State<MyHomePage> {
     handleSwitchCase(context, index);
   }
 
+  void _showQuestionDialog(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Point of interest found!'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+  }
+
   void handleSwitchCase(BuildContext context, int index) {
     switch (index) {
       case 0:
@@ -132,6 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           GoogleMap(
             onMapCreated: _onMapCreated,
+            minMaxZoomPreference: MinMaxZoomPreference(15, 30),
             initialCameraPosition: CameraPosition(
               target: _center,
               zoom: 11.0,
@@ -170,6 +193,50 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<void> getPOIThroughHttp() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    String key = '&key=${dotenv.env['GOOGLE_API_KEY']}';
+    String radius = '&radius=100';
+    String location = '?location=${position.latitude}%2C${position.longitude}';
+    String link = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+    String request = link + location + radius + key;
+
+    print(request);
+
+    var response = await http.get(Uri.parse(request));
+    var decodedResponse = json.decode(response.body);
+
+    var closestPOI = decodedResponse['results'][0];
+    double closestPOIDistance = 100.0;
+
+    for(var test in decodedResponse['results'])
+    {
+      double lat = test['geometry']['location']['lat'] as double;
+      double lng = test['geometry']['location']['lng'] as double;
+      
+      var distance = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          lat,
+          lng
+          );
+
+      if(distance < closestPOIDistance){
+        closestPOI = test;
+        closestPOIDistance = distance;
+      }
+    }
+
+    if(closestPOIDistance < 25)
+    {
+    _showQuestionDialog(context, 'Do you want to navigate to the information page?');
+    }
+
+    print('Distance to ${closestPOI['name']} (${closestPOI['types'][0]}): $closestPOIDistance meters');
+  }
+
   Future<void> requestLocationPermission() async {
     var status = await Permission.locationWhenInUse.status;
     if (status.isDenied) {
@@ -184,8 +251,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 void startLocationUpdates() {
-  _timer = Timer.periodic(Duration(seconds: 60), (timer) {
+  _timer = Timer.periodic(Duration(seconds: 5), (timer) {
     fetchLocationAndCheckProximity();
+    getPOIThroughHttp();
   });
 }
 
@@ -213,7 +281,7 @@ Future<void> checkProximityToMajorPOI(Position position) async {
   for (String type in majorPlaceTypes) {
     final response = await _places.searchNearbyWithRadius(
       Location(lat: position.latitude,lng:  position.longitude),
-      100,
+      25,
       type: type,
     );
 

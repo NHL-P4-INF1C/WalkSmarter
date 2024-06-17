@@ -1,5 +1,5 @@
+
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'utils/pocketbase.dart';
 
 var pb = PocketBaseSingleton().instance;
@@ -24,26 +24,56 @@ class LoginDemo extends StatefulWidget {
 class _LoginDemoState extends State<LoginDemo> {
   String? username, password;
 
-  Future<void> signIn() async {
-    if(dotenv.env["DEV_ENV"] != null)
-    {
-      Navigator.pushNamed(
-        context,
-        '/homepage',
-      );
+  @override
+  void initState() {
+    super.initState();
+    checkAuthStateAndNavigate();
+  } 
+
+    Future<void> checkAuthStateAndNavigate() async {
+    if (pb.authStore.model != null) {
+      bool isValid = await getValidAuthState();
+      if (isValid) {
+        // Make sure to use the context safely within an async method
+        if (mounted) {
+          Navigator.pushNamed(
+            context,
+            '/homepage',
+            arguments: pb.authStore.model.username, // assuming you have username in authStore model
+          );
+        }
+      }
     }
+  }
+
+    Future<bool> getValidAuthState() async {
+    try {
+      await pb.collection('users').authRefresh();
+    } catch (error) {
+      print('Error during auth refresh: $error');
+      return false;
+    }
+    return pb.authStore.isValid;
+  }
+
+  Future<void> signIn() async {
     try {
       if (username != null && password != null) {
+        pb.authStore.clear();
+
         await pb.collection('users').authWithPassword(username!, password!);
 
         if (!mounted) return;
 
+
+      if(pb.authStore.isValid){
         Navigator.pushNamed(
           context,
           '/homepage',
           arguments: username,
         );
         print("Ingelogd!!");
+        }
       }
     } catch (e) {
       _showErrorDialog(context, 'Invalid username or password. Try again.');
