@@ -58,18 +58,31 @@ class _InformationPageState extends State<InformationPage>
   {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) 
       {
         return AlertDialog(
           title: Text("Still loading"),
-          content: Text("Pleas wait until everything has loaded."),
+          content: Text("Please wait until everything has loaded"),
           actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () 
-              {
-                Navigator.pop(context);
-              },
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 9, 106, 46),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+                child: Text("OK"),
+                onPressed: () 
+                {
+                  Navigator.pop(context);
+                },
+              ),
             ),
           ],
         );
