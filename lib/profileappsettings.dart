@@ -19,15 +19,15 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings> {
     switch (index) {
       case 0:
         Navigator.pushNamed(context, "/homepage");
-        break;
+        return;
       case 1:
         Navigator.pushNamed(context, "/leaderboard");
-        break;
+        return;
       case 2:
         Navigator.pushNamed(context, "/friendspage");
-        break;
+        return;
       default:
-        break;
+        return;
     }
   }
 
