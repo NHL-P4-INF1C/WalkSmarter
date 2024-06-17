@@ -211,22 +211,52 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: _isLoading
-                          ? Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : ListView.builder(
-                              physics: AlwaysScrollableScrollPhysics(),
-                              itemCount: _users.length <= 3 ? 0 : _users.length - 3,
-                              itemBuilder: (context, index) {
-                                var user = _users[index + 3];
-                                String position = (index + 4).toString();
-                                _fetchAvatar(user['id']);
-                                return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(30),
+                      child: ListView.builder(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: 17,
+                        itemBuilder: (context, index) {
+                          String position = (index + 4).toString();
+                          return Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 25,
+                                    child: Text(
+                                      position,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  CircleAvatar(
+                                    radius: 20,
+                                    child: Icon(Icons.account_circle, size: 40),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Username',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+
                                   ),
                                   child: ListTile(
                                     title: Row(

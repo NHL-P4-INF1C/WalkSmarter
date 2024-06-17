@@ -132,25 +132,23 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                   padding: const EdgeInsets.only(right: 15),
                   child: FutureBuilder<String>(
                     future: fetchPoints(),
-                    builder: (context, snapshot) 
-                    {
-                      if (snapshot.connectionState == ConnectionState.waiting) 
-                      {
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
-                      } else if (snapshot.hasError) 
-                      {
+                      } else if (snapshot.hasError) {
+
                         return Text(
                           'Error',
                           style: TextStyle(fontSize: 14),
                         );
-                      } else if (snapshot.hasData) 
-                      {
+                      } else if (snapshot.hasData) {
+
                         return Text(
                           '${snapshot.data} Points',
                           style: TextStyle(fontSize: 14),
                         );
-                      } else 
-                      {
+                      } else {
+
                         return Text(
                           '0 Points',
                           style: TextStyle(fontSize: 14),
@@ -173,8 +171,10 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
               child: CircleAvatar(
                 radius: 23,
                 backgroundImage: _profilePicture.startsWith("http")
-                  ? NetworkImage(_profilePicture)
-                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+                    ? NetworkImage(_profilePicture)
+                    : AssetImage("assets/standardProfilePicture.png")
+                        as ImageProvider,
+
               ),
             ),
           ),
@@ -305,10 +305,14 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                           color: Color.fromARGB(255, 9, 106, 46),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
+
                         ),
                       ),
                     ),
@@ -320,8 +324,16 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                   child: Container(
                     width: 355,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+
                     ),
                     child: Row(
                       children: [
@@ -345,7 +357,9 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
+
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -383,8 +397,16 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                   child: Container(
                     width: 355,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+
                     ),
                     child: Row(
                       children: [
@@ -408,7 +430,9 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
+
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -446,8 +470,15 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                   child: Container(
                     width: 355,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                     ),
                     child: Row(
                       children: [
@@ -471,7 +502,8 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -483,6 +515,7 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                                     fontWeight: FontWeight.bold,
                                     color: Color.fromARGB(255, 0, 0, 0),
                                   ),
+
                                 ),
                                 SizedBox(height: 5),
                                 Align(
@@ -535,10 +568,14 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                           color: Color.fromARGB(255, 9, 106, 46),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
+
                         ),
                       ),
                     ),
@@ -559,7 +596,9 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                         return Center(child: Text("No friends found"));
                       } else {
                         final friends = snapshot.data!;
-                        List<Map<String, String>> limitedFriends = friends.take(3).toList();
+                        List<Map<String, String>> limitedFriends =
+                            friends.take(3).toList();
+
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: limitedFriends.map((friend) {
@@ -567,7 +606,9 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                             final friendId = friend['id']!;
                             final friendAvatar = friend['avatar']!;
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+
                               child: GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
@@ -575,19 +616,31 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
                                     '/friendprofilepage',
                                     arguments: friendId,
                                   );
-                                  print(friendId); // Ensure friendId is being printed
+                                  print(
+                                      friendId); // Ensure friendId is being printed
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(30.0),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+
                                   ),
                                   child: ListTile(
                                     leading: CircleAvatar(
                                       radius: 25,
                                       backgroundImage: friendAvatar.isNotEmpty
                                           ? NetworkImage(friendAvatar)
-                                          : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+                                          : AssetImage(
+                                                  "assets/standardProfilePicture.png")
+                                              as ImageProvider,
+
                                     ),
                                     title: Text(friendName),
                                   ),
@@ -635,13 +688,11 @@ Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async
               ],
               selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
-              onTap: (index)
-               {
-                setState(() 
-                {
+              onTap: (index) {
+                setState(() {
                   currentIndex = index;
-                  switch (index) 
-                  {
+                  switch (index) {
+
                     case 0:
                       Navigator.pushNamed(context, '/homepage');
                     case 1:
