@@ -94,6 +94,26 @@ class _InformationPageState extends State<InformationPage>
   @override
   Widget build(BuildContext context)
   {
+    void onItemTapped(int index) {
+      setState(() {
+        currentIndex = index;
+      });
+
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, "/homepage");
+          return;
+        case 1:
+          Navigator.pushNamed(context, "/leaderboard");
+          return;
+        case 2:
+          Navigator.pushNamed(context, "/friendspage");
+          return;
+        default:
+          return;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -240,24 +260,7 @@ class _InformationPageState extends State<InformationPage>
       ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-          switch (index) {
-            case 0:
-              Navigator.pushNamed(context, '/homepage');
-              return;
-            case 1:
-              Navigator.pushNamed(context, '/leaderboard');
-              return;
-            case 2:
-              Navigator.pushNamed(context, '/friendspage');
-              return;
-            default:
-              return;
-          }
-        },
+        onTap: onItemTapped,
       ),
     );
   }
