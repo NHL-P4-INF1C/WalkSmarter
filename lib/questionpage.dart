@@ -1,6 +1,7 @@
-import 'apimanager.dart';
+import 'utils/apimanager.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'components/bottombar.dart';
 
 class TimerPainter extends CustomPainter {
   final Animation<double> animation;
@@ -104,6 +105,26 @@ class _QuestionPageState extends State<QuestionPage>
 
   @override
   Widget build(BuildContext context) {
+    void onItemTapped(int index) {
+      setState(() {
+        currentIndex = index;
+      });
+
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, "/homepage");
+          return;
+        case 1:
+          Navigator.pushNamed(context, "/leaderboard");
+          return;
+        case 2:
+          Navigator.pushNamed(context, "/friendspage");
+          return;
+        default:
+          return;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -197,43 +218,41 @@ class _QuestionPageState extends State<QuestionPage>
                           margin: EdgeInsets.only(bottom: 10),
                           child: Stack(
                             children: [
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        margin: EdgeInsets.all(4),
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: _selectedOption == index
-                                              ? Color.fromARGB(155, 9, 106, 46)
-                                              : Colors.white,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(20)),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                answers[index],
-                                                style: TextStyle(fontSize: 16),
-                                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.all(4),
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: _selectedOption == index
+                                            ? Color.fromARGB(155, 9, 106, 46)
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              answers[index],
+                                              style: TextStyle(fontSize: 16),
                                             ),
-                                            Radio<int>(
-                                              value: index,
-                                              groupValue: _selectedOption,
-                                              onChanged: (int? value) {
-                                                setState(() {
-                                                  _selectedOption = value;
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                          Radio<int>(
+                                            value: index,
+                                            groupValue: _selectedOption,
+                                            onChanged: (int? value) {
+                                              setState(() {
+                                                _selectedOption = value;
+                                              });
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                               if (_selectedOption == index)
                                 Positioned.fill(
@@ -252,24 +271,22 @@ class _QuestionPageState extends State<QuestionPage>
                       }),
                     ),
                     SizedBox(height: 20),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
                           _question = "Getting question...";
-                          final _payload = await _requestManager.makeApiCall();
-                          print(_payload);
-                          if (_payload['statusCode'] == 200) {
-                            _question = _payload['response']['question'];
-                            answers[0] = _payload['response']['correct_answer'];
-                            answers[1] =
-                                _payload['response']['wrong_answer'][0];
-                            answers[2] =
-                                _payload['response']['wrong_answer'][1];
+                          final payload = await _requestManager.makeApiCall();
+                          print(payload);
+                          if (payload['statusCode'] == 200) {
+                            _question = payload['response']['question'];
+                            answers[0] = payload['response']['correct_answer'];
+                            answers[1] = payload['response']['wrong_answer'][0];
+                            answers[2] = payload['response']['wrong_answer'][1];
                           } else {
                             _question =
-                                "${_payload['response']}. Status code: ${_payload['statusCode']}";
+                                "${payload['response']}. Status code: ${payload['statusCode']}";
                           }
                         },
                         style: ButtonStyle(
@@ -293,57 +310,9 @@ class _QuestionPageState extends State<QuestionPage>
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-            border: Border.all(
-              color: Color(0xFF096A2E),
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: 'Map',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard),
-                  label: 'Leaderboard',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.group),
-                  label: 'Friends',
-                ),
-              ],
-              currentIndex: currentIndex,
-              selectedItemColor: Color.fromARGB(255, 9, 106, 46),
-              onTap: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-                switch (index) {
-                  case 0:
-                    Navigator.pushNamed(context, '/homepage');
-                    break;
-                  case 1:
-                    Navigator.pushNamed(context, '/leaderboard');
-                    break;
-                  case 2:
-                    Navigator.pushNamed(context, '/friendspage');
-                    break;
-                  default:
-                    break;
-                }
-              },
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: currentIndex,
+        onTap: onItemTapped,
       ),
     );
   }

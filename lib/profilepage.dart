@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:walk_smarter/friendspage.dart';
 import 'package:walk_smarter/leaderboard.dart';
 import 'dart:convert';
-import 'pocketbase.dart';
+import 'utils/pocketbase.dart';
 import 'package:walk_smarter/profilesettings.dart';
 
 var pb = PocketBaseSingleton().instance;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pocketbase.dart';
+import 'utils/pocketbase.dart';
 
 var pb = PocketBaseSingleton().instance;
 
@@ -75,6 +75,7 @@ class _SignUpDemo extends State<SignUp>
           }
           catch(e)
           {
+            // ignore: use_build_context_synchronously
             _showErrorDialog(context, 'Username or email address is already in use');
             return;
           }
@@ -93,6 +94,7 @@ class _SignUpDemo extends State<SignUp>
           }
           catch(e)
           {
+            // ignore: use_build_context_synchronously
             _showErrorDialog(context, 'Failed to auto-login. Please go to the login page to manually log in');
           }
         }
@@ -108,6 +110,7 @@ class _SignUpDemo extends State<SignUp>
     }
     catch (e)
     {
+      // ignore: use_build_context_synchronously
       _showErrorDialog(context, 'Unknown error has occured. Please try again');
     }
   }
@@ -115,13 +118,13 @@ class _SignUpDemo extends State<SignUp>
   @override
   Widget build(BuildContext context) 
   {
-    bool _visible = true;
+    bool visible = true;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Opacity(
           // ignore: dead_code
-          opacity: _visible ? 1.0 : 0.0,
+          opacity: visible ? 1.0 : 0.0,
           child: Column(
             children: <Widget>
             [

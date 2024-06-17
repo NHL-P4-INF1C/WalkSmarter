@@ -24,15 +24,15 @@ class ForgotPasswordDemo extends StatefulWidget {
 
 class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
   String? email;
+
   Future<void> signIn() async {
     try {
       if (email != null) {
+        // Save the navigator context before the async call
+        final navigator = Navigator.of(context);
         await pb.collection('users').requestPasswordReset(email!);
 
-        Navigator.pushNamed(
-          context,
-          '/home',
-        );
+        navigator.pushNamed('/home');
         print("Request sent");
       }
     } catch (e) {
@@ -58,7 +58,7 @@ class _ForgotPasswordDemoState extends State<ForgotPasswordDemo> {
                 child: SizedBox(
                   width: 200,
                   height: 150,
-                  //Verander hier de path naar de benodigde IMAGE PATH voor de juiste image
+                  // Change the path to the required IMAGE PATH for the correct image
                   child: Image(image: AssetImage('assets/walksmarterlogo.png')),
                 ),
               ),
