@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:walk_smarter/friendspage.dart';
+import 'package:walk_smarter/leaderboard.dart';
 import 'dart:convert';
 import 'utils/pocketbase.dart';
 import 'package:walk_smarter/profilesettings.dart';
-import 'components/bottombar.dart';
-import 'components/navbar.dart';
 
 var pb = PocketBaseSingleton().instance;
 
@@ -108,32 +108,84 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/homepage');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/leaderboard');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/friendspage',
-            arguments: pb.authStore.model['id']);
-        break;
-      default:
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
-      appBar: Navbar(profilePicture: _profilePicture),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 50,
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image(
+              image: AssetImage('assets/walksmarterlogo.png'),
+              height: 40,
+              width: 40,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Walk Smarter',
+              style: TextStyle(fontSize: 14),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: FutureBuilder<String>(
+                    future: fetchPoints(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'Error',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else if (snapshot.hasData) {
+                        return Text(
+                          '${snapshot.data} Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      } else {
+                        return Text(
+                          '0 Points',
+                          style: TextStyle(fontSize: 14),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 10.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/profilepage');
+              },
+              child: CircleAvatar(
+                radius: 23,
+                backgroundImage: _profilePicture.startsWith("http")
+                    ? NetworkImage(_profilePicture)
+                    : AssetImage("assets/standardProfilePicture.png")
+                        as ImageProvider,
+              ),
+            ),
+          ),
+        ],
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           height: 1000,
@@ -225,65 +277,372 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Positioned(
-                  left: 30,
+                  left: 0,
+                  right: 0,
                   top: 200,
-                  child: Text(
-                    'Friends',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Container(
+                    height: 1,
+                    color: Colors.black,
                   ),
                 ),
                 Positioned(
                   left: 30,
-                  top: 230,
+                  top: 220,
+                  child: Text(
+                    "Trophies",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Positioned(
+                  left: 200,
+                  top: 220,
                   child: SizedBox(
-                    width: 350,
-                    height: 300,
-                    child: FutureBuilder<List<Map<String, String>>>(
-                      future: fetchFriendNamesForUser(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Error fetching friends');
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return Text('No friends found');
-                        } else {
-                          final friends = snapshot.data!;
-                          return ListView.builder(
-                            itemCount: friends.length,
-                            itemBuilder: (context, index) {
-                              final friend = friends[index];
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage: friend['avatar']!
-                                          .startsWith("http")
-                                      ? NetworkImage(friend['avatar']!)
-                                      : AssetImage(
-                                              "assets/standardProfilePicture.png")
-                                          as ImageProvider,
-                                ),
-                                title: Text(friend['username']!),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () async {
-                                    await deleteUser(friend['id']!);
-                                    setState(() {
-                                      friends.removeAt(index);
-                                    });
-                                  },
-                                ),
-                              );
-                            },
-                          );
-                        }
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LeaderboardPage(),
+                        ));
                       },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 9, 106, 46),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
+                        child: Text(
+                          "View more",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
+                        ),
+                      ),
                     ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 280,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/award.png",
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Champion",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "Earned in April 2024",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 380,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/award.png",
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "2nd place",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "Earned in April 2024",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: 480,
+                  child: Container(
+                    width: 355,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF096A2E), // Green color
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/award.png",
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "3rd place",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "Earned in April 2024",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 600, // Adjusted top position to add space
+                  child: Container(
+                    height: 1,
+                    color: Colors.black,
+                  ),
+                ),
+                Positioned(
+                  left: 30,
+                  top: 620,
+                  child: Text(
+                    "Friends",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Positioned(
+                  left: 200,
+                  top: 620,
+                  child: SizedBox(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => MyFriendsPage(),
+                        ));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 9, 106, 46),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
+                        child: Text(
+                          "View more",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 10,
+                  right: 10,
+                  top: 680,
+                  child: FutureBuilder<List<Map<String, String>>>(
+                    future: fetchFriendNamesForUser(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Error fetching friends"));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text("No friends found"));
+                      } else {
+                        final friends = snapshot.data!;
+                        List<Map<String, String>> limitedFriends =
+                            friends.take(3).toList();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: limitedFriends.map((friend) {
+                            final friendName = friend['username']!;
+                            final friendId = friend['id']!;
+                            final friendAvatar = friend['avatar']!;
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/friendprofilepage',
+                                    arguments: friendId,
+                                  );
+                                  print(
+                                      friendId); // Ensure friendId is being printed
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage: friendAvatar.isNotEmpty
+                                          ? NetworkImage(friendAvatar)
+                                          : AssetImage(
+                                                  "assets/standardProfilePicture.png")
+                                              as ImageProvider,
+                                    ),
+                                    title: Text(friendName),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }
+                    },
                   ),
                 ),
               ],
@@ -291,9 +650,54 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-        bottomNavigationBar: BottomNavBar(
-        selectedIndex: currentIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
+            border: Border.all(
+              color: Color(0xFF096A2E),
+              width: 2.0,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30.0),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: "Map",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.leaderboard),
+                  label: "Leaderboard",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.group),
+                  label: "Friends",
+                ),
+              ],
+              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
+              currentIndex: 1,
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                  switch (index) {
+                    case 0:
+                      Navigator.pushNamed(context, '/homepage');
+                    case 1:
+                      Navigator.pushNamed(context, '/leaderboard');
+                    case 2:
+                      Navigator.pushNamed(context, '/friendspage');
+                    default:
+                      break;
+                  }
+                });
+              },
+            ),
+          ),
+        ),
       ),
     );
   }

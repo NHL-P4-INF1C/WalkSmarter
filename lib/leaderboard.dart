@@ -206,6 +206,13 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
                             ),
                             child: ListTile(
                               title: Row(
