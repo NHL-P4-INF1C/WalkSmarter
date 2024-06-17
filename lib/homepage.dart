@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'pocketbase.dart';
+import 'utils/pocketbase.dart';
+import 'components/bottombar.dart';
+import 'components/navbar.dart';
 import 'dart:convert';
 
 var pb = PocketBaseSingleton().instance;
@@ -22,7 +24,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<String> fetchPoints() async {
     try {
-      final response = await pb.collection('users').getOne(pb.authStore.model['id'].toString());
+      final response = await pb
+          .collection('users')
+          .getOne(pb.authStore.model['id'].toString());
       return response.data['points'].toString();
     } catch (error) {
       print('Error: $error');
@@ -32,13 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _fetchUserData() async {
     try {
-      final jsonString = await pb.collection("users").getFirstListItem(
-        "id=\"$_userID\""
-      );
+      final jsonString =
+          await pb.collection("users").getFirstListItem("id=\"$_userID\"");
       final record = jsonDecode(jsonString.toString());
       setState(() {
         if (record["avatar"] != null) {
-          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
+          _profilePicture =
+              pb.files.getUrl(jsonString, record["avatar"]).toString();
         } else {
           _profilePicture = "";
         }
@@ -62,94 +66,22 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/homepage');
-        break;
+        return;
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
-        break;
+        return;
       case 2:
-        Navigator.pushNamed(context, '/friendspage', arguments: pb.authStore.model['id']);
-        break;
+        Navigator.pushNamed(context, '/friendspage',
+            arguments: pb.authStore.model['id']);
       default:
-        break;
+        return;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 50,
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image(
-              image: AssetImage('assets/walksmarterlogo.png'),
-              height: 40,
-              width: 40,
-            ),
-            SizedBox(width: 8),
-            Text(
-              'Walk Smarter',
-              style: TextStyle(fontSize: 14),
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: FutureBuilder<String>(
-                    future: fetchPoints(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text(
-                          'Error',
-                          style: TextStyle(fontSize: 14),
-                        );
-                      } else if (snapshot.hasData) {
-                        return Text(
-                          '${snapshot.data} Points',
-                          style: TextStyle(fontSize: 14),
-                        );
-                      } else {
-                        return Text(
-                          '0 Points',
-                          style: TextStyle(fontSize: 14),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/profilepage');
-              },
-              child: CircleAvatar(
-                radius: 23,
-                backgroundImage: _profilePicture.startsWith("http")
-                  ? NetworkImage(_profilePicture)
-                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
-              ),
-            ),
-          ),
-        ],
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(30),
-            bottomRight: Radius.circular(30),
-          ),
-        ),
-      ),
+      appBar: Navbar(profilePicture: _profilePicture),
       body: Stack(
         children: [
           Center(
@@ -175,42 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30.0),
-                border: Border.all(
-                  color: Color(0xFF096A2E),
-                  width: 2.0,
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30.0),
-                child: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.map),
-                      label: 'Map',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.leaderboard),
-                      label: 'Leaderboard',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.group),
-                      label: 'Friends',
-                    ),
-                  ],
-                  selectedItemColor: Color(0xFF096A2E),
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                ),
-              ),
-            ),
+          BottomNavBar(
+            selectedIndex: _selectedIndex,
+            onTap: _onItemTapped,
           ),
         ],
       ),

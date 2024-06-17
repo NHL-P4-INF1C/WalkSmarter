@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-class storagemanager extends AuthStore {
+class StorageManager extends AuthStore {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String _token = "";
   Map<String, dynamic>? _model;
