@@ -26,14 +26,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _fetchUserData() async {
     try {
-      final jsonString =
-          await pb.collection("users").getFirstListItem("id=\"$_userID\"");
+      final jsonString = await pb.collection("users").getFirstListItem(
+        "id=\"$_userID\""
+      );
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _username = record["username"];
         if (record["avatar"] != null) {
-          _profilePicture =
-              pb.files.getUrl(jsonString, record["avatar"]).toString();
+          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
         } else {
           _profilePicture = "";
         }
@@ -63,44 +63,40 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<List<Map<String, String>>> fetchFriendNamesForUser() async {
-    print(pb.authStore.model['id']);
-    try {
-      final user =
-          await pb.collection('users').getOne(pb.authStore.model['id']);
-      final friendIds = user.data['friends'] as List<dynamic>;
-      return fetchFriendNames(friendIds.cast<String>());
-    } catch (e) {
-      print('Error fetching friends: $e');
-      return [];
-    }
+  print(pb.authStore.model['id']);
+  try {
+    final user = await pb.collection('users').getOne(pb.authStore.model['id']);
+    final friendIds = user.data['friends'] as List<dynamic>;
+    return fetchFriendNames(friendIds.cast<String>());
+  } catch (e) {
+    print('Error fetching friends: $e');
+    return [];
   }
+}
 
-  Future<List<Map<String, String>>> fetchFriendNames(
-      List<String> friendIds) async {
-    List<Map<String, String>> friends = [];
-    for (String id in friendIds) {
-      try {
-        final friend = await pb.collection('users').getOne(id);
-        final profilePictureUrl = friend.data['avatar'] != null
-            ? pb.files.getUrl(friend, friend.data['avatar']).toString()
-            : '';
-        friends.add({
-          'id': friend.id,
-          'username': friend.data['username'],
-          'avatar': profilePictureUrl,
-        });
-      } catch (e) {
-        print('Error fetching friend with id $id: $e');
-      }
+Future<List<Map<String, String>>> fetchFriendNames(List<String> friendIds) async {
+  List<Map<String, String>> friends = [];
+  for (String id in friendIds) {
+    try {
+      final friend = await pb.collection('users').getOne(id);
+      final profilePictureUrl = friend.data['avatar'] != null
+          ? pb.files.getUrl(friend, friend.data['avatar']).toString()
+          : '';
+      friends.add({
+        'id': friend.id,
+        'username': friend.data['username'],
+        'avatar': profilePictureUrl,
+      });
+    } catch (e) {
+      print('Error fetching friend with id $id: $e');
     }
-    return friends;
   }
+  return friends;
+}
 
   Future<String> fetchPoints() async {
     try {
-      final response = await pb
-          .collection('users')
-          .getOne(pb.authStore.model['id'].toString());
+      final response = await pb.collection('users').getOne(pb.authStore.model['id'].toString());
       return response.data['points'].toString();
     } catch (error) {
       print('Error: $error');
@@ -109,7 +105,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: AppBar(
@@ -139,16 +136,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
                       } else if (snapshot.hasError) {
+
                         return Text(
                           'Error',
                           style: TextStyle(fontSize: 14),
                         );
                       } else if (snapshot.hasData) {
+
                         return Text(
                           '${snapshot.data} Points',
                           style: TextStyle(fontSize: 14),
                         );
                       } else {
+
                         return Text(
                           '0 Points',
                           style: TextStyle(fontSize: 14),
@@ -174,6 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ? NetworkImage(_profilePicture)
                     : AssetImage("assets/standardProfilePicture.png")
                         as ImageProvider,
+
               ),
             ),
           ),
@@ -200,15 +201,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 10,
                   top: 50,
                   child: SizedBox(
-                      width: 130,
-                      height: 130,
-                      child: CircleAvatar(
-                        radius: 0,
-                        backgroundImage: _profilePicture.startsWith("http")
-                            ? NetworkImage(_profilePicture)
-                            : AssetImage("assets/standardProfilePicture.png")
-                                as ImageProvider,
-                      )),
+                    width: 130,
+                    height: 130,
+                    child: CircleAvatar(
+                      radius: 0,
+                      backgroundImage: _profilePicture.startsWith("http")
+                        ? NetworkImage(_profilePicture)
+                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+                    )
+                  ),
                 ),
                 Positioned(
                   left: 10,
@@ -241,8 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(
                           'April 2024',
                           style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 9, fontWeight: FontWeight.bold,
                           ),
                         )
                       ],
@@ -264,13 +264,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Color.fromARGB(255, 216, 219, 216),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 7, horizontal: 14),
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14),
                         child: Text(
                           "Edit profile",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                          style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ),
                     ),
@@ -315,6 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                               fontSize: 12,
                               color: Color.fromARGB(255, 255, 255, 255)),
+
                         ),
                       ),
                     ),
@@ -335,6 +333,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           offset: Offset(0, 5),
                         ),
                       ],
+
                     ),
                     child: Row(
                       children: [
@@ -360,6 +359,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 15),
+
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -406,6 +406,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           offset: Offset(0, 5),
                         ),
                       ],
+
                     ),
                     child: Row(
                       children: [
@@ -431,6 +432,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 15),
+
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -513,6 +515,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     fontWeight: FontWeight.bold,
                                     color: Color.fromARGB(255, 0, 0, 0),
                                   ),
+
                                 ),
                                 SizedBox(height: 5),
                                 Align(
@@ -572,6 +575,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                               fontSize: 12,
                               color: Color.fromARGB(255, 255, 255, 255)),
+
                         ),
                       ),
                     ),
@@ -594,6 +598,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         final friends = snapshot.data!;
                         List<Map<String, String>> limitedFriends =
                             friends.take(3).toList();
+
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: limitedFriends.map((friend) {
@@ -603,6 +608,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 8.0),
+
                               child: GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
@@ -624,6 +630,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         offset: Offset(0, 5),
                                       ),
                                     ],
+
                                   ),
                                   child: ListTile(
                                     leading: CircleAvatar(
@@ -633,6 +640,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           : AssetImage(
                                                   "assets/standardProfilePicture.png")
                                               as ImageProvider,
+
                                     ),
                                     title: Text(friendName),
                                   ),
@@ -684,6 +692,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 setState(() {
                   currentIndex = index;
                   switch (index) {
+
                     case 0:
                       Navigator.pushNamed(context, '/homepage');
                     case 1:

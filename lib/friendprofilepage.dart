@@ -58,7 +58,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    void _onItemTapped(int index) {
+    void onItemTapped(int index) {
       setState(() {
         currentIndex = index;
       });
@@ -66,15 +66,15 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
       switch (index) {
         case 0:
           Navigator.pushNamed(context, "/homepage");
-          break;
+          return;
         case 1:
           Navigator.pushNamed(context, "/leaderboard");
-          break;
+          return;
         case 2:
           Navigator.pushNamed(context, "/friendspage");
-          break;
+          return;
         default:
-          break;
+          return;
       }
     }
 
@@ -421,7 +421,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
       ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: currentIndex,
-        onTap: _onItemTapped,
+        onTap: onItemTapped,
       ),
     );
   }

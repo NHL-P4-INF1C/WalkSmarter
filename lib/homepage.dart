@@ -67,10 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         Navigator.pushNamed(context, '/homepage');
         return;
-        return;
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
-        return;
         return;
       case 2:
         Navigator.pushNamed(context, '/friendspage',

@@ -163,6 +163,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       try {
         await pb.collection("users").delete(_userID);
         BuildContext context = this.context;
+        // ignore: use_build_context_synchronously
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
       } catch (e) {
         print("Error deleting account: $e");
