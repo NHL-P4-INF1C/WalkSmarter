@@ -45,7 +45,7 @@ Future <http.Response> sendRequest(
     String? token;
     if(dotenv.env["DEV_ENV"] == null)
     {
-      String? token = await getHashToken() ?? '';
+      token = await getHashToken() ?? '';
       if(token.isEmpty)
       {
         // Returning a fake status code to trick the rest of the manager into outputting this response. It's ugly, but it works
@@ -62,7 +62,7 @@ Future <http.Response> sendRequest(
       headers: <String, String>
       {
         'Content-Type': 'application/json',
-        'jwt': token!,
+        'jwt': token,
       },
       body: jsonEncode(<String, dynamic>
       {
@@ -72,6 +72,7 @@ Future <http.Response> sendRequest(
   } 
   catch (e) 
   {
+    print(e);
     return http.Response(e.toString(), 500);
   }
 }
