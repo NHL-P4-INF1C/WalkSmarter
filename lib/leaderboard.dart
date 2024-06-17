@@ -1,41 +1,86 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import './components/bottombar.dart';
+import './utils/pocketbase.dart';
+import 'dart:convert';
+
+var pb = PocketBaseSingleton().instance;
 
 class LeaderboardPage extends StatefulWidget {
   @override
-  State<LeaderboardPage> createState() => _LeaderboardPageState();
+  _LeaderboardPageState createState() => _LeaderboardPageState();
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
+  List<Map<String, dynamic>> _users = [];
+  bool _isLoading = true;
   int _selectedIndex = 1;
-  late String _selectedMonth;
 
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('en', null);
-    _selectedMonth = DateFormat.MMMM('en').format(DateTime.now());
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await pb.collection('users').getList();
+      final userList = response.items.map((item) => item.toJson()).toList();
+      userList.sort((a, b) => b['points'].compareTo(a['points']));
+      setState(() {
+        _users = userList;
+        _isLoading = false;
+      });
+    } catch (error) {
+      print('Error fetching user data: $error');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<String> fetchPoints() async {
+    try {
+      final response = await pb.collection('users').getOne(pb.authStore.model['id']);
+      return response.data['points'].toString();
+    } catch (error) {
+      print('Error: $error');
+      return 'Err';
+    }
+  }
+
+  Future<void> _fetchAvatar(String userId) async {
+    try {
+      final jsonString = await pb.collection("users").getFirstListItem('id="$userId"');
+      final record = jsonDecode(jsonString.toString());
+      setState(() {
+        _users = _users.map((user) {
+          if (user['id'] == userId) {
+            user['avatarUrl'] = record["avatar"] != null
+                ? pb.files.getUrl(jsonString, record["avatar"]).toString()
+                : "";
+          }
+          return user;
+        }).toList();
+      });
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        _users = _users.map((user) {
+          if (user['id'] == userId) {
+            user['avatarUrl'] = "";
+          }
+          return user;
+        }).toList();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-
     return Scaffold(
       body: Stack(
         children: [
@@ -71,9 +116,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                             alignment: Alignment.centerRight,
                             child: Padding(
                               padding: const EdgeInsets.only(right: 15),
-                              child: Text(
-                                '1001 Points',
-                                style: TextStyle(fontSize: 14),
+                              child: FutureBuilder<String>(
+                                future: fetchPoints(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return Text(
+                                      'Loading...',
+                                      style: TextStyle(fontSize: 14),
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return Text(
+                                      'Error',
+                                      style: TextStyle(fontSize: 14),
+                                    );
+                                  } else {
+                                    return Text(
+                                      '${snapshot.data} Points',
+                                      style: TextStyle(fontSize: 14),
+                                    );
+                                  }
+                                },
                               ),
                             ),
                           ),
@@ -84,9 +146,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       IconButton(
                         iconSize: 40,
                         icon: Icon(Icons.account_circle),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/profilepage');
-                        },
+                        onPressed: () {},
                       ),
                     ],
                     backgroundColor: Colors.white,
@@ -108,41 +168,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       'Leaderboard',
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                    SizedBox(width: 8),
-                    PopupMenuButton<String>(
-                      offset: Offset(0, 35),
-                      itemBuilder: (BuildContext context) {
-                        return months.map((String value) {
-                          return PopupMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList();
-                      },
-                      onSelected: (String newValue) {
-                        setState(() {
-                          _selectedMonth = newValue;
-                        });
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                        decoration: BoxDecoration(
-                          border:
-                              Border(bottom: BorderSide(color: Colors.white)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _selectedMonth,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Icon(Icons.arrow_drop_down, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -161,26 +186,17 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           children: [
                             Positioned(
                               bottom: 120,
-                              left:
-                                  MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(
-                                  2, Colors.grey[300]!, 30,
-                                  borderColor: Color(0xFFC0C0C0)),
+                              left: MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)),
                             ),
                             Positioned(
                               bottom: 150,
-                              child: _buildTopThreeCircle(
-                                  1, Colors.grey[300]!, 35,
-                                  borderColor: Color(0xFFFFD700),
-                                  isCrowned: true),
+                              child: _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true),
                             ),
                             Positioned(
                               bottom: 120,
-                              right:
-                                  MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(
-                                  3, Colors.grey[300]!, 30,
-                                  borderColor: Color(0xFFCD7F32)),
+                              right: MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)),
                             ),
                           ],
                         ),
@@ -195,58 +211,62 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: ListView.builder(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: 17,
-                        itemBuilder: (context, index) {
-                          String position = (index + 4).toString();
-                          return Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: ListTile(
-                              title: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 25,
-                                    child: Text(
-                                      position,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
+                      child: _isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView.builder(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemCount: _users.length <= 3 ? 0 : _users.length - 3,
+                              itemBuilder: (context, index) {
+                                var user = _users[index + 3];
+                                String position = (index + 4).toString();
+                                _fetchAvatar(user['id']);
+                                return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: ListTile(
+                                    title: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 25,
+                                          child: Text(
+                                            position,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
+                                              ? NetworkImage(user['avatarUrl'])
+                                              : AssetImage('assets/default_avatar.png') as ImageProvider,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          user['username'],
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        ),
+                                        Spacer(),
+                                        Text(
+                                          user['points'].toString(),
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(width: 4),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  CircleAvatar(
-                                    radius: 20,
-                                    child: Icon(Icons.account_circle, size: 40),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Username',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                  Spacer(),
-                                  Text(
-                                    '1001',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(width: 4),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ],
                 ),
@@ -261,15 +281,15 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 switch (index) {
                   case 0:
                     Navigator.pushNamed(context, '/homepage');
-                    return;
+                    break;
                   case 1:
                     Navigator.pushNamed(context, '/leaderboard');
-                    return;
+                    break;
                   case 2:
                     Navigator.pushNamed(context, '/friendspage');
-                    return;
+                    break;
                   default:
-                    return;
+                    break;
                 }
               });
             },
@@ -279,8 +299,11 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 
-  Widget _buildTopThreeCircle(int position, Color circleColor, double size,
-      {bool isCrowned = false, required Color borderColor}) {
+  Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
+    var user = _users.length >= position ? _users[position - 1] : null;
+    if (user != null && user['avatarUrl'] == null) {
+      _fetchAvatar(user['id']);
+    }
     return Column(
       children: [
         SizedBox(height: 10),
@@ -293,7 +316,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               child: CircleAvatar(
                 radius: size,
                 backgroundColor: circleColor,
-                child: Icon(Icons.account_circle, size: size * 2),
+                backgroundImage: user != null && user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
+                    ? NetworkImage(user['avatarUrl'])
+                    : AssetImage('assets/default_avatar.png') as ImageProvider,
               ),
             ),
             if (isCrowned)
@@ -314,29 +339,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 ),
                 child: Text(
                   '$position',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ],
         ),
         SizedBox(height: 5),
-        Column(
-          children: [
-            Text(
-              '{username}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 14),
-            ),
-            Text(
-              '1001',
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
+        if (user != null)
+          Column(
+            children: [
+              Text(
+                user['username'],
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                user['points'].toString(),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
       ],
     );
   }
