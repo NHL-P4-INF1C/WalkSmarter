@@ -489,6 +489,7 @@ void _darnNoToast(BuildContext context)
                             catch (e) 
                             {
                               print("Failed to update points in Pocketbase: $e");
+                              // ignore: use_build_context_synchronously
                               _darnNoToast(context);
                             }
                           }
