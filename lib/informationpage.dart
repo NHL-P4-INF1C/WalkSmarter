@@ -1,53 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'components/bottombar.dart';
 import "utils/apimanager.dart";
 
-class InformationPage extends StatefulWidget 
-{
+class InformationPage extends StatefulWidget {
   @override
   State<InformationPage> createState() => _InformationPageState();
 }
 
-class _InformationPageState extends State<InformationPage>
-{
+class _InformationPageState extends State<InformationPage> {
   int currentIndex = 0;
-  final requestManager = RequestManager(
-    {
-      "pointOfInterest":"NHL Stenden Emmen",
-      "locationOfOrigin":"The Netherlands"
-    }, "openai"
-  );
+  final requestManager = RequestManager({
+    "pointOfInterest": "NHL Stenden Emmen",
+    "locationOfOrigin": "The Netherlands"
+  }, "openai");
   Map<String, dynamic> payload = {};
   String monumentInformation = "loading...";
   bool isLoading = true;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     _fetchData();
   }
 
-  void _fetchData() async 
-  {
-    try 
-    {
+  var pointOfInterestData;
+  bool _initialized = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      pointOfInterestData = ModalRoute.of(context)?.settings.arguments;
+      String string =
+          '${'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photo_reference=' + pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}';
+      print(string);
+      _initialized = true;
+    }
+  }
+
+  void _fetchData() async {
+    try {
       payload = await requestManager.makeApiCall();
-      if (payload['statusCode'] == 200) 
-      {
+      if (payload['statusCode'] == 200) {
         monumentInformation = payload['response']['description'];
-      } 
-      else 
-      {
-        monumentInformation = "${payload['response']}. Status code: ${payload['statusCode']}";
+      } else {
+        monumentInformation =
+            "${payload['response']}. Status code: ${payload['statusCode']}";
       }
       setState(() {
         isLoading = false;
       });
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       print("API call failed: $e");
       setState(() {
         isLoading = false;
@@ -55,13 +59,11 @@ class _InformationPageState extends State<InformationPage>
     }
   }
 
-  void _showLoadingDialog() 
-  {
+  void _showLoadingDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) 
-      {
+      builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Still loading"),
           content: Text("Please wait until everything has loaded"),
@@ -79,8 +81,7 @@ class _InformationPageState extends State<InformationPage>
                   ),
                 ),
                 child: Text("OK"),
-                onPressed: () 
-                {
+                onPressed: () {
                   Navigator.pop(context);
                 },
               ),
@@ -92,8 +93,7 @@ class _InformationPageState extends State<InformationPage>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     void onItemTapped(int index) {
       setState(() {
         currentIndex = index;
@@ -127,8 +127,7 @@ class _InformationPageState extends State<InformationPage>
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: TextButton(
-                    onPressed: () 
-                    {
+                    onPressed: () {
                       Navigator.pushNamed(context, "/homepage");
                     },
                     child: Text(
@@ -167,7 +166,7 @@ class _InformationPageState extends State<InformationPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "{Monument name}",
+                      pointOfInterestData['name'],
                       style: TextStyle(
                         fontSize: 24,
                       ),
@@ -177,14 +176,40 @@ class _InformationPageState extends State<InformationPage>
                       height: 100,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.grey[
-                            300], // placeholder banner afbeelding monument
+                        color:
+                            Colors.grey[300], // Placeholder banner image color
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
-                      child: Center(
-                        child: Text(
-                          "{banner picture of monument}",
-                          textAlign: TextAlign.center,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        child: Center(
+                          child: Image.network(
+                            'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              }
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ??
+                                              1)
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
+                              return Icon(Icons
+                                  .error); // Display error icon if image fails to load
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -220,23 +245,18 @@ class _InformationPageState extends State<InformationPage>
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: ElevatedButton(
-                          onPressed: () 
-                          {
-                            print(payload);
-                            if (isLoading)
-                            {
-                              _showLoadingDialog();
-                            }
-                            else
-                            {
-                              Navigator.pushNamed(
-                                context,
-                                "/questionpage",
-                                arguments: payload,
-                              );
-                            }
-                            
-                          },
+                        onPressed: () {
+                          print(payload);
+                          if (isLoading) {
+                            _showLoadingDialog();
+                          } else {
+                            Navigator.pushNamed(
+                              context,
+                              "/questionpage",
+                              arguments: payload,
+                            );
+                          }
+                        },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Color.fromARGB(255, 9, 106, 46)),

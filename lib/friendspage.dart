@@ -14,7 +14,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
   final pb = PocketBaseSingleton().instance;
   int _selectedIndex = 2;
   String? username;
-
+  
   Future<void> deleteFriend(String friendId) async {
     try {
       final user =
