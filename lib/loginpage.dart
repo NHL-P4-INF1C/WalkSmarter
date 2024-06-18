@@ -64,18 +64,20 @@ class _LoginDemoState extends State<LoginDemo> {
         await pb.collection('users').authWithPassword(username!, password!);
 
         if (!mounted) return;
+        await Future.delayed(Duration(milliseconds: 100));
 
-
-      if(pb.authStore.isValid){
-        Navigator.pushNamed(
-          context,
-          '/homepage',
-          arguments: username,
-        );
-        print("Ingelogd!!");
+        if(pb.authStore.isValid){
+          // ignore: use_build_context_synchronously
+          Navigator.pushNamed(
+            context,
+            '/homepage',
+            arguments: username,
+          );
+          print("Ingelogd!!");
         }
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       _showErrorDialog(context, 'Invalid username or password. Try again.');
       print('Error occurred during authentication: $e');
     }
