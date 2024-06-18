@@ -11,31 +11,24 @@ class InformationPage extends StatefulWidget {
 
 class _InformationPageState extends State<InformationPage> {
   int currentIndex = 0;
-  final requestManager = RequestManager({
-    "pointOfInterest": "NHL Stenden Emmen",
-    "locationOfOrigin": "The Netherlands"
-  }, "openai");
+  late RequestManager requestManager;
   Map<String, dynamic> payload = {};
   String monumentInformation = "loading...";
   bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  var pointOfInterestData;
+  late dynamic pointOfInterestData;
   bool _initialized = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
       pointOfInterestData = ModalRoute.of(context)?.settings.arguments;
-      String string =
-          '${'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photo_reference=' + pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}';
-      print(string);
+      requestManager = RequestManager({
+        "pointOfInterest": "${pointOfInterestData['name']}",
+        "locationOfOrigin": "${pointOfInterestData['plus_code']['compound_code']}"
+      }, "openai");
       _initialized = true;
+      _fetchData();
     }
   }
 
@@ -45,8 +38,7 @@ class _InformationPageState extends State<InformationPage> {
       if (payload['statusCode'] == 200) {
         monumentInformation = payload['response']['description'];
       } else {
-        monumentInformation =
-            "${payload['response']}. Status code: ${payload['statusCode']}";
+        monumentInformation ="${payload['response']}. Status code: ${payload['statusCode']}";
       }
       setState(() {
         isLoading = false;
