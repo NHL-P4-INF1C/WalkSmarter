@@ -56,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     _timer.cancel();
+    _refreshTimer.cancel();
+    isTimerActive = false;
+    isListRefreshTimerIsActive = false;
     super.dispose();
   }
 
@@ -283,9 +286,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void startLocationUpdates() {
     if (!isTimerActive) {
+      isTimerActive = true;
       _timer = Timer.periodic(Duration(seconds: 5), (timer) {
         // fetchLocationAndCheckProximity();
-        if(!hasPopUp){
+        if (!hasPopUp) {
+        print('pop up called');
           getPOIThroughHttp();
         }
       });
@@ -294,8 +299,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void startListRefreshTimer() {
     if (!isListRefreshTimerIsActive) {
+      isListRefreshTimerIsActive = true;
       _refreshTimer = Timer.periodic(Duration(seconds: 900), (timer) {
         cleanList();
+        print('Cleaning called');
       });
     }
   }
