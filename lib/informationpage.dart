@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'components/bottombar.dart';
 import "utils/apimanager.dart";
@@ -22,6 +23,20 @@ class _InformationPageState extends State<InformationPage> {
   void initState() {
     super.initState();
     _fetchData();
+  }
+
+  var pointOfInterestData;
+  bool _initialized = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      pointOfInterestData = ModalRoute.of(context)?.settings.arguments;
+      String string =
+          '${'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photo_reference=' + pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}';
+      print(string);
+      _initialized = true;
+    }
   }
 
   void _fetchData() async {
@@ -151,7 +166,7 @@ class _InformationPageState extends State<InformationPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "{Monument name}",
+                      pointOfInterestData['name'],
                       style: TextStyle(
                         fontSize: 24,
                       ),
@@ -161,14 +176,40 @@ class _InformationPageState extends State<InformationPage> {
                       height: 100,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.grey[
-                            300], // placeholder banner afbeelding monument
+                        color:
+                            Colors.grey[300], // Placeholder banner image color
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
-                      child: Center(
-                        child: Text(
-                          "{banner picture of monument}",
-                          textAlign: TextAlign.center,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        child: Center(
+                          child: Image.network(
+                            'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              }
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ??
+                                              1)
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
+                              return Icon(Icons
+                                  .error); // Display error icon if image fails to load
+                            },
+                          ),
                         ),
                       ),
                     ),
