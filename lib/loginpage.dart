@@ -25,8 +25,7 @@ class _LoginDemoState extends State<LoginDemo> {
   String? username, password;
 
   Future<void> signIn() async {
-    if(dotenv.env["DEV_ENV"] != null)
-    {
+    if (dotenv.env["DEV_ENV"] != null) {
       Navigator.pushNamed(
         context,
         '/homepage',

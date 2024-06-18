@@ -62,7 +62,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
 
         var request = http.MultipartRequest(
           "PATCH",
-          Uri.parse('${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
+          Uri.parse(
+              '${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
         );
 
         request.files.add(
@@ -126,8 +127,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       setState(() {
         _profilePicture = "";
       });
-      if (!mounted) return; 
-      if (!mounted) return; 
+      if (!mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Profile picture deleted successfully!"),
@@ -148,9 +149,9 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   Future<bool> _verifyPassword(String username, String password) async {
     try {
       await pb.collection('users').authWithPassword(
-        username,
-        password,
-      );
+            username,
+            password,
+          );
       return pb.authStore.isValid;
     } catch (e) {
       print("Error verifying password: $e");
@@ -477,7 +478,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text("Enter your username and password to delete your account:"),
+                                Text(
+                                    "Enter your username and password to delete your account:"),
                                 SizedBox(height: 10),
                                 TextField(
                                   controller: _usernameController,
@@ -506,14 +508,18 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  String username = _usernameController.text.trim();
-                                  String password = _passwordController.text.trim();
-                                  if (username.isNotEmpty && password.isNotEmpty) {
+                                  String username =
+                                      _usernameController.text.trim();
+                                  String password =
+                                      _passwordController.text.trim();
+                                  if (username.isNotEmpty &&
+                                      password.isNotEmpty) {
                                     _deleteAccount(username, password);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text("Please enter both username and password."),
+                                        content: Text(
+                                            "Please enter both username and password."),
                                       ),
                                     );
                                   }

@@ -45,7 +45,8 @@ class InputDialogState extends State<InputDialog> {
   }
 }
 
-Future<String?> showInputDialog(BuildContext context, String title, String hintText) {
+Future<String?> showInputDialog(
+    BuildContext context, String title, String hintText) {
   return showDialog<String>(
     context: context,
     builder: (BuildContext context) {
