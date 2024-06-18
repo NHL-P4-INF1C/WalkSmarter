@@ -225,8 +225,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                       final friendId = friend['id'];
                                       final friendAvatar = friend['avatar'];
                                       return Container(
-                                        margin: EdgeInsets.only(
-                                            left: 20, right: 20, top: 10),
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 30, vertical: 10),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
