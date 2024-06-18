@@ -3,51 +3,40 @@ import 'package:flutter/material.dart';
 import 'components/bottombar.dart';
 import "utils/apimanager.dart";
 
-class InformationPage extends StatefulWidget 
-{
+class InformationPage extends StatefulWidget {
   @override
   State<InformationPage> createState() => _InformationPageState();
 }
 
-class _InformationPageState extends State<InformationPage>
-{
+class _InformationPageState extends State<InformationPage> {
   int currentIndex = 0;
-  final requestManager = RequestManager(
-    {
-      "pointOfInterest":"NHL Stenden Emmen",
-      "locationOfOrigin":"The Netherlands"
-    }, "openai"
-  );
+  final requestManager = RequestManager({
+    "pointOfInterest": "NHL Stenden Emmen",
+    "locationOfOrigin": "The Netherlands"
+  }, "openai");
   Map<String, dynamic> payload = {};
   String monumentInformation = "loading...";
   bool isLoading = true;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     _fetchData();
   }
 
-  void _fetchData() async 
-  {
-    try 
-    {
+  void _fetchData() async {
+    try {
       payload = await requestManager.makeApiCall();
-      if (payload['statusCode'] == 200) 
-      {
+      if (payload['statusCode'] == 200) {
         monumentInformation = payload['response']['description'];
-      } 
-      else 
-      {
-        monumentInformation = "${payload['response']}. Status code: ${payload['statusCode']}";
+      } else {
+        monumentInformation =
+            "${payload['response']}. Status code: ${payload['statusCode']}";
       }
       setState(() {
         isLoading = false;
       });
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       print("API call failed: $e");
       setState(() {
         isLoading = false;
@@ -55,13 +44,11 @@ class _InformationPageState extends State<InformationPage>
     }
   }
 
-  void _showLoadingDialog() 
-  {
+  void _showLoadingDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) 
-      {
+      builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Still loading"),
           content: Text("Please wait until everything has loaded"),
@@ -79,8 +66,7 @@ class _InformationPageState extends State<InformationPage>
                   ),
                 ),
                 child: Text("OK"),
-                onPressed: () 
-                {
+                onPressed: () {
                   Navigator.pop(context);
                 },
               ),
@@ -92,8 +78,7 @@ class _InformationPageState extends State<InformationPage>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     void onItemTapped(int index) {
       setState(() {
         currentIndex = index;
@@ -127,8 +112,7 @@ class _InformationPageState extends State<InformationPage>
                 child: Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: TextButton(
-                    onPressed: () 
-                    {
+                    onPressed: () {
                       Navigator.pushNamed(context, "/homepage");
                     },
                     child: Text(
@@ -220,23 +204,18 @@ class _InformationPageState extends State<InformationPage>
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: ElevatedButton(
-                          onPressed: () 
-                          {
-                            print(payload);
-                            if (isLoading)
-                            {
-                              _showLoadingDialog();
-                            }
-                            else
-                            {
-                              Navigator.pushNamed(
-                                context,
-                                "/questionpage",
-                                arguments: payload,
-                              );
-                            }
-                            
-                          },
+                        onPressed: () {
+                          print(payload);
+                          if (isLoading) {
+                            _showLoadingDialog();
+                          } else {
+                            Navigator.pushNamed(
+                              context,
+                              "/questionpage",
+                              arguments: payload,
+                            );
+                          }
+                        },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Color.fromARGB(255, 9, 106, 46)),
