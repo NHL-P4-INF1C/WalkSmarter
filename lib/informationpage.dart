@@ -17,6 +17,7 @@ class _InformationPageState extends State<InformationPage> {
   bool isLoading = true;
   late dynamic pointOfInterestData;
   bool _initialized = false;
+  late String photoLink;
 
   @override
   void didChangeDependencies() {
@@ -27,6 +28,13 @@ class _InformationPageState extends State<InformationPage> {
         "pointOfInterest": "${pointOfInterestData['name']}",
         "locationOfOrigin": "${pointOfInterestData['plus_code']['compound_code']}"
       }, "openai");
+      if(pointOfInterestData['photos'] != null) {
+        photoLink = 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}';
+      } else if(pointOfInterestData['icon'] != null) {
+        photoLink = pointOfInterestData['icon'];
+      } else {
+        photoLink = '';
+      }
       _initialized = true;
       _fetchData();
     }
@@ -176,7 +184,7 @@ class _InformationPageState extends State<InformationPage> {
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                         child: Center(
                           child: Image.network(
-                            'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}',
+                            photoLink,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
@@ -197,9 +205,13 @@ class _InformationPageState extends State<InformationPage> {
                               );
                             },
                             errorBuilder: (BuildContext context, Object error,
-                                StackTrace? stackTrace) {
-                              return Icon(Icons
-                                  .error); // Display error icon if image fails to load
+                              StackTrace? stackTrace) {
+                              return Image.asset(
+                                'assets/walksmarterlogo.png',
+                                  fit: BoxFit.fitHeight,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                              );
                             },
                           ),
                         ),

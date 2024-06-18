@@ -31,3 +31,5 @@ doc/api/
 .flutter-plugins-dependencies
 
 .idea
+
+local.properties
