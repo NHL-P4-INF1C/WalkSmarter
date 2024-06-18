@@ -74,6 +74,9 @@ class _LoginDemoState extends State<LoginDemo> {
             arguments: username,
           );
           print("Ingelogd!!");
+        } else {
+            // ignore: use_build_context_synchronously
+            _showErrorDialog(context, 'Unable to log in. Try again.');
         }
       }
     } catch (e) {
