@@ -220,7 +220,7 @@ class _InformationPageState extends State<InformationPage> {
                     ),
                     SizedBox(height: 20),
                     Container(
-                      height: 380,
+                      height: 360,
                       width: double.infinity,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
