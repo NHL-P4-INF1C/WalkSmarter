@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:walk_smarter/frienddialog.dart';
 import './utils/pocketbase.dart';
-import './frienddialog.dart';
+import 'frienddialog.dart';
 import './components/navbar.dart';
 import './components/bottombar.dart';
 
@@ -14,7 +13,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
   final pb = PocketBaseSingleton().instance;
   int _selectedIndex = 2;
   String? username;
-  
+
   Future<void> deleteFriend(String friendId) async {
     try {
       final user =
@@ -34,11 +33,17 @@ class _FriendsPageState extends State<MyFriendsPage> {
     }
   }
 
-  Future<void> addFriend(friendName) async {
+  Future<void> addFriend(String friendName) async {
     try {
       final user =
           await pb.collection('users').getOne(pb.authStore.model['id']);
       List<String> friends = List<String>.from(user.data['friends']);
+      final currentUsername = user.data['username'];
+
+      if (friendName == currentUsername) {
+        print('You cannot add yourself as a friend.');
+        return;
+      }
 
       final friendRecords = await pb.collection('users').getFullList(
             filter: 'username="$friendName"',
@@ -121,7 +126,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
     return Scaffold(
       appBar: Navbar(
           profilePicture:
-              'assets/standardProfilePicture.png'),
+              'path/to/profile/picture'), // Replace with actual profile picture path
       body: Stack(
         children: [
           Container(
@@ -171,8 +176,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 String? friendName = await showInputDialog(
                                     context,
                                     'Enter Name',
-                                    'Type your friends name here');
-                                await addFriend(friendName);
+                                    'Type your name here');
+                                await addFriend(friendName!);
                                 setState(() {});
                               },
                               child: Container(
