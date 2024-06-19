@@ -248,7 +248,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                           radius: 20,
                                           backgroundImage: user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
                                               ? NetworkImage(user['avatarUrl'])
-                                              : AssetImage('assets/default_avatar.png') as ImageProvider,
+                                              : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
                                         ),
                                         SizedBox(width: 8),
                                         Text(
@@ -318,7 +318,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 backgroundColor: circleColor,
                 backgroundImage: user != null && user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
                     ? NetworkImage(user['avatarUrl'])
-                    : AssetImage('assets/default_avatar.png') as ImageProvider,
+                    : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
               ),
             ),
             if (isCrowned)
