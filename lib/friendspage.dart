@@ -121,7 +121,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
     return Scaffold(
       appBar: Navbar(
           profilePicture:
-              'path/to/profile/picture'), // Replace with actual profile picture path
+              'assets/standardProfilePicture.png'),
       body: Stack(
         children: [
           Container(
@@ -171,7 +171,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 String? friendName = await showInputDialog(
                                     context,
                                     'Enter Name',
-                                    'Type your name here');
+                                    'Type your friends name here');
                                 await addFriend(friendName);
                                 setState(() {});
                               },
