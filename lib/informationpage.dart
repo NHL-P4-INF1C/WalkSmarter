@@ -24,10 +24,17 @@ class _InformationPageState extends State<InformationPage> {
     super.didChangeDependencies();
     if (!_initialized) {
       pointOfInterestData = ModalRoute.of(context)?.settings.arguments;
-      List<String> location = pointOfInterestData['plus_code']['compound_code'].split(' ');
+      String? pointOfInterestLocation;
+      if(pointOfInterestData['plus_code'] != null) {
+        List<String> location = pointOfInterestData['plus_code']['compound_code'].split(' ');
+        pointOfInterestLocation = location.sublist(1).join(' ');
+      } else {
+        pointOfInterestLocation = pointOfInterestData['name'];
+      }
+
       requestManager = RequestManager({
-        "pointOfInterest": "${pointOfInterestData['name']}",
-        "locationOfOrigin": location.sublist(1).join(' '),
+        "pointOfInterest": pointOfInterestData['name'],
+        "locationOfOrigin": pointOfInterestLocation,
       }, "openai");
       photoLink = pointOfInterestData['photos'] != null ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}' : '';
       _initialized = true;

@@ -265,8 +265,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                                       null &&
                                                   user['avatarUrl'].isNotEmpty
                                               ? NetworkImage(user['avatarUrl'])
-                                              : AssetImage(
-                                                      'assets/default_avatar.png')
+                                              : AssetImage('assets/standardProfilePicture.png')
                                                   as ImageProvider,
                                         ),
                                         SizedBox(width: 8),
@@ -343,7 +342,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         user['avatarUrl'] != null &&
                         user['avatarUrl'].isNotEmpty
                     ? NetworkImage(user['avatarUrl'])
-                    : AssetImage('assets/default_avatar.png') as ImageProvider,
+                    : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
               ),
             ),
             if (isCrowned)
