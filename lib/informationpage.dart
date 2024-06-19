@@ -29,13 +29,7 @@ class _InformationPageState extends State<InformationPage> {
         "pointOfInterest": "${pointOfInterestData['name']}",
         "locationOfOrigin": location.sublist(1).join(' '),
       }, "openai");
-      if(pointOfInterestData['photos'] != null) {
-        photoLink = 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}';
-      } else if(pointOfInterestData['icon'] != null) {
-        photoLink = pointOfInterestData['icon'];
-      } else {
-        photoLink = '';
-      }
+      photoLink = pointOfInterestData['photos'] != null ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}' : '';
       _initialized = true;
       _fetchData();
     }
