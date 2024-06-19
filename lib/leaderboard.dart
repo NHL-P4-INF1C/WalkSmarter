@@ -240,7 +240,14 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                       horizontal: 30, vertical: 10),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 5),
+                                            ),
+                                          ],
                                   ),
                                   child: ListTile(
                                     title: Row(
@@ -266,7 +273,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                                   user['avatarUrl'].isNotEmpty
                                               ? NetworkImage(user['avatarUrl'])
                                               : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
-                                                  as ImageProvider,
+
                                         ),
                                         SizedBox(width: 8),
                                         Text(
