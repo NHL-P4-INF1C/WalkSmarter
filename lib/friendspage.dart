@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:walk_smarter/frienddialog.dart';
 import './utils/pocketbase.dart';
-import 'frienddialog.dart';
+import './frienddialog.dart';
 import './components/navbar.dart';
 import './components/bottombar.dart';
 
@@ -13,7 +14,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
   final pb = PocketBaseSingleton().instance;
   int _selectedIndex = 2;
   String? username;
-
+  
   Future<void> deleteFriend(String friendId) async {
     try {
       final user =
@@ -120,7 +121,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
     return Scaffold(
       appBar: Navbar(
           profilePicture:
-              'path/to/profile/picture'), // Replace with actual profile picture path
+              'assets/standardProfilePicture.png'),
       body: Stack(
         children: [
           Container(
@@ -170,7 +171,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                 String? friendName = await showInputDialog(
                                     context,
                                     'Enter Name',
-                                    'Type your name here');
+                                    'Type your friends name here');
                                 await addFriend(friendName);
                                 setState(() {});
                               },
@@ -224,8 +225,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                       final friendId = friend['id'];
                                       final friendAvatar = friend['avatar'];
                                       return Container(
-                                        margin: EdgeInsets.only(
-                                            left: 20, right: 20, top: 10),
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 30, vertical: 10),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:

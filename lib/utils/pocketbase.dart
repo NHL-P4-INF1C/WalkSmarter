@@ -13,7 +13,6 @@ class PocketBaseSingleton {
   PocketBaseSingleton._internal() {
     _pocketBase = PocketBase(
       dotenv.env["POCKETBASE_URL"]!,
-
       authStore: StorageManager(),
     );
   }

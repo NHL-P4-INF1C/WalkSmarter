@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:walk_smarter/friendprofilepage.dart';
+import 'package:walk_smarter/loginpage.dart';
 import 'changeusername.dart';
 import 'profileappsettings.dart';
 import 'profilesettings.dart';
 import 'profileusersettings.dart';
-import 'loginpage.dart';
 import 'signup.dart';
 import 'forgotpassword.dart';
 import 'homepage.dart';
@@ -19,23 +19,38 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class MyNavigatorObserver extends NavigatorObserver {
-  @override
-  Future<void> didPush(Route route, Route? previousRoute) async {
-    try {
-      var pb = PocketBaseSingleton().instance;
-      await pb.collection('users').authRefresh();
-      super.didPush(route, previousRoute);
-    } catch (error) {
-      print('Error during navigation: $error');
-    }
-  }
+  // @override
+  // Future<void> didPush(Route route, Route? previousRoute) async {
+  //   var pb = PocketBaseSingleton().instance;
+  //     try {
+  //       var requestData = await pb.collection('users').authRefresh();
+  //       print(requestData);
+
+  //       if (requestData.meta['token'] != null && requestData.meta['token'].isNotEmpty) {
+  //         super.didPush(route, previousRoute);
+  //         return;
+  //       }
+  //     } catch (error) {
+  //       print('Error during authentication refresh: $error');
+  //       pb.authStore.clear();
+  //       Navigator.of(route.navigator!.context).pushReplacementNamed('/loginpage');
+  //     }
+  // }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  await dotenv.load(fileName: '.env');
+
+  // Load environment variables
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    print('Failed to load .env file: $e');
+  }
+
+  PocketBaseSingleton().instance;
 
   runApp(
     ChangeNotifierProvider(
@@ -81,10 +96,11 @@ class MyApp extends StatelessWidget {
         '/profileusersettings': (context) => ProfileUserSettings(),
         '/profileappsettings': (context) => ProfileAppSettings(),
         '/changeusername': (context) => ChangeUsernamePage(),
-        '/questionpage': (context) => QuestionPage(),
+        '/questionpage': (context) => QuestionPage(payload: {}),
         '/informationpage': (context) => InformationPage(),
         '/friendspage': (context) => MyFriendsPage(),
         '/friendprofilepage': (context) => FriendProfilePage(),
+        '/loginpage': (context) => LoginDemo(),
       },
     );
   }

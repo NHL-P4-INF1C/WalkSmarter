@@ -44,7 +44,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   Future<String> fetchPoints() async {
     try {
-      final response = await pb.collection('users').getOne(pb.authStore.model['id']);
+      final response =
+          await pb.collection('users').getOne(pb.authStore.model['id']);
       return response.data['points'].toString();
     } catch (error) {
       print('Error: $error');
@@ -54,7 +55,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   Future<void> _fetchAvatar(String userId) async {
     try {
-      final jsonString = await pb.collection("users").getFirstListItem('id="$userId"');
+      final jsonString =
+          await pb.collection("users").getFirstListItem('id="$userId"');
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _users = _users.map((user) {
@@ -119,7 +121,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                               child: FutureBuilder<String>(
                                 future: fetchPoints(),
                                 builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
                                     return Text(
                                       'Loading...',
                                       style: TextStyle(fontSize: 14),
@@ -186,17 +189,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           children: [
                             Positioned(
                               bottom: 120,
-                              left: MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(2, Colors.grey[300]!, 30, borderColor: Color(0xFFC0C0C0)),
+                              left:
+                                  MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(
+                                  2, Colors.grey[300]!, 30,
+                                  borderColor: Color(0xFFC0C0C0)),
                             ),
                             Positioned(
                               bottom: 150,
-                              child: _buildTopThreeCircle(1, Colors.grey[300]!, 35, borderColor: Color(0xFFFFD700), isCrowned: true),
+                              child: _buildTopThreeCircle(
+                                  1, Colors.grey[300]!, 35,
+                                  borderColor: Color(0xFFFFD700),
+                                  isCrowned: true),
                             ),
                             Positioned(
                               bottom: 120,
-                              right: MediaQuery.of(context).size.width * 0.2 - 60,
-                              child: _buildTopThreeCircle(3, Colors.grey[300]!, 30, borderColor: Color(0xFFCD7F32)),
+                              right:
+                                  MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(
+                                  3, Colors.grey[300]!, 30,
+                                  borderColor: Color(0xFFCD7F32)),
                             ),
                           ],
                         ),
@@ -217,20 +229,23 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                             )
                           : ListView.builder(
                               physics: AlwaysScrollableScrollPhysics(),
-                              itemCount: _users.length <= 3 ? 0 : _users.length - 3,
+                              itemCount:
+                                  _users.length <= 3 ? 0 : _users.length - 3,
                               itemBuilder: (context, index) {
                                 var user = _users[index + 3];
                                 String position = (index + 4).toString();
                                 _fetchAvatar(user['id']);
                                 return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 10),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                   child: ListTile(
                                     title: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 25,
@@ -246,19 +261,25 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                         SizedBox(width: 8),
                                         CircleAvatar(
                                           radius: 20,
-                                          backgroundImage: user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
+                                          backgroundImage: user['avatarUrl'] !=
+                                                      null &&
+                                                  user['avatarUrl'].isNotEmpty
                                               ? NetworkImage(user['avatarUrl'])
                                               : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
+                                                  as ImageProvider,
                                         ),
                                         SizedBox(width: 8),
                                         Text(
                                           user['username'],
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
                                         ),
                                         Spacer(),
                                         Text(
                                           user['points'].toString(),
-                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
                                         ),
                                         SizedBox(width: 4),
                                       ],
@@ -299,7 +320,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 
-  Widget _buildTopThreeCircle(int position, Color circleColor, double size, {bool isCrowned = false, required Color borderColor}) {
+  Widget _buildTopThreeCircle(int position, Color circleColor, double size,
+      {bool isCrowned = false, required Color borderColor}) {
     var user = _users.length >= position ? _users[position - 1] : null;
     if (user != null && user['avatarUrl'] == null) {
       _fetchAvatar(user['id']);
@@ -316,7 +338,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               child: CircleAvatar(
                 radius: size,
                 backgroundColor: circleColor,
-                backgroundImage: user != null && user['avatarUrl'] != null && user['avatarUrl'].isNotEmpty
+                backgroundImage: user != null &&
+                        user['avatarUrl'] != null &&
+                        user['avatarUrl'].isNotEmpty
                     ? NetworkImage(user['avatarUrl'])
                     : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
               ),
@@ -339,7 +363,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 ),
                 child: Text(
                   '$position',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
