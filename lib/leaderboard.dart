@@ -265,7 +265,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                                       null &&
                                                   user['avatarUrl'].isNotEmpty
                                               ? NetworkImage(user['avatarUrl'])
-                                              : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
+                                              : AssetImage('assets/standardProfilePicture.png')
                                                   as ImageProvider,
                                         ),
                                         SizedBox(width: 8),
