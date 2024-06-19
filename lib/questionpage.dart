@@ -483,9 +483,12 @@ class _QuestionPageState extends State<QuestionPage>
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: currentIndex,
-        onTap: onItemTapped,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 10, left: 15, right: 15),
+        child: BottomNavBar(
+          selectedIndex: currentIndex,
+          onTap: onItemTapped,
+        ),
       ),
     );
   }

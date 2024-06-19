@@ -221,7 +221,7 @@ class _InformationPageState extends State<InformationPage> {
                     ),
                     SizedBox(height: 20),
                     Container(
-                      height: 380,
+                      height: 350,
                       width: double.infinity,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -284,9 +284,12 @@ class _InformationPageState extends State<InformationPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: currentIndex,
-        onTap: onItemTapped,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 10, left: 15, right: 15),
+        child: BottomNavBar(
+          selectedIndex: currentIndex,
+          onTap: onItemTapped,
+        ),
       ),
     );
   }
