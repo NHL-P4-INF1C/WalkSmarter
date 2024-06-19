@@ -11,31 +11,33 @@ class InformationPage extends StatefulWidget {
 
 class _InformationPageState extends State<InformationPage> {
   int currentIndex = 0;
-  final requestManager = RequestManager({
-    "pointOfInterest": "NHL Stenden Emmen",
-    "locationOfOrigin": "The Netherlands"
-  }, "openai");
+  late RequestManager requestManager;
   Map<String, dynamic> payload = {};
   String monumentInformation = "loading...";
   bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  var pointOfInterestData;
+  late dynamic pointOfInterestData;
   bool _initialized = false;
+  late String photoLink;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
       pointOfInterestData = ModalRoute.of(context)?.settings.arguments;
-      String string =
-          '${'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photo_reference=' + pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}';
-      print(string);
+      List<String> location = pointOfInterestData['plus_code']['compound_code'].split(' ');
+      requestManager = RequestManager({
+        "pointOfInterest": "${pointOfInterestData['name']}",
+        "locationOfOrigin": location.sublist(1).join(' '),
+      }, "openai");
+      if(pointOfInterestData['photos'] != null) {
+        photoLink = 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}';
+      } else if(pointOfInterestData['icon'] != null) {
+        photoLink = pointOfInterestData['icon'];
+      } else {
+        photoLink = '';
+      }
       _initialized = true;
+      _fetchData();
     }
   }
 
@@ -45,8 +47,7 @@ class _InformationPageState extends State<InformationPage> {
       if (payload['statusCode'] == 200) {
         monumentInformation = payload['response']['description'];
       } else {
-        monumentInformation =
-            "${payload['response']}. Status code: ${payload['statusCode']}";
+        monumentInformation ="${payload['response']}. Status code: ${payload['statusCode']}";
       }
       setState(() {
         isLoading = false;
@@ -184,7 +185,7 @@ class _InformationPageState extends State<InformationPage> {
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                         child: Center(
                           child: Image.network(
-                            'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1920&photoreference=${pointOfInterestData['photos'][0]['photo_reference']}&key=${dotenv.env['GOOGLE_API_KEY']}',
+                            photoLink,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
@@ -205,9 +206,13 @@ class _InformationPageState extends State<InformationPage> {
                               );
                             },
                             errorBuilder: (BuildContext context, Object error,
-                                StackTrace? stackTrace) {
-                              return Icon(Icons
-                                  .error); // Display error icon if image fails to load
+                              StackTrace? stackTrace) {
+                              return Image.asset(
+                                'assets/walksmarterlogo.png',
+                                  fit: BoxFit.fitHeight,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                              );
                             },
                           ),
                         ),
