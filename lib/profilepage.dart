@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:walk_smarter/friendspage.dart';
 import 'package:walk_smarter/leaderboard.dart';
 import 'dart:convert';
+import 'dart:math';
 import 'utils/pocketbase.dart';
 import 'package:walk_smarter/profilesettings.dart';
 
@@ -16,12 +17,30 @@ class _ProfilePageState extends State<ProfilePage> {
   String _username = "Loading...";
   String _profilePicture = "";
   String _userID = pb.authStore.model['id'];
+  int amountOfPoints = 0;
+  int amountOfTrophies = 0;
   int currentIndex = 0;
+  String newestTrophy = 'Latest Trophy: Made an account';
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+    _initialiseTrophies();
+  }
+
+  Future<void> _initialiseTrophies() async {
+    amountOfPoints = int.parse(await fetchPoints());
+    // ignore: no_leading_underscores_for_local_identifiers
+    int _amountOfPoints = amountOfPoints;
+    setState(() {
+      while (_amountOfPoints >= 10) {
+        amountOfTrophies += 1;
+        _amountOfPoints ~/= 10;
+      }
+      num powerOfTrophies = pow(10, amountOfTrophies);
+      newestTrophy = 'Latest Trophy: Achieved $powerOfTrophies points!';
+    });
   }
 
   Future<void> _fetchUserData() async {
@@ -63,7 +82,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<List<Map<String, String>>> fetchFriendNamesForUser() async {
-    print(pb.authStore.model['id']);
     try {
       final user =
           await pb.collection('users').getOne(pb.authStore.model['id']);
@@ -239,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 40,
                         ),
                         Text(
-                          'April 2024',
+                          newestTrophy,
                           style: TextStyle(
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
@@ -611,8 +629,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     '/friendprofilepage',
                                     arguments: friendId,
                                   );
-                                  print(
-                                      friendId); // Ensure friendId is being printed
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
