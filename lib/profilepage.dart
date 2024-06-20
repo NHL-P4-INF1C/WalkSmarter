@@ -536,7 +536,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: 600, // Adjusted top position to add space
+                  top: 600,
                   child: Container(
                     height: 1,
                     color: Colors.black,
@@ -612,7 +612,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     arguments: friendId,
                                   );
                                   print(
-                                      friendId); // Ensure friendId is being printed
+                                      friendId); 
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(

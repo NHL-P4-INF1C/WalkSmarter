@@ -374,7 +374,14 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                       width: 355,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                       ),
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -431,7 +438,14 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                       width: 355,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                       ),
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -527,7 +541,14 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Color.fromARGB(255, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
                                     border: Border.all(
                                       color: Color.fromARGB(255, 255, 0, 0),
                                       width: 2,
