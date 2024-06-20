@@ -62,6 +62,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  void stopTimers(){
+        _timer.cancel();
+    _refreshTimer.cancel();
+    isTimerActive = false;
+    isListRefreshTimerIsActive = false;
+  }
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     print('Map created and controller initialized');
@@ -134,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // }
 
   void handleSwitchCase(BuildContext context, int index) {
+    stopTimers();
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/homepage');
@@ -165,29 +173,6 @@ class _MyHomePageState extends State<MyHomePage> {
             markers:
                 _currentLocationMarker != null ? {_currentLocationMarker!} : {},
           ),
-          // Center(
-          //   child: Container(
-          //     height: MediaQuery.of(context).size.height * 0.81,
-          //     decoration: BoxDecoration(),
-          //     child: Center(
-          //       child: Column(
-          //         children: [
-          //           Container(
-          //             alignment: Alignment.center,
-          //             width: double.infinity,
-          //             child: TextButton(
-          //               onPressed: () {
-          //                 Navigator.pushNamed(context, '/informationpage');
-          //               },
-          //               child: Text('Question'),
-          //             ),
-          //           ),
-          //           SizedBox(height: 20),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
           BottomNavBar(
             selectedIndex: _selectedIndex,
             onTap: _onItemTapped,
@@ -288,7 +273,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!isTimerActive) {
       isTimerActive = true;
       _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-        // fetchLocationAndCheckProximity();
         if (!hasPopUp) {
         print('pop up called');
           getPOIThroughHttp();
@@ -310,48 +294,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void cleanList() {
     namesOfFoundPOI.clear();
   }
-
-  // Future<void> fetchLocationAndCheckProximity() async {
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high);
-  //   setState(() {
-  //     _currentPosition = position;
-  //     LatLng currentLatLng = LatLng(position.latitude, position.longitude);
-  //     if (mapController != null) {
-  //       mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
-  //       _currentLocationMarker = Marker(
-  //         markerId: MarkerId('currentLocation'),
-  //         position: currentLatLng,
-  //       );
-  //     } else {
-  //       print('MapController is not initialized');
-  //     }
-  //   });
-  //   print('Location: ${position.latitude}, ${position.longitude}');
-  //   checkProximityToMajorPOI(position);
-  // }
-
-// Future<void> checkProximityToMajorPOI(Position position) async {
-//   for (String type in majorPlaceTypes) {
-//     final response = await _places.searchNearbyWithRadius(
-//       Location(lat: position.latitude,lng:  position.longitude),
-//       25,
-//       type: type,
-//     );
-
-//     if (response.isOkay) {
-//       for (var result in response.results) {
-//         double distance = Geolocator.distanceBetween(
-//           position.latitude,
-//           position.longitude,
-//           result.geometry!.location.lat,
-//           result.geometry!.location.lng,
-//         );
-//         print('Distance to ${result.name} ($type): $distance meters');
-//       }
-//     }
-//   }
-// }
 
   Future<void> fetchLocation() async {
     Position position = await Geolocator.getCurrentPosition(
