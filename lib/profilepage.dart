@@ -21,6 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int amountOfTrophies = 0;
   int currentIndex = 0;
   String newestTrophy = 'Latest Trophy: Made an account';
+  List<int> valueOfTrophies = [];
 
   @override
   void initState() {
@@ -30,18 +31,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _initialiseTrophies() async {
-    amountOfPoints = int.parse(await fetchPoints());
-    // ignore: no_leading_underscores_for_local_identifiers
-    int _amountOfPoints = amountOfPoints;
-    setState(() {
-      while (_amountOfPoints >= 10) {
+  int points = int.parse(await fetchPoints());
+  setState(() {
+    amountOfPoints = points;
+    amountOfTrophies = 0;
+    valueOfTrophies.clear();
+    
+    if(amountOfPoints >= 10) {
+      while (points >= 10) {
         amountOfTrophies += 1;
-        _amountOfPoints ~/= 10;
+        valueOfTrophies.add(pow(10, amountOfTrophies).toInt());
+        points ~/= 10;
       }
-      num powerOfTrophies = pow(10, amountOfTrophies);
-      newestTrophy = 'Latest Trophy: Achieved $powerOfTrophies points!';
-    });
-  }
+      newestTrophy = 'Latest Trophy: Achieved ${pow(10, amountOfTrophies).toInt()} points!';
+    }
+  });
+}
 
   Future<void> _fetchUserData() async {
     try {
@@ -125,6 +130,100 @@ class _ProfilePageState extends State<ProfilePage> {
       return 'Err';
     }
   }
+
+  Widget _buildTrophyWiget(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        width: 355,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Color(0xFF096A2E), // Green color
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
+                ),
+              ),
+              child: Center(
+                child: Image.asset(
+                  "assets/award.png",
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: 20, horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "Earned in April 2024",
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+List<Widget> _buildTrophyWidgets() {
+  List<Widget> trophyWidgets = [];
+  int startIndex = (valueOfTrophies.length - 3).clamp(0, valueOfTrophies.length);
+  List<int> lastThreeTrophies = valueOfTrophies.sublist(startIndex);
+
+  int currentAmountOfTrophies = 0;
+  for (int trophy in lastThreeTrophies) {
+    if (currentAmountOfTrophies >= 3) {
+      break;
+    }
+    trophyWidgets.add(_buildTrophyWiget("$trophy Points trophy"));
+    currentAmountOfTrophies++;
+  }
+
+  if (lastThreeTrophies.isEmpty) {
+    trophyWidgets.add(_buildTrophyWiget("Successfully made an account!"));
+  }
+
+  return trophyWidgets;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -341,214 +440,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Positioned(
                   left: 20,
                   top: 280,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF096A2E), // Green color
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              "assets/award.png",
-                              width: 40,
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "Champion",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    "Earned in April 2024",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 380,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF096A2E), // Green color
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              "assets/award.png",
-                              width: 40,
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "2nd place",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    "Earned in April 2024",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 480,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF096A2E), // Green color
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              "assets/award.png",
-                              width: 40,
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "3rd place",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    "Earned in April 2024",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    children: _buildTrophyWidgets(),
                   ),
                 ),
                 Positioned(
