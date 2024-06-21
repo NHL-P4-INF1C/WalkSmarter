@@ -22,6 +22,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   String newestTrophy = 'Latest Trophy: Made an account';
   List<int> valueOfTrophies = [];
 
+  @override
   void initState() {
     super.initState();
   }
