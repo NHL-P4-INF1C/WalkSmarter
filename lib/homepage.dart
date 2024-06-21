@@ -140,12 +140,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Navbar(profilePicture: _profilePicture),
+      appBar: Navbar(profilePicture: _profilePicture, ),
       body: Stack(
         children: [
           GoogleMap(
             onMapCreated: _onMapCreated,
             minMaxZoomPreference: MinMaxZoomPreference(15, 30),
+            zoomControlsEnabled: false,
             initialCameraPosition: CameraPosition(
               target: _center,
               zoom: 11.0,
@@ -199,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
         !namesOfFoundPOI.contains(closestPOIName)) {
       hasPopUp = true;
       _showQuestionDialog(context,
-          'It appears that you are located near $closestPOIName. Click on OK to get some more knowledge about this location?', closestPOI);
+          'It appears that you are located near $closestPOIName. Click on OK to get some more knowledge about this location? If you wish to suppress this message for the location: $closestPOIName, then click outside of the pop up.', closestPOI);
     }
 
     print(
@@ -212,7 +213,8 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         return WillPopScope(
           onWillPop: () async {
-            _onDialogDismissed(); // Call your specific function here
+            _onDialogDismissed();
+            namesOfFoundPOI.add(closestPOIName);
             return true;
           },
           child: AlertDialog(
@@ -222,6 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
               TextButton(
                 child: Text('OK'),
                 onPressed: () {
+                  namesOfFoundPOI.add(closestPOIName);
                   Navigator.pushNamed(context, '/informationpage', arguments: closestPOI);
                 },
               ),
@@ -264,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void startListRefreshTimer() {
     if (!isListRefreshTimerIsActive) {
       isListRefreshTimerIsActive = true;
-      _refreshTimer = Timer.periodic(Duration(seconds: 900), (timer) {
+      _refreshTimer = Timer.periodic(Duration(seconds: 300), (timer) {
         cleanList();
         print('Cleaning called');
       });

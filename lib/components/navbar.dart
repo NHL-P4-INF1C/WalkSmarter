@@ -6,7 +6,7 @@ var pb = PocketBaseSingleton().instance;
 class Navbar extends StatelessWidget implements PreferredSizeWidget {
   final String profilePicture;
 
-  const Navbar({required this.profilePicture, super.key});
+  const Navbar({required this.profilePicture,super.key});
 
   @override
   Widget build(BuildContext context) {
