@@ -54,29 +54,28 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
     _fetchUserData();
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/homepage');
-        return;
-      case 1:
-        Navigator.pushNamed(context, '/leaderboard');
-        return;
-      case 2:
-        Navigator.pushNamed(context, '/friendspage',
-            arguments: pb.authStore.model['id']);
-        return;
-      default:
-        return;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    void onItemTapped(int index) {
+      setState(() {
+        currentIndex = index;
+      });
+
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, "/homepage");
+          return;
+        case 1:
+          Navigator.pushNamed(context, "/leaderboard");
+          return;
+        case 2:
+          Navigator.pushNamed(context, "/friendspage");
+          return;
+        default:
+          return;
+      }
+    }
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -322,9 +321,12 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: currentIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 10, left: 15, right: 15, top: 10), 
+        child: BottomNavBar(
+          selectedIndex: currentIndex,
+          onTap: onItemTapped,
+        ),
       ),
     );
   }
