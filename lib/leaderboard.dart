@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:walk_smarter/components/navbar.dart';
 import './components/bottombar.dart';
 import './utils/pocketbase.dart';
-import 'components/navbar.dart';
-import 'components/bottombar.dart';
 import 'dart:convert';
 
 var pb = PocketBaseSingleton().instance;
@@ -17,7 +15,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   List<Map<String, dynamic>> _users = [];
   bool _isLoading = true;
   int _selectedIndex = 1;
-   String _profilePicture = "";
 
   @override
   void initState() {
@@ -84,6 +81,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,9 +96,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             children: [
               Stack(
                 children: [
-                  Text(
-                    'Leaderboard',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  Container(
+                    color: Color.fromRGBO(9, 106, 46, 1),
                   ),
                 ],
               ),
@@ -229,69 +226,46 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                         Text(
                                           user['points'].toString(),
                                           style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundImage: user['avatarUrl'] != null &&
-                                                user['avatarUrl'].isNotEmpty
-                                            ? NetworkImage(user['avatarUrl'])
-                                            : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        user['username'],
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        user['points'].toString(),
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      SizedBox(width: 4),
-                                    ],
+                                        SizedBox(width: 4),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-                ],
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        BottomNavBar(
-          selectedIndex: _selectedIndex,
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-              switch (index) {
-                case 0:
-                  Navigator.pushNamed(context, '/homepage');
-                  break;
-                case 1:
-                  Navigator.pushNamed(context, '/leaderboard');
-                  break;
-                case 2:
-                  Navigator.pushNamed(context, '/friendspage');
-                  break;
-                default:
-                  break;
-              }
-            });
-          },
-        ),
-      ],
-    ),
-  );
-}
-
+            ],
+          ),
+          BottomNavBar(
+            selectedIndex: _selectedIndex,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+                switch (index) {
+                  case 0:
+                    Navigator.pushNamed(context, '/homepage');
+                    break;
+                  case 1:
+                    Navigator.pushNamed(context, '/leaderboard');
+                    break;
+                  case 2:
+                    Navigator.pushNamed(context, '/friendspage');
+                    break;
+                  default:
+                    break;
+                }
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildTopThreeCircle(int position, Color circleColor, double size,
       {bool isCrowned = false, required Color borderColor}) {
