@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "dart:convert";
 import "utils/pocketbase.dart";
-
 import "profileappsettings.dart";
 import "profileusersettings.dart";
 import 'components/bottombar.dart';
