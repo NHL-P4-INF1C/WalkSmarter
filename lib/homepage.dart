@@ -184,7 +184,9 @@ class _MyHomePageState extends State<MyHomePage> {
       var distance = Geolocator.distanceBetween(
           position.latitude, position.longitude, lat, lng);
 
-      if (distance < closestPOIDistance) {
+      if (distance < closestPOIDistance && !closestPOI['types'].contains('transit_station')) {
+         print(closestPOI['types'].contains('transit_station'));
+
         closestPOI = test;
         closestPOIDistance = distance;
       }
@@ -192,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     closestPOIName = closestPOI['name'];
 
-    if (closestPOIDistance < 25 &&
+    if (closestPOIDistance < 50 &&
         !hasPopUp &&
         !namesOfFoundPOI.contains(closestPOIName)) {
       hasPopUp = true;
