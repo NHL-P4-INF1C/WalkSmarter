@@ -44,9 +44,9 @@ class _ProfilePageState extends State<ProfilePage> {
         points ~/= 10;
       }
       newestTrophy = 'Latest Trophy: Achieved ${pow(10, amountOfTrophies).toInt()} points!';
-    }
-  });
-}
+      }
+    });
+  }
 
   Future<void> _fetchUserData() async {
     try {
