@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walk_smarter/components/navbar.dart';
 import './components/bottombar.dart';
 import './utils/pocketbase.dart';
 import 'dart:convert';
@@ -84,6 +85,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: Navbar(),
       body: Stack(
         children: [
           Container(
@@ -96,69 +98,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 children: [
                   Container(
                     color: Color.fromRGBO(9, 106, 46, 1),
-                  ),
-                  AppBar(
-                    automaticallyImplyLeading: false,
-                    toolbarHeight: 50,
-                    title: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image(
-                          image: AssetImage('assets/walksmarterlogo.png'),
-                          height: 40,
-                          width: 40,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Walk Smarter',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 15),
-                              child: FutureBuilder<String>(
-                                future: fetchPoints(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Text(
-                                      'Loading...',
-                                      style: TextStyle(fontSize: 14),
-                                    );
-                                  } else if (snapshot.hasError) {
-                                    return Text(
-                                      'Error',
-                                      style: TextStyle(fontSize: 14),
-                                    );
-                                  } else {
-                                    return Text(
-                                      '${snapshot.data} Points',
-                                      style: TextStyle(fontSize: 14),
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      IconButton(
-                        iconSize: 40,
-                        icon: Icon(Icons.account_circle),
-                        onPressed: () {},
-                      ),
-                    ],
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30),
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -242,12 +181,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(15),
                                     boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 5,
-                                              offset: Offset(0, 5),
-                                            ),
-                                          ],
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
                                   ),
                                   child: ListTile(
                                     title: Row(
@@ -272,7 +211,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                                                       null &&
                                                   user['avatarUrl'].isNotEmpty
                                               ? NetworkImage(user['avatarUrl'])
-                                              : AssetImage('assets/standardProfilePicture.png')
+                                              : AssetImage(
+                                                      'assets/standardProfilePicture.png')
                                                   as ImageProvider,
                                         ),
                                         SizedBox(width: 8),
@@ -349,7 +289,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         user['avatarUrl'] != null &&
                         user['avatarUrl'].isNotEmpty
                     ? NetworkImage(user['avatarUrl'])
-                    : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
+                    : AssetImage('assets/standardProfilePicture.png')
+                        as ImageProvider,
               ),
             ),
             if (isCrowned)
