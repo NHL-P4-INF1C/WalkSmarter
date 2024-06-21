@@ -9,7 +9,7 @@ class ProfileAppSettings extends StatefulWidget {
 
 class _ProfileAppSettingsState extends State<ProfileAppSettings> {
   int currentIndex = 0;
-  String selectedLanguage = "English"; // State variable for language selection
+  String selectedLanguage = "English";
 
   void _onItemTapped(int index) {
     setState(() {
@@ -107,7 +107,14 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings> {
                     width: 355,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                     ),
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     child: Row(
@@ -133,7 +140,14 @@ class _ProfileAppSettingsState extends State<ProfileAppSettings> {
                     width: 355,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                     ),
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     child: Row(
