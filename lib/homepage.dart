@@ -120,26 +120,6 @@ class _MyHomePageState extends State<MyHomePage> {
     handleSwitchCase(context, index);
   }
 
-  // void _showQuestionDialog(BuildContext context, String message) {
-  // showDialog(
-  //   context: context,
-  //   builder: (BuildContext context) {
-  //     return AlertDialog(
-  //       title: Text('Point of interest found!'),
-  //       content: Text(message),
-  //       actions: <Widget>[
-  //         TextButton(
-  //           child: Text('OK'),
-  //           onPressed: () {
-  //             Navigator.pushNamed(context, '/informationpage');
-  //           },
-  //         ),
-  //       ],
-  //     );
-  //   },
-  // );
-  // }
-
   void handleSwitchCase(BuildContext context, int index) {
     stopTimers();
     switch (index) {
