@@ -35,9 +35,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final LatLng _center = const LatLng(52.778382, 6.913517);
 
   String mapStyle = '';
-  String _profilePicture = "";
-  String _userID = pb.authStore.isValid ? pb.authStore.model['id'] : 'ErrToken';
-
   @override
   void initState() {
     super.initState();
@@ -47,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
     requestLocationPermission();
-    _fetchUserData();
   }
 
   @override
@@ -59,8 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  void stopTimers(){
-        _timer.cancel();
+  void stopTimers() {
+    _timer.cancel();
     _refreshTimer.cancel();
     isTimerActive = false;
     isListRefreshTimerIsActive = false;
@@ -86,27 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (error) {
       print('Error: $error');
       return 'Err';
-    }
-  }
-
-  Future<void> _fetchUserData() async {
-    try {
-      final jsonString =
-          await pb.collection("users").getFirstListItem("id=\"$_userID\"");
-      final record = jsonDecode(jsonString.toString());
-      setState(() {
-        if (record["avatar"] != null) {
-          _profilePicture =
-              pb.files.getUrl(jsonString, record["avatar"]).toString();
-        } else {
-          _profilePicture = "";
-        }
-      });
-    } catch (e) {
-      print("Error fetching user data: $e");
-      setState(() {
-        _profilePicture = "";
-      });
     }
   }
 
@@ -137,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Navbar(profilePicture: _profilePicture, ),
+      appBar: Navbar(),
       body: Stack(
         children: [
           GoogleMap(
@@ -198,15 +173,18 @@ class _MyHomePageState extends State<MyHomePage> {
         !hasPopUp &&
         !namesOfFoundPOI.contains(closestPOIName)) {
       hasPopUp = true;
-      _showQuestionDialog(context,
-          'It appears that you are located near $closestPOIName. Click on OK to get some more knowledge about this location? If you wish to suppress this message for the location: $closestPOIName, then click outside of the pop up.', closestPOI);
+      _showQuestionDialog(
+          context,
+          'It appears that you are located near $closestPOIName. Click on OK to get some more knowledge about this location? If you wish to suppress this message for the location: $closestPOIName, then click outside of the pop up.',
+          closestPOI);
     }
 
     print(
         'Distance to ${closestPOI['name']} (${closestPOI['types'][0]}): $closestPOIDistance meters');
   }
 
-  void _showQuestionDialog(BuildContext context, String message, var closestPOI) {
+  void _showQuestionDialog(
+      BuildContext context, String message, var closestPOI) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -224,7 +202,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('OK'),
                 onPressed: () {
                   namesOfFoundPOI.add(closestPOIName);
-                  Navigator.pushNamed(context, '/informationpage', arguments: closestPOI);
+                  Navigator.pushNamed(context, '/informationpage',
+                      arguments: closestPOI);
                 },
               ),
             ],
@@ -256,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
       isTimerActive = true;
       _timer = Timer.periodic(Duration(seconds: 5), (timer) {
         if (!hasPopUp) {
-        print('pop up called');
+          print('pop up called');
           getPOIThroughHttp();
         }
       });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walk_smarter/components/navbar.dart';
 import './components/bottombar.dart';
 import './utils/pocketbase.dart';
 import 'components/navbar.dart';
@@ -83,30 +84,19 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       });
     }
   }
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Stack(
-      children: [
-        Container(
-          color: Color.fromRGBO(9, 106, 46, 1),
-          height: double.infinity,
-        ),
-        Column(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  color: Color.fromRGBO(9, 106, 46, 1),
-                ),
-                Navbar(profilePicture: _profilePicture),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              margin: const EdgeInsets.only(top: 10),
-              child: Row(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: Navbar(),
+      body: Stack(
+        children: [
+          Container(
+            color: Color.fromRGBO(9, 106, 46, 1),
+            height: double.infinity,
+          ),
+          Column(
+            children: [
+              Stack(
                 children: [
                   Text(
                     'Leaderboard',
@@ -114,82 +104,130 @@ Widget build(BuildContext context) {
                   ),
                 ],
               ),
-            ),
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 300,
-                      color: Color.fromRGBO(9, 106, 46, 1),
-                      child: Stack(
-                        alignment: Alignment.topCenter,
-                        children: [
-                          Positioned(
-                            bottom: 120,
-                            left: MediaQuery.of(context).size.width * 0.2 - 60,
-                            child: _buildTopThreeCircle(2, Colors.grey[300]!, 30,
-                                borderColor: Color(0xFFC0C0C0)),
-                          ),
-                          Positioned(
-                            bottom: 150,
-                            child: _buildTopThreeCircle(1, Colors.grey[300]!, 35,
-                                borderColor: Color(0xFFFFD700), isCrowned: true),
-                          ),
-                          Positioned(
-                            bottom: 120,
-                            right: MediaQuery.of(context).size.width * 0.2 - 60,
-                            child: _buildTopThreeCircle(3, Colors.grey[300]!, 30,
-                                borderColor: Color(0xFFCD7F32)),
-                          ),
-                        ],
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.only(top: 10),
+                child: Row(
+                  children: [
+                    Text(
+                      'Leaderboard',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 300,
+                        color: Color.fromRGBO(9, 106, 46, 1),
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: [
+                            Positioned(
+                              bottom: 120,
+                              left:
+                                  MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(
+                                  2, Colors.grey[300]!, 30,
+                                  borderColor: Color(0xFFC0C0C0)),
+                            ),
+                            Positioned(
+                              bottom: 150,
+                              child: _buildTopThreeCircle(
+                                  1, Colors.grey[300]!, 35,
+                                  borderColor: Color(0xFFFFD700),
+                                  isCrowned: true),
+                            ),
+                            Positioned(
+                              bottom: 120,
+                              right:
+                                  MediaQuery.of(context).size.width * 0.2 - 60,
+                              child: _buildTopThreeCircle(
+                                  3, Colors.grey[300]!, 30,
+                                  borderColor: Color(0xFFCD7F32)),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 200),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 235, 235, 235),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
+                    Container(
+                      margin: EdgeInsets.only(top: 200),
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 235, 235, 235),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
                       ),
-                    ),
-                    child: _isLoading
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : ListView.builder(
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemCount: _users.length <= 3 ? 0 : _users.length - 3,
-                            itemBuilder: (context, index) {
-                              var user = _users[index + 3];
-                              String position = (index + 4).toString();
-                              _fetchAvatar(user['id']);
-                              return Container(
-                                margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(15),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: ListTile(
-                                  title: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        width: 25,
-                                        child: Text(
-                                          position,
+                      child: _isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView.builder(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemCount:
+                                  _users.length <= 3 ? 0 : _users.length - 3,
+                              itemBuilder: (context, index) {
+                                var user = _users[index + 3];
+                                String position = (index + 4).toString();
+                                _fetchAvatar(user['id']);
+                                return Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ListTile(
+                                    title: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 25,
+                                          child: Text(
+                                            position,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: user['avatarUrl'] !=
+                                                      null &&
+                                                  user['avatarUrl'].isNotEmpty
+                                              ? NetworkImage(user['avatarUrl'])
+                                              : AssetImage(
+                                                      'assets/standardProfilePicture.png')
+                                                  as ImageProvider,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          user['username'],
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        Spacer(),
+                                        Text(
+                                          user['points'].toString(),
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
@@ -277,7 +315,8 @@ Widget build(BuildContext context) {
                         user['avatarUrl'] != null &&
                         user['avatarUrl'].isNotEmpty
                     ? NetworkImage(user['avatarUrl'])
-                    : AssetImage('assets/standardProfilePicture.png') as ImageProvider,
+                    : AssetImage('assets/standardProfilePicture.png')
+                        as ImageProvider,
               ),
             ),
             if (isCrowned)

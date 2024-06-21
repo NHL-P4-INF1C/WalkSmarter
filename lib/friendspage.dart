@@ -5,13 +5,14 @@ import 'frienddialog.dart';
 import './components/navbar.dart';
 import './components/bottombar.dart';
 
+final pb = PocketBaseSingleton().instance;
+
 class MyFriendsPage extends StatefulWidget {
   @override
   State<MyFriendsPage> createState() => _FriendsPageState();
 }
 
 class _FriendsPageState extends State<MyFriendsPage> {
-  final pb = PocketBaseSingleton().instance;
   int _selectedIndex = 2;
   String? username;
 
@@ -25,10 +26,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
       final body = <String, dynamic>{
         "friends": friends,
       };
-      final record = await pb
-          .collection('users')
-          .update(pb.authStore.model['id'], body: body);
-      print(record);
+      await pb.collection('users').update(pb.authStore.model['id'], body: body);
     } catch (e) {
       print('Error deleting friend: $e');
     }
@@ -65,7 +63,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
         final updatedRecord = await pb
             .collection('users')
             .update(pb.authStore.model['id'], body: body);
-        print('Friend added successfully: $updatedRecord');
       } else {
         String? friendName = await showErrorDialog(context,
             'Username is incorrect or not found!', 'Insert a correct username');
@@ -131,9 +128,7 @@ class _FriendsPageState extends State<MyFriendsPage> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: Navbar(
-          profilePicture:
-              'path/to/profile/picture'), // Replace with actual profile picture path
+      appBar: Navbar(), // Replace with actual profile picture path
       body: Stack(
         children: [
           Container(
@@ -258,7 +253,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                               '/friendprofilepage',
                                               arguments: friendId,
                                             );
-                                            print(friendId);
                                           },
                                           leading: CircleAvatar(
                                             radius: 24,
@@ -299,9 +293,6 @@ class _FriendsPageState extends State<MyFriendsPage> {
                                                         await deleteFriend(
                                                             friendId);
                                                         setState(() {});
-                                                        print(friendId);
-                                                        print(
-                                                            'Deleted $friendName');
                                                       }
                                                     },
                                                   ),
