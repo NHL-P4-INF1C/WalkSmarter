@@ -9,7 +9,6 @@ Walk Smarter is an app designed to help users explore and learn about the city t
 ## Node JS server
 This project is supposed to connect to a custom NodeJS server that can be found in [this repository](https://github.com/NHL-P4-INF1C/walk_smarter_node_server)
 
-
 ## Authors
 
 - [Jesse van der Voet](https://github.com/JesseNHLStenden)
@@ -24,6 +23,20 @@ This project is supposed to connect to a custom NodeJS server that can be found 
 
 [Link to Code conventions](CONTRIBUTING.md)
 
-# Commit style
+## Commit style
 
 [Link to commit style guide](COMMIT.md)
+
+## Building the Project
+
+To build the project, follow these steps:
+
+1. Clone the repository.
+2. Navigate to the project directory.
+3. Run `flutter pub get` to install dependencies.
+4. Run `flutter build` to build the project.
+
+## Known Issues
+
+- The `mapController` cannot be initialized.
+- Popup timers continue running when navigating to the profile page from the map page.
