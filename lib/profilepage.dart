@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:walk_smarter/friendspage.dart';
 import 'package:walk_smarter/leaderboard.dart';
 import 'dart:convert';
-import 'pocketbase.dart';
+import 'dart:math';
+import 'utils/pocketbase.dart';
 import 'package:walk_smarter/profilesettings.dart';
 
 var pb = PocketBaseSingleton().instance;
@@ -16,24 +17,47 @@ class _ProfilePageState extends State<ProfilePage> {
   String _username = "Loading...";
   String _profilePicture = "";
   String _userID = pb.authStore.model['id'];
+  int amountOfPoints = 0;
+  int amountOfTrophies = 0;
   int currentIndex = 0;
+  String newestTrophy = 'Latest Trophy: Made an account';
+  List<int> valueOfTrophies = [];
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+    _initialiseTrophies();
+  }
+
+  Future<void> _initialiseTrophies() async {
+  int points = int.parse(await fetchPoints());
+  setState(() {
+    amountOfPoints = points;
+    amountOfTrophies = 0;
+    valueOfTrophies.clear();
+    
+    if(amountOfPoints >= 10) {
+      while (points >= 10) {
+        amountOfTrophies += 1;
+        valueOfTrophies.add(pow(10, amountOfTrophies).toInt());
+        points ~/= 10;
+      }
+      newestTrophy = 'Latest Trophy: Achieved ${pow(10, amountOfTrophies).toInt()} points!';
+      }
+    });
   }
 
   Future<void> _fetchUserData() async {
     try {
-      final jsonString = await pb.collection("users").getFirstListItem(
-        "id=\"$_userID\""
-      );
+      final jsonString =
+          await pb.collection("users").getFirstListItem("id=\"$_userID\"");
       final record = jsonDecode(jsonString.toString());
       setState(() {
         _username = record["username"];
         if (record["avatar"] != null) {
-          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
+          _profilePicture =
+              pb.files.getUrl(jsonString, record["avatar"]).toString();
         } else {
           _profilePicture = "";
         }
@@ -62,10 +86,10 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<List<String>> fetchFriendNamesForUser() async {
-    print(pb.authStore.model['id']);
+  Future<List<Map<String, String>>> fetchFriendNamesForUser() async {
     try {
-      final user = await pb.collection('users').getOne(pb.authStore.model['id']);
+      final user =
+          await pb.collection('users').getOne(pb.authStore.model['id']);
       final friendIds = user.data['friends'] as List<dynamic>;
       return fetchFriendNames(friendIds.cast<String>());
     } catch (e) {
@@ -74,22 +98,32 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<List<String>> fetchFriendNames(List<String> friendIds) async {
-    List<String> friendNames = [];
+  Future<List<Map<String, String>>> fetchFriendNames(
+      List<String> friendIds) async {
+    List<Map<String, String>> friends = [];
     for (String id in friendIds) {
       try {
         final friend = await pb.collection('users').getOne(id);
-        friendNames.add(friend.data['username']);
+        final profilePictureUrl = friend.data['avatar'] != null
+            ? pb.files.getUrl(friend, friend.data['avatar']).toString()
+            : '';
+        friends.add({
+          'id': friend.id,
+          'username': friend.data['username'],
+          'avatar': profilePictureUrl,
+        });
       } catch (e) {
-        print('Error fetching friend with ID $id: $e');
+        print('Error fetching friend with id $id: $e');
       }
     }
-    return friendNames;
+    return friends;
   }
 
   Future<String> fetchPoints() async {
     try {
-      final response = await pb.collection('users').getOne(pb.authStore.model['id'].toString());
+      final response = await pb
+          .collection('users')
+          .getOne(pb.authStore.model['id'].toString());
       return response.data['points'].toString();
     } catch (error) {
       print('Error: $error');
@@ -97,9 +131,102 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Widget _buildTrophyWiget(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        width: 355,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Color(0xFF096A2E), // Green color
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
+                ),
+              ),
+              child: Center(
+                child: Image.asset(
+                  "assets/award.png",
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: 20, horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "Earned in April 2024",
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildTrophyWidgets() {
+    List<Widget> trophyWidgets = [];
+    int startIndex = (valueOfTrophies.length - 3).clamp(0, valueOfTrophies.length);
+    List<int> lastThreeTrophies = valueOfTrophies.sublist(startIndex);
+
+    int currentAmountOfTrophies = 0;
+    for (int trophy in lastThreeTrophies) {
+      if (currentAmountOfTrophies >= 3) {
+        break;
+      }
+      trophyWidgets.add(_buildTrophyWiget("$trophy Points trophy"));
+      currentAmountOfTrophies++;
+    }
+
+    if (lastThreeTrophies.isEmpty) {
+      trophyWidgets.add(_buildTrophyWiget("Successfully made an account!"));
+    }
+
+    return trophyWidgets;
+  }
+
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: AppBar(
@@ -125,25 +252,20 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.only(right: 15),
                   child: FutureBuilder<String>(
                     future: fetchPoints(),
-                    builder: (context, snapshot) 
-                    {
-                      if (snapshot.connectionState == ConnectionState.waiting) 
-                      {
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
-                      } else if (snapshot.hasError) 
-                      {
+                      } else if (snapshot.hasError) {
                         return Text(
                           'Error',
                           style: TextStyle(fontSize: 14),
                         );
-                      } else if (snapshot.hasData) 
-                      {
+                      } else if (snapshot.hasData) {
                         return Text(
                           '${snapshot.data} Points',
                           style: TextStyle(fontSize: 14),
                         );
-                      } else 
-                      {
+                      } else {
                         return Text(
                           '0 Points',
                           style: TextStyle(fontSize: 14),
@@ -166,8 +288,9 @@ class _ProfilePageState extends State<ProfilePage> {
               child: CircleAvatar(
                 radius: 23,
                 backgroundImage: _profilePicture.startsWith("http")
-                  ? NetworkImage(_profilePicture)
-                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+                    ? NetworkImage(_profilePicture)
+                    : AssetImage("assets/standardProfilePicture.png")
+                        as ImageProvider,
               ),
             ),
           ),
@@ -194,15 +317,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 10,
                   top: 50,
                   child: SizedBox(
-                    width: 130,
-                    height: 130,
-                    child: CircleAvatar(
-                      radius: 0,
-                      backgroundImage: _profilePicture.startsWith("http")
-                        ? NetworkImage(_profilePicture)
-                        : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
-                    )
-                  ),
+                      width: 130,
+                      height: 130,
+                      child: CircleAvatar(
+                        radius: 0,
+                        backgroundImage: _profilePicture.startsWith("http")
+                            ? NetworkImage(_profilePicture)
+                            : AssetImage("assets/standardProfilePicture.png")
+                                as ImageProvider,
+                      )),
                 ),
                 Positioned(
                   left: 10,
@@ -233,9 +356,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 40,
                         ),
                         Text(
-                          'April 2024',
+                          newestTrophy,
                           style: TextStyle(
-                            fontSize: 9, fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
                           ),
                         )
                       ],
@@ -257,10 +381,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Color.fromARGB(255, 216, 219, 216),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 14),
                         child: Text(
                           "Edit profile",
-                          style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ),
                     ),
@@ -298,10 +425,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Color.fromARGB(255, 9, 106, 46),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                       ),
                     ),
@@ -310,196 +440,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 Positioned(
                   left: 20,
                   top: 280,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF096A2E), // Green color
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              "assets/award.png",
-                              width: 40,
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "Champion",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    "Earned in April 2024",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 380,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF096A2E), // Green color
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              "assets/award.png",
-                              width: 40,
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "2nd place",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    "Earned in April 2024",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 480,
-                  child: Container(
-                    width: 355,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF096A2E), // Green color
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              "assets/award.png",
-                              width: 40,
-                              height: 40,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "3rd place",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    "Earned in April 2024",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    children: _buildTrophyWidgets(),
                   ),
                 ),
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: 600, // Adjusted top position to add space
+                  top: 600,
                   child: Container(
                     height: 1,
                     color: Colors.black,
@@ -528,10 +476,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Color.fromARGB(255, 9, 106, 46),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 30),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 30),
                         child: Text(
                           "View more",
-                          style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                       ),
                     ),
@@ -541,7 +492,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 10,
                   right: 10,
                   top: 680,
-                  child: FutureBuilder<List<String>>(
+                  child: FutureBuilder<List<Map<String, String>>>(
                     future: fetchFriendNamesForUser(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -552,25 +503,46 @@ class _ProfilePageState extends State<ProfilePage> {
                         return Center(child: Text("No friends found"));
                       } else {
                         final friends = snapshot.data!;
-                        List<String> limitedFriends = friends.take(3).toList();
+                        List<Map<String, String>> limitedFriends =
+                            friends.take(3).toList();
+
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: limitedFriends.map((friendName) {
+                          children: limitedFriends.map((friend) {
+                            final friendName = friend['username']!;
+                            final friendId = friend['id']!;
+                            final friendAvatar = friend['avatar']!;
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/friendprofilepage', arguments: friendName);
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/friendprofilepage',
+                                    arguments: friendId,
+                                  );
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(30.0),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
                                   ),
                                   child: ListTile(
                                     leading: CircleAvatar(
                                       radius: 25,
-                                      backgroundImage: AssetImage("assets/standardProfilePicture.png"),
+                                      backgroundImage: friendAvatar.isNotEmpty
+                                          ? NetworkImage(friendAvatar)
+                                          : AssetImage(
+                                                  "assets/standardProfilePicture.png")
+                                              as ImageProvider,
                                     ),
                                     title: Text(friendName),
                                   ),
@@ -618,13 +590,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
               selectedItemColor: Color.fromARGB(255, 119, 120, 119),
               currentIndex: 1,
-              onTap: (index)
-               {
-                setState(() 
-                {
+              onTap: (index) {
+                setState(() {
                   currentIndex = index;
-                  switch (index) 
-                  {
+                  switch (index) {
                     case 0:
                       Navigator.pushNamed(context, '/homepage');
                     case 1:

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pocketbase.dart';
+import 'utils/pocketbase.dart';
 
 var pb = PocketBaseSingleton().instance;
 
@@ -22,6 +22,26 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpDemo extends State<SignUp> {
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Signup Failed'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   String? username, email, password, passwordAgain;
   Future<void> signIn() async {
     try {
@@ -37,31 +57,51 @@ class _SignUpDemo extends State<SignUp> {
             "password": password,
             "passwordConfirm": passwordAgain,
           };
-          await pb.collection('users').create(body: body);
+          try {
+            await pb.collection('users').create(body: body);
+          } catch (e) {
+            // ignore: use_build_context_synchronously
+            _showErrorDialog(
+                context, 'Username or email address is already in use');
+            return;
+          }
           await pb.collection('users').requestVerification(email!);
+          try {
+            await pb.collection('users').authWithPassword(username!, password!);
 
-          Navigator.pushNamed(
-            context,
-            '/homepage',
-          );
-          print("New user created");
+            if (!mounted) return;
+
+            Navigator.pushNamed(
+              context,
+              '/homepage',
+              arguments: username,
+            );
+          } catch (e) {
+            // ignore: use_build_context_synchronously
+            _showErrorDialog(context,
+                'Failed to auto-login. Please go to the login page to manually log in');
+          }
+        } else {
+          _showErrorDialog(context, 'Passwords do not match');
         }
+      } else {
+        _showErrorDialog(context, 'All fields are required to make an account');
       }
     } catch (e) {
-      print('Error occurred during authentication: $e');
+      // ignore: use_build_context_synchronously
+      _showErrorDialog(context, 'Unknown error has occured. Please try again');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    bool _visible = true;
-    //backgroundColor: _isDarkMode ? 1.0 : 0.0,
+    bool visible = true;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Opacity(
           // ignore: dead_code
-          opacity: _visible ? 1.0 : 0.0,
+          opacity: visible ? 1.0 : 0.0,
           child: Column(
             children: <Widget>[
               Padding(
@@ -70,7 +110,6 @@ class _SignUpDemo extends State<SignUp> {
                   child: SizedBox(
                     width: 200,
                     height: 150,
-                    //Verander hier de path naar de benodigde IMAGE PATH
                     child:
                         Image(image: AssetImage('assets/walksmarterlogo.png')),
                   ),

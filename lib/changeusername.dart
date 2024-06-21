@@ -2,12 +2,10 @@ import "package:flutter/material.dart";
 import "profileusersettings.dart";
 
 class ChangeUsernamePage extends StatefulWidget {
-  final String userId;
-  final String currentUsername;
-
-  ChangeUsernamePage({required this.userId, required this.currentUsername});
+  // ChangeUsernamePage({required this.userId, required this.currentUsername});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ChangeUsernamePageState createState() => _ChangeUsernamePageState();
 }
 
@@ -19,21 +17,25 @@ class _ChangeUsernamePageState extends State<ChangeUsernamePage> {
   @override
   void initState() {
     super.initState();
-    _usernameController.text = widget.currentUsername;
+    _usernameController.text = pb.authStore.model['username'];
   }
 
   Future<void> _changeUsername() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await pb.collection("users").update(widget.userId, body: {
+        // Save the navigator context before the async call
+        final navigator = Navigator.of(context);
+        await pb.collection("users").update(pb.authStore.model['id'], body: {
           "username": _usernameController.text,
         });
-        Navigator.of(context).pop(true);
+        navigator.pop(true);
       } catch (e) {
         print("Error updating username: $e");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error updating username")),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error updating username")),
+          );
+        }
       }
     }
   }

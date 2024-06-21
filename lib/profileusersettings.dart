@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:image_picker/image_picker.dart";
-import "pocketbase.dart";
+import "utils/pocketbase.dart";
 import "dart:convert";
 import "package:http/http.dart" as http;
 
@@ -18,6 +19,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   String _profilePicture = "";
   String _userID = pb.authStore.model['id'];
   int currentIndex = 0;
+  TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -51,15 +53,19 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
   }
 
   Future<void> _changeProfilePicture() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       try {
+        BuildContext context = this.context;
+
         var request = http.MultipartRequest(
           "PATCH",
-          Uri.parse("https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/records/$_userID"),
+          Uri.parse(
+              '${dotenv.env["POCKETBASE_URL"]}api/collections/users/records/$_userID'),
         );
+
         request.files.add(
           await http.MultipartFile.fromPath(
             "avatar",
@@ -78,6 +84,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
           setState(() {
             _profilePicture = responseData["avatar"];
           });
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Profile picture changed successfully!"),
@@ -86,6 +96,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
 
           await _fetchUserData();
         } else {
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
+          if (!mounted) return;
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Failed to change profile picture"),
@@ -94,6 +108,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
         }
       } catch (e) {
         print("Error uploading image: $e");
+        if (!mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error changing profile picture"),
@@ -111,6 +127,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       setState(() {
         _profilePicture = "";
       });
+      if (!mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Profile picture deleted successfully!"),
@@ -118,6 +136,8 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
       );
     } catch (e) {
       print("Error deleting profile picture: $e");
+      if (!mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Failed to delete profile picture"),
@@ -126,57 +146,42 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
     }
   }
 
-  Future<bool> _verifyPassword(String password) async 
-  {
-    try 
-    {
-      final response = await http.post(
-        Uri.parse('https://inf1c-p4-pocketbase-backup.bramsuurd.nl/api/collections/users/auth-with-password'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'identity': _username,
-          'password': password,
-        }),
-      );
-
-      if (response.statusCode == 200) 
-      {
-        return true;
-      } else 
-      {
-        return false;
-      }
-    } catch (e) 
-    {
+  Future<bool> _verifyPassword(String username, String password) async {
+    try {
+      await pb.collection('users').authWithPassword(
+            username,
+            password,
+          );
+      return pb.authStore.isValid;
+    } catch (e) {
       print("Error verifying password: $e");
       return false;
     }
   }
 
-  Future<void> _deleteAccount(String password) async 
-  {
-    if (await _verifyPassword(password)) 
-    {
-      try 
-      {
+  Future<void> _deleteAccount(String username, String password) async {
+    if (await _verifyPassword(username, password)) {
+      try {
         await pb.collection("users").delete(_userID);
+        BuildContext context = this.context;
+        // ignore: use_build_context_synchronously
         Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
-      } catch (e) 
-      {
+      } catch (e) {
         print("Error deleting account: $e");
+        if (!mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to delete account. Please try again."),
           ),
         );
       }
-    } else 
-    {
+    } else {
+      if (!mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Incorrect password. Please try again."),
+          content: Text("Incorrect username or password. Please try again."),
         ),
       );
     }
@@ -358,10 +363,7 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                     onTap: () async {
                       bool? result = await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ChangeUsernamePage(
-                            userId: _userID,
-                            currentUsername: _username,
-                          ),
+                          builder: (context) => ChangeUsernamePage(),
                         ),
                       );
                       if (result == true) {
@@ -372,7 +374,14 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                       width: 355,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                       ),
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -400,16 +409,19 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                 Positioned(
                   top: 310,
                   child: GestureDetector(
-                    onTap: () async
-                    {
-                      await pb.collection('users').requestPasswordReset(pb.authStore.model['email']);
+                    onTap: () async {
+                      await pb
+                          .collection('users')
+                          .requestPasswordReset(pb.authStore.model['email']);
                       showDialog(
+                        // ignore: use_build_context_synchronously
+                        // ignore: use_build_context_synchronously
                         context: context,
-                        builder: (BuildContext context) 
-                        {
+                        builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text("Email Sent"),
-                            content: Text("An email has been sent to reset your password."),
+                            content: Text(
+                                "An email has been sent to reset your password."),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -426,7 +438,14 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                       width: 355,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                       ),
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -474,7 +493,15 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                    "Enter your password to delete your account:"),
+                                    "Enter your username and password to delete your account:"),
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: _usernameController,
+                                  onChanged: (value) {},
+                                  decoration: InputDecoration(
+                                    hintText: "Username",
+                                  ),
+                                ),
                                 SizedBox(height: 10),
                                 TextField(
                                   controller: _passwordController,
@@ -494,15 +521,19 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                 child: Text("Cancel"),
                               ),
                               TextButton(
-                                onPressed: () 
-                                {
-                                  String password = _passwordController.text.trim();
-                                  if (password.isNotEmpty) {
-                                    _deleteAccount(password);
+                                onPressed: () {
+                                  String username =
+                                      _usernameController.text.trim();
+                                  String password =
+                                      _passwordController.text.trim();
+                                  if (username.isNotEmpty &&
+                                      password.isNotEmpty) {
+                                    _deleteAccount(username, password);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text("Please enter your password."),
+                                        content: Text(
+                                            "Please enter both username and password."),
                                       ),
                                     );
                                   }
@@ -510,14 +541,23 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Color.fromARGB(255, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
                                     border: Border.all(
                                       color: Color.fromARGB(255, 255, 0, 0),
                                       width: 2,
                                     ),
                                   ),
                                   padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 15),
+                                    vertical: 10,
+                                    horizontal: 15,
+                                  ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -531,10 +571,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                                       Text(
                                         "Delete account",
                                         style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                                Color.fromARGB(255, 255, 0, 0)),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color.fromARGB(255, 255, 0, 0),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -555,8 +595,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                           width: 2,
                         ),
                       ),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 15,
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -570,9 +612,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                           Text(
                             "Delete account",
                             style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 255, 0, 0)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 0, 0),
+                            ),
                           ),
                         ],
                       ),
@@ -620,13 +663,10 @@ class _ProfileUserSettingsState extends State<ProfileUserSettings> {
                   switch (index) {
                     case 0:
                       Navigator.pushNamed(context, "/homepage");
-                      break;
                     case 1:
                       Navigator.pushNamed(context, "/leaderboard");
-                      break;
                     case 2:
                       Navigator.pushNamed(context, "/friendspage");
-                      break;
                     default:
                       break;
                   }

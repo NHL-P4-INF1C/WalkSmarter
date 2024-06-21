@@ -1,6 +1,15 @@
-import 'package:flutter/material.dart';
-import 'pocketbase.dart';
+import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'utils/pocketbase.dart';
+import 'components/bottombar.dart';
+import 'components/navbar.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 var pb = PocketBaseSingleton().instance;
 
@@ -11,43 +20,68 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  String _profilePicture = "";
-  String _userID = pb.authStore.model['id'];
+  late GoogleMapController mapController;
 
+  // ignore: unused_fields
+  bool hasPopUp = false;
+  bool isTimerActive = false;
+  bool isListRefreshTimerIsActive = false;
+  late Timer _timer;
+  late Timer _refreshTimer;
+  Marker? _currentLocationMarker;
+  String closestPOIName = "";
+  List<String> namesOfFoundPOI = [];
+
+  final LatLng _center = const LatLng(52.778382, 6.913517);
+
+  String mapStyle = '';
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    rootBundle.loadString('assets/map_style.json').then((string) {
+      setState(() {
+        mapStyle = string;
+      });
+    });
+    requestLocationPermission();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _refreshTimer.cancel();
+    isTimerActive = false;
+    isListRefreshTimerIsActive = false;
+    super.dispose();
+  }
+
+  void stopTimers() {
+    _timer.cancel();
+    _refreshTimer.cancel();
+    isTimerActive = false;
+    isListRefreshTimerIsActive = false;
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    print('Map created and controller initialized');
+    if (mapStyle.isNotEmpty) {
+      // ignore: deprecated_member_use
+      mapController.setMapStyle(mapStyle);
+    }
+    startLocationUpdates();
+    startListRefreshTimer();
   }
 
   Future<String> fetchPoints() async {
     try {
-      final response = await pb.collection('users').getOne(pb.authStore.model['id'].toString());
+      final response = await pb
+          .collection('users')
+          .getOne(pb.authStore.model['id'].toString());
       return response.data['points'].toString();
     } catch (error) {
       print('Error: $error');
       return 'Err';
-    }
-  }
-
-  Future<void> _fetchUserData() async {
-    try {
-      final jsonString = await pb.collection("users").getFirstListItem(
-        "id=\"$_userID\""
-      );
-      final record = jsonDecode(jsonString.toString());
-      setState(() {
-        if (record["avatar"] != null) {
-          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();
-        } else {
-          _profilePicture = "";
-        }
-      });
-    } catch (e) {
-      print("Error fetching user data: $e");
-      setState(() {
-        _profilePicture = "";
-      });
     }
   }
 
@@ -59,161 +93,180 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void handleSwitchCase(BuildContext context, int index) {
+    stopTimers();
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/homepage');
-        break;
+        return;
       case 1:
         Navigator.pushNamed(context, '/leaderboard');
-        break;
+        return;
       case 2:
-        Navigator.pushNamed(context, '/friendspage', arguments: pb.authStore.model['id']);
-        break;
+        Navigator.pushNamed(context, '/friendspage',
+            arguments: pb.authStore.model['id']);
       default:
-        break;
+        return;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 50,
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image(
-              image: AssetImage('assets/walksmarterlogo.png'),
-              height: 40,
-              width: 40,
-            ),
-            SizedBox(width: 8),
-            Text(
-              'Walk Smarter',
-              style: TextStyle(fontSize: 14),
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: FutureBuilder<String>(
-                    future: fetchPoints(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text(
-                          'Error',
-                          style: TextStyle(fontSize: 14),
-                        );
-                      } else if (snapshot.hasData) {
-                        return Text(
-                          '${snapshot.data} Points',
-                          style: TextStyle(fontSize: 14),
-                        );
-                      } else {
-                        return Text(
-                          '0 Points',
-                          style: TextStyle(fontSize: 14),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/profilepage');
-              },
-              child: CircleAvatar(
-                radius: 23,
-                backgroundImage: _profilePicture.startsWith("http")
-                  ? NetworkImage(_profilePicture)
-                  : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
-              ),
-            ),
-          ),
-        ],
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(30),
-            bottomRight: Radius.circular(30),
-          ),
-        ),
-      ),
+      appBar: Navbar(),
       body: Stack(
         children: [
-          Center(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.81,
-              decoration: BoxDecoration(),
-              child: Center(
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/informationpage');
-                        },
-                        child: Text('Question'),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            minMaxZoomPreference: MinMaxZoomPreference(15, 30),
+            zoomControlsEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: _center,
+              zoom: 11.0,
             ),
+            markers:
+                _currentLocationMarker != null ? {_currentLocationMarker!} : {},
           ),
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30.0),
-                border: Border.all(
-                  color: Color(0xFF096A2E),
-                  width: 2.0,
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30.0),
-                child: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.map),
-                      label: 'Map',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.leaderboard),
-                      label: 'Leaderboard',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.group),
-                      label: 'Friends',
-                    ),
-                  ],
-                  selectedItemColor: Color(0xFF096A2E),
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                ),
-              ),
-            ),
+          BottomNavBar(
+            selectedIndex: _selectedIndex,
+            onTap: _onItemTapped,
           ),
         ],
       ),
     );
+  }
+
+  Future<void> getPOIThroughHttp() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    String key = '&key=${dotenv.env['GOOGLE_API_KEY']}';
+    String radius = '&radius=100';
+    String location = '?location=${position.latitude}%2C${position.longitude}';
+    String link =
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+    String request = link + location + radius + key;
+
+    var response = await http.get(Uri.parse(request));
+    var decodedResponse = json.decode(response.body);
+
+    var closestPOI = decodedResponse['results'][0];
+    double closestPOIDistance = 100.0;
+
+    for (var test in decodedResponse['results']) {
+      double lat = test['geometry']['location']['lat'] as double;
+      double lng = test['geometry']['location']['lng'] as double;
+
+      var distance = Geolocator.distanceBetween(
+          position.latitude, position.longitude, lat, lng);
+
+      if (distance < closestPOIDistance && !closestPOI['types'].contains('transit_station')) {
+         print(closestPOI['types'].contains('transit_station'));
+
+        closestPOI = test;
+        closestPOIDistance = distance;
+      }
+    }
+
+    closestPOIName = closestPOI['name'];
+
+    if (closestPOIDistance < 50 &&
+        !hasPopUp &&
+        !namesOfFoundPOI.contains(closestPOIName)) {
+      hasPopUp = true;
+      _showQuestionDialog(
+          context,
+          'It appears that you are located near $closestPOIName. Click on OK to get some more knowledge about this location? If you wish to suppress this message for the location: $closestPOIName, then click outside of the pop up.',
+          closestPOI);
+    }
+
+    print(
+        'Distance to ${closestPOI['name']} (${closestPOI['types'][0]}): $closestPOIDistance meters');
+  }
+
+  void _showQuestionDialog(
+      BuildContext context, String message, var closestPOI) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async {
+            _onDialogDismissed();
+            namesOfFoundPOI.add(closestPOIName);
+            return true;
+          },
+          child: AlertDialog(
+            title: Text('Point of interest found!'),
+            content: Text(message),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  namesOfFoundPOI.add(closestPOIName);
+                  Navigator.pushNamed(context, '/informationpage',
+                      arguments: closestPOI);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _onDialogDismissed() {
+    hasPopUp = false;
+  }
+
+  Future<void> requestLocationPermission() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (status.isDenied) {
+      if (await Permission.locationWhenInUse.request().isGranted) {
+        fetchLocation();
+      } else {
+        print('Location permission denied');
+      }
+    } else {
+      fetchLocation();
+    }
+  }
+
+  void startLocationUpdates() {
+    if (!isTimerActive) {
+      isTimerActive = true;
+      _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+        if (!hasPopUp) {
+          print('pop up called');
+          getPOIThroughHttp();
+        }
+      });
+    }
+  }
+
+  void startListRefreshTimer() {
+    if (!isListRefreshTimerIsActive) {
+      isListRefreshTimerIsActive = true;
+      _refreshTimer = Timer.periodic(Duration(seconds: 300), (timer) {
+        cleanList();
+        print('Cleaning called');
+      });
+    }
+  }
+
+  void cleanList() {
+    namesOfFoundPOI.clear();
+  }
+
+  Future<void> fetchLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      LatLng currentLatLng = LatLng(position.latitude, position.longitude);
+      mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
+      _currentLocationMarker = Marker(
+        markerId: MarkerId('currentLocation'),
+        position: currentLatLng,
+      );
+    });
+    print('Location: ${position.latitude}, ${position.longitude}');
   }
 }

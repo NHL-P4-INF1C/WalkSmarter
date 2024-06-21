@@ -1,58 +1,46 @@
 import "package:flutter/material.dart";
 import "dart:convert";
-import "pocketbase.dart";
-
+import "utils/pocketbase.dart";
 import "profileappsettings.dart";
 import "profileusersettings.dart";
+import 'components/bottombar.dart';
 
 var pb = PocketBaseSingleton().instance;
 
-class ProfilePageSettings extends StatefulWidget 
-{
+class ProfilePageSettings extends StatefulWidget {
   @override
   State<ProfilePageSettings> createState() => _ProfilePageSettingsState();
 }
 
-class _ProfilePageSettingsState extends State<ProfilePageSettings> 
-{
+class _ProfilePageSettingsState extends State<ProfilePageSettings> {
   String _username = "Loading...";
   String _profilePicture = "";
   String _userID = pb.authStore.model['id'];
   int currentIndex = 0;
 
   @override
-  void initState() 
-  {
+  void initState() {
     super.initState();
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async 
-  {
-    try
-    {
-      final jsonString = await pb.collection("users").getFirstListItem(
-        "id=\"$_userID\"" 
-      );
+  Future<void> _fetchUserData() async {
+    try {
+      final jsonString =
+          await pb.collection("users").getFirstListItem("id=\"$_userID\"");
       final record = jsonDecode(jsonString.toString());
-      setState(() 
-      {
+      setState(() {
         _username = record["username"];
-        if(record["avatar"] != null)
-        {
-          _profilePicture = pb.files.getUrl(jsonString, record["avatar"]).toString();          
-        }
-        else
-        {
+        if (record["avatar"] != null) {
+          _profilePicture =
+              pb.files.getUrl(jsonString, record["avatar"]).toString();
+        } else {
           _profilePicture = "";
         }
       });
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       print("Error fetching user data: $e");
-      setState(() 
-      {
+      setState(() {
         _username = "Error loading username";
         _profilePicture = "";
       });
@@ -60,15 +48,33 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
   }
 
   @override
-  void didChangeDependencies() 
-  {
+  void didChangeDependencies() {
     super.didChangeDependencies();
     _fetchUserData();
   }
-  
+
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
+    void onItemTapped(int index) {
+      setState(() {
+        currentIndex = index;
+      });
+
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, "/homepage");
+          return;
+        case 1:
+          Navigator.pushNamed(context, "/leaderboard");
+          return;
+        case 2:
+          Navigator.pushNamed(context, "/friendspage");
+          return;
+        default:
+          return;
+      }
+    }
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 243, 243),
       appBar: PreferredSize(
@@ -81,18 +87,18 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
             children: [
               IconButton(
                 icon: Icon(Icons.arrow_back, color: Color(0xFF096A2E)),
-                onPressed: () 
-                {
+                onPressed: () {
                   Navigator.pushNamed(context, "/profilepage");
                 },
               ),
               SizedBox(width: 8),
-              Row( 
+              Row(
                 children: [
-                  Text(
-                    "Go Back",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF096A2E))
-                  ),
+                  Text("Go Back",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF096A2E))),
                   SizedBox(width: 8),
                 ],
               ),
@@ -102,7 +108,8 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                   children: [
                     Text(
                       "Walk Smarter",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 8),
                     Image(
@@ -143,7 +150,8 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                       radius: 0,
                       backgroundImage: _profilePicture.startsWith("http")
                           ? NetworkImage(_profilePicture)
-                          : AssetImage("assets/standardProfilePicture.png") as ImageProvider,
+                          : AssetImage("assets/standardProfilePicture.png")
+                              as ImageProvider,
                     ),
                   ),
                 ),
@@ -157,8 +165,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                 Positioned(
                   top: 245,
                   child: GestureDetector(
-                    onTap: () 
-                    {
+                    onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ProfileUserSettings(),
                       ));
@@ -167,9 +174,17 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                       width: 355,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -181,7 +196,10 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                           SizedBox(width: 10),
                           Text(
                             "User settings",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],
                       ),
@@ -191,8 +209,7 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                 Positioned(
                   top: 310,
                   child: GestureDetector(
-                    onTap: () 
-                    {
+                    onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ProfileAppSettings(),
                       ));
@@ -201,9 +218,17 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                       width: 355,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -215,7 +240,10 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                           SizedBox(width: 10),
                           Text(
                             "App settings",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],
                       ),
@@ -225,28 +253,24 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                 Positioned(
                   top: 375,
                   child: GestureDetector(
-                    onTap: () 
-                    {
+                    onTap: () {
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) 
-                        {
+                        builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text("Log out?"),
                             content: Text("Are you sure you want to log out?"),
                             actions: <Widget>[
                               TextButton(
-                                onPressed: () 
-                                {
+                                onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                                 child: Text("Cancel"),
                               ),
                               TextButton(
-                                onPressed: () 
-                                {
+                                onPressed: () {
                                   pb.authStore.clear();
-                                  Navigator.pushNamed (context, "/");
+                                  Navigator.pushNamed(context, "/");
                                 },
                                 child: Text("Log out"),
                               ),
@@ -259,9 +283,17 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                       width: 355,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -273,7 +305,10 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
                           SizedBox(width: 10),
                           Text(
                             "Log out",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],
                       ),
@@ -286,58 +321,10 @@ class _ProfilePageSettingsState extends State<ProfilePageSettings>
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-            border: Border.all(
-              color: Color(0xFF096A2E),
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: "Map",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard),
-                  label: "Leaderboard",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.group),
-                  label: "Friends",
-                ),
-              ],
-              selectedItemColor: Color.fromARGB(255, 119, 120, 119),
-              currentIndex: 1,
-              onTap: (index) 
-              {
-                setState(() 
-                {
-                  currentIndex = index;
-                  switch (index) 
-                  {
-                    case 0:
-                      Navigator.pushNamed(context, "/homepage");
-                      break;
-                    case 1:
-                      Navigator.pushNamed(context, "/leaderboard");
-                      break;
-                    case 2:
-                      Navigator.pushNamed(context, "/friendspage");
-                      break;
-                    default:
-                      break;
-                  }
-                });
-              },
-            ),
-          ),
+        padding: EdgeInsets.only(bottom: 10, left: 15, right: 15, top: 10), 
+        child: BottomNavBar(
+          selectedIndex: currentIndex,
+          onTap: onItemTapped,
         ),
       ),
     );
