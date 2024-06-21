@@ -26,7 +26,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool hasPopUp = false;
   bool isTimerActive = false;
   bool isListRefreshTimerIsActive = false;
-  late Position _currentPosition;
   late Timer _timer;
   late Timer _refreshTimer;
   Marker? _currentLocationMarker;
@@ -277,7 +276,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
-      _currentPosition = position;
       LatLng currentLatLng = LatLng(position.latitude, position.longitude);
       mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
       _currentLocationMarker = Marker(
