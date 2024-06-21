@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walk_smarter/alertDialog.dart';
 import './utils/pocketbase.dart';
 import 'frienddialog.dart';
 import './components/navbar.dart';
@@ -41,6 +42,10 @@ class _FriendsPageState extends State<MyFriendsPage> {
       final currentUsername = user.data['username'];
 
       if (friendName == currentUsername) {
+        String? friendName = await showErrorDialog(
+            context,
+            'Can not add yourself to your own friendlist!',
+            'Type another users name here');
         print('You cannot add yourself as a friend.');
         return;
       }
@@ -62,6 +67,8 @@ class _FriendsPageState extends State<MyFriendsPage> {
             .update(pb.authStore.model['id'], body: body);
         print('Friend added successfully: $updatedRecord');
       } else {
+        String? friendName = await showErrorDialog(context,
+            'Username is incorrect or not found!', 'Insert a correct username');
         print('Friend not found');
       }
     } catch (e) {
