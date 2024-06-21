@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:walk_smarter/frienddialog.dart';
 import './utils/pocketbase.dart';
-import './frienddialog.dart';
 import './components/navbar.dart';
 import './components/bottombar.dart';
 
