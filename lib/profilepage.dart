@@ -44,9 +44,9 @@ class _ProfilePageState extends State<ProfilePage> {
         points ~/= 10;
       }
       newestTrophy = 'Latest Trophy: Achieved ${pow(10, amountOfTrophies).toInt()} points!';
-    }
-  });
-}
+      }
+    });
+  }
 
   Future<void> _fetchUserData() async {
     try {
@@ -204,26 +204,26 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-List<Widget> _buildTrophyWidgets() {
-  List<Widget> trophyWidgets = [];
-  int startIndex = (valueOfTrophies.length - 3).clamp(0, valueOfTrophies.length);
-  List<int> lastThreeTrophies = valueOfTrophies.sublist(startIndex);
+  List<Widget> _buildTrophyWidgets() {
+    List<Widget> trophyWidgets = [];
+    int startIndex = (valueOfTrophies.length - 3).clamp(0, valueOfTrophies.length);
+    List<int> lastThreeTrophies = valueOfTrophies.sublist(startIndex);
 
-  int currentAmountOfTrophies = 0;
-  for (int trophy in lastThreeTrophies) {
-    if (currentAmountOfTrophies >= 3) {
-      break;
+    int currentAmountOfTrophies = 0;
+    for (int trophy in lastThreeTrophies) {
+      if (currentAmountOfTrophies >= 3) {
+        break;
+      }
+      trophyWidgets.add(_buildTrophyWiget("$trophy Points trophy"));
+      currentAmountOfTrophies++;
     }
-    trophyWidgets.add(_buildTrophyWiget("$trophy Points trophy"));
-    currentAmountOfTrophies++;
-  }
 
-  if (lastThreeTrophies.isEmpty) {
-    trophyWidgets.add(_buildTrophyWiget("Successfully made an account!"));
-  }
+    if (lastThreeTrophies.isEmpty) {
+      trophyWidgets.add(_buildTrophyWiget("Successfully made an account!"));
+    }
 
-  return trophyWidgets;
-}
+    return trophyWidgets;
+  }
 
   @override
   Widget build(BuildContext context) {
