@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'utils/pocketbase.dart';
 import 'components/bottombar.dart';
@@ -22,13 +21,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late GoogleMapController mapController;
-  // final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: dotenv.env['GOOGLE_API_KEY']);
 
   // ignore: unused_fields
   bool hasPopUp = false;
   bool isTimerActive = false;
   bool isListRefreshTimerIsActive = false;
-  late Position _currentPosition;
   late Timer _timer;
   late Timer _refreshTimer;
   Marker? _currentLocationMarker;
@@ -282,7 +279,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
-      _currentPosition = position;
       LatLng currentLatLng = LatLng(position.latitude, position.longitude);
       mapController.animateCamera(CameraUpdate.newLatLng(currentLatLng));
       _currentLocationMarker = Marker(
