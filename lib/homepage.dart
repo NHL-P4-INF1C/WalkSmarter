@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'utils/pocketbase.dart';
 import 'components/bottombar.dart';
@@ -22,7 +21,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late GoogleMapController mapController;
-  // final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: dotenv.env['GOOGLE_API_KEY']);
 
   // ignore: unused_fields
   bool hasPopUp = false;
@@ -212,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         return WillPopScope(
           onWillPop: () async {
-            _onDialogDismissed(); // Call your specific function here
+            _onDialogDismissed();
             return true;
           },
           child: AlertDialog(
